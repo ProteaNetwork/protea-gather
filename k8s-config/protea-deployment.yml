@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: protea-frontend-_APP_
+  labels:
+    app: protea-frontend-_APP_
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: protea-frontend-_APP_
+  
+  # Pod template
+  template:
+    metadata:
+      labels:
+        app: protea-frontend-_APP_
+        date: _DATE_
+    spec:
+      containers:
+        - name: _TAG_
+          image: registry.gitlab.com/linumlabs/proteav2/release/protea-frontend:_TAG_
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: gitlab-registry-protea
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: protea-frontend-_APP_
+  labels:
+    app: protea-frontend-_APP_
+    date: _DATE_
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: protea-frontend-_APP_

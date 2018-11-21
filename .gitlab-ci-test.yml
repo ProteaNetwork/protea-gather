@@ -1,0 +1,139 @@
+.push_deploy:
+  when: manual
+  allow_failure: false
+  
+build:feature_frontend:
+  stage: build
+  only:
+    changes: 
+      - Frontend/*
+  except:
+    - ^((?!^feature-.*$).)*$
+    - ^((?!^feature\/.*$).)*$
+  artifacts:
+    paths:
+      - Frontend/
+  script:
+    - .gitlab-ci-scripts/frontend-build.sh
+    
+test:feature_frontend:
+  stage: test
+  only:
+    changes: 
+      - Frontend/*
+  except:
+    - ^((?!^feature-.*$).)*$
+    - ^((?!^feature\/.*$).)*$
+  dependencies:
+    - build:feature_frontend
+  script:
+    - .gitlab-ci-scripts/frontend-test.sh
+    
+build:feature_backend:
+  stage: build
+  only:
+    changes:
+      - ApiServer/*
+  except:
+    - ^((?!^feature-.*$).)*$
+    - ^((?!^feature\/.*$).)*$
+  artifacts:
+    paths:
+      - ApiServer/
+  script:
+    - .gitlab-ci-scripts/apiserver-build.sh
+    
+test:feature_backend:
+  stage: test
+  only:
+    changes:
+      - ApiServer/*
+  except:
+    - ^((?!^feature-.*$).)*$
+    - ^((?!^feature\/.*$).)*$
+  dependencies:
+    - build:feature_backend
+  script:
+    - .gitlab-ci-scripts/apiserver-test.sh
+    
+build:nightly_frontend:
+  stage: build
+  only:
+    changes:
+      - Frontend/*
+  except:
+    - ^((?!^nightly.*$).)*$
+  artifacts:
+    paths:
+      - Frontend/
+  script:
+    - .gitlab-ci-scripts/frontend-build.sh
+    
+test:nightly_frontend:
+  stage: test
+  only:
+    changes:
+      - Frontend/*
+  except:
+    - ^((?!^nightly.*$).)*$
+  dependencies:
+    - build:nightly_frontend
+  script:
+    - .gitlab-ci-scripts/frontend-test.sh
+
+build:nightly_backend:
+  stage: build
+  only:
+    changes:
+      - ApiServer/*
+  except:
+    - ^((?!^nightly.*$).)*$
+  artifacts:
+    paths:
+      - ApiServer/
+  script:
+    - .gitlab-ci-scripts/apiserver-build.sh
+
+test:nightly_backend:
+  stage: test
+  only:
+    changes:
+      - ApiServer/*
+  except:
+    - ^((?!^nightly.*$).)*$
+  dependencies:
+    - build:nightly_backend
+  script:
+    - .gitlab-ci-scripts/apiserver-test.sh
+    
+merge:to_master:
+  stage: merge
+  only:
+    - nightly
+  script:
+    - .gitlab-ci-scripts/configure-git.sh
+    - git checkout master
+    - git merge origin/nightly
+    - git push
+
+merge:to_staging:
+  stage: merge
+  extends: .push_deploy
+  only:
+    - master
+  script:
+    - .gitlab-ci-scripts/configure-git.sh
+    - git checkout staging
+    - git merge origin/master
+    - git push
+
+merge:to_production:
+  stage: merge
+  extends: .push_deploy
+  only:
+    - staging
+  script:
+    - .gitlab-ci-scripts/configure-git.sh
+    - git checkout production
+    - git merge origin/staging
+    - git push

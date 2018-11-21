@@ -1,0 +1,33 @@
+include:
+  - .gitlab-ci-test.yml
+  - .gitlab-ci-deploy.yml 
+
+image: node:latest
+
+#services:
+  #- docker:dind
+  #- node:latest
+  
+# Cache modules in between jobs for current branch
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - apt-cache/
+
+variables:
+  MOLECULE_FRONTEND_CONTAINER_IMAGE: registry.gitlab.com/linumlabs/proteav2/testing/protea-frontend:$CI_BUILD_REF_NAME
+  MOLECULE_FRONTEND_CONTAINER_RELEASE_IMAGE: registry.gitlab.com/linumlabs/proteav2/release/protea-frontend:$CI_BUILD_REF_NAME
+  GIT_SUBMODULE_STRATEGY: recursive
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://localhost:2375
+before_script:
+  - set -xe && apt-get update && apt-get -yq -o dir::cache::archives="apt-cache" install bash git openssh-server
+
+stages:
+  - build
+  - test
+  - merge
+  - docker-build
+  - push
+  - deploy

@@ -1,0 +1,8 @@
+version: '3'
+services:
+  protea-frontend:
+    image: $PROTEA_FRONTEND_CONTAINER_RELEASE_IMAGE
+    build:
+      context: Frontend/.
+    ports:
+      - 3000:80
