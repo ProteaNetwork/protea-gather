@@ -1,0 +1,21 @@
+{
+  "name": "proteav2contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "dotenv": "^6.1.0",
+    "openzeppelin-solidity": "^2.0.0",
+    "truffle": "^4.1.14",
+    "truffle-hdwallet-provider": "0.0.6",
+    "web3-eth-abi": "^1.0.0-beta.36"
+  }
+}
