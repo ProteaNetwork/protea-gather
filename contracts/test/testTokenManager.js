@@ -32,7 +32,7 @@ contract('Token Manager', accounts => {
         });
 
         it('Transferring functionality', async () => {
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(0, {from: userAddress});
             await pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
             await tokenManager.mint(10, {from: userAddress});
             let balanceOfUser = await tokenManager.balanceOf(userAddress);
@@ -47,7 +47,7 @@ contract('Token Manager', accounts => {
         });
 
         it('Encoded transfer from functionality', async () => {
-            // await pseudoDaiToken.mint({from: userAddress});
+            // await pseudoDaiToken.mint(0, {from: userAddress});
             // let balanceOfUser = await pseudoDaiToken.balanceOf(userAddress);
             // await pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
             // await tokenManager.mint(10, {from: userAddress});
@@ -61,7 +61,7 @@ contract('Token Manager', accounts => {
             let priceOfMint = await tokenManager.priceToMint(10);
             assert.equal(priceOfMint['c'], 125, "The price to mint is 125");
 
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(0, {from: userAddress});
             let balanceOfUser = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(balanceOfUser.toNumber(), 250, "Balance of user is correct");
 
@@ -99,7 +99,7 @@ contract('Token Manager', accounts => {
             let priceOfMint = await tokenManager.priceToMint(10);
             assert.equal(priceOfMint['c'], 125, "The price to mint is 125");
 
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(0, {from: userAddress});
             await pseudoDaiToken.approve(tokenManager.address, priceOfMint, {from: userAddress});
             await tokenManager.mint(10, {from: userAddress});
             let oneTokenPrice = await tokenManager.priceToMint(1);
@@ -107,9 +107,9 @@ contract('Token Manager', accounts => {
             assert.equal(balanceAfter, 10, "Balance is 10");
             assert.equal(oneTokenPrice.toNumber(), 26, "Initial price is 26");
 
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(1, {from: userAddress});
             //mint twice to give user enough DAI to buy another 10
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(2, {from: userAddress});
             let priceOfMintAfter = await tokenManager.priceToMint(10);
             await pseudoDaiToken.approve(
                 tokenManager.address, 
@@ -127,7 +127,7 @@ contract('Token Manager', accounts => {
         });
 
         it('Burning tests', async () => {
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(0, {from: userAddress});
             pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
             await tokenManager.mint(10, {from: userAddress});
             let balance = await tokenManager.balanceOf(userAddress);
@@ -159,7 +159,7 @@ contract('Token Manager', accounts => {
         });
 
         it('Total supply changes with minting and burning', async () => {
-            await pseudoDaiToken.mint({from: userAddress});
+            await pseudoDaiToken.mint(0, {from: userAddress});
             pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
             await tokenManager.mint(10, {from: userAddress});
             let supply = await tokenManager.totalSupply();
