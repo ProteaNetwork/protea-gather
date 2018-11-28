@@ -228,7 +228,7 @@ contract EventManager is RewardIssuerInterface, ERC223Receiver {
 
     /**
       * @dev Forwards an amount of a members stake. 
-      * @param _amount : The amount of steak to forward.
+      * @param _amount : The amount of stake to forward.
       * @param _member : The members address. 
       */
     function _forwardStake(uint256 _amount, address _member) 
@@ -236,7 +236,7 @@ contract EventManager is RewardIssuerInterface, ERC223Receiver {
         returns(bool) 
     {
         IERC20 token = IERC20(tokenManager);
-        token.transfer(_member, _amount);    
+        token.transfer(rewardManager, _amount);    
         return true;
     }
 
@@ -256,7 +256,7 @@ contract EventManager is RewardIssuerInterface, ERC223Receiver {
         events[_index].currentAttendees += 1;
         emit MemberRegistered(_index, _member);
         /** bytes4 RSVP_SIG = bytes4(keccak256("rsvp(uint256,address)"));
-          * To encode it with paramiters (ie not just the function signature)
+          * To encode it with parameters (ie not just the function signature)
           * add the paramiters after the :
           * (numbering (1 2 3) for ease of reading)
           * this.call(1 bytes32(2 keccak256(3 "toEncode(uint8)")3 )2, 87 )1;
@@ -291,7 +291,7 @@ contract EventManager is RewardIssuerInterface, ERC223Receiver {
         external 
         onlyToken() 
     {
-        require(this.call(_data), "Call on encoded function failed.");
+        require(address(this).call(_data), "Call on encoded function failed.");
         // 2 kinds of request with stake 
         // 1. Create, which has all the event info and the creation stake
         // 2. an event index and the required stake

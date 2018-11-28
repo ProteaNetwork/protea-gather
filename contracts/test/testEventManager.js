@@ -16,9 +16,10 @@ contract('TokenManager', (accounts) => {
     userAddress = accounts[2];
     tokenOwnerAddress = accounts[3];
     beforeEach('', async () => {
-        tokenManager = await TokenManager.new({
+        pseudoDaiToken = await PseudoDaiToken.new("DAI", "DAI", 18);
+        tokenManager = await TokenManager.new("tokenMan", "PDAI", pseudoDaiToken.address, {
             from: tokenOwnerAddress
-        })
+        });
         eventManager = await EventManager.new({
             from: tokenOwnerAddress
         })
@@ -29,15 +30,11 @@ contract('TokenManager', (accounts) => {
 
         it("Encode and Call event manager properly", async () => {
 
-            let receiverContract = await ERC223Receiver.new(conferenceName, deposit, limitOfParticipants,
-                coolingPeriod, proteaToken.address, encryption, {
-                    from: adminAddress
-                });
             // https://beresnev.pro/test-overloaded-solidity-functions-via-truffle/
             // Truffle unable to use overloaded functions, assuming target overload is last entry to the contract
             // Possible upgrade, include lodash to dynamically load abi function
-            let targetAbi = CommunityToken.contract.abi[proteaToken.contract.abi.length - 1];
-            console.log('ABI code', CommunityToken.contract.abi);
+            // let targetAbi = CommunityToken.contract.abi[proteaToken.contract.abi.length - 1];
+            // console.log('ABI code', CommunityToken.contract.abi);
 
             
             // Begin creating custom transaction call
@@ -49,7 +46,7 @@ contract('TokenManager', (accounts) => {
             //     ]
             // );
 
-            console.log(transferMethodTransactionData);
+            // console.log(transferMethodTransactionData);
           
             // await web3.eth.sendTransaction({
             //     from: userAddress,
@@ -58,7 +55,7 @@ contract('TokenManager', (accounts) => {
             //     data: transferMethodTransactionData,
             //     value: 0
             // });
-
+            assert.equal(true, false, "Tests incomplete");
         });
     })
    
