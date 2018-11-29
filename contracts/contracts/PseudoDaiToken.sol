@@ -1,52 +1,8 @@
 pragma solidity ^0.4.24;
 
-library SafeMath {
+import "./openzeppelin-solidity/token/ERC20/ERC20.sol";
 
-    /**
-    * @dev Multiplies two numbers, throws on overflow.
-    */
-    function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-        // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
-        // benefit is lost if 'b' is also tested.
-        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
-        if (_a == 0) {
-            return 0;
-        }
-
-        c = _a * _b;
-        assert(c / _a == _b);
-        return c;
-    }
-
-    /**
-    * @dev Integer division of two numbers, truncating the quotient.
-    */
-    function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        // assert(_b > 0); // Solidity automatically throws when dividing by 0
-        // uint256 c = _a / _b;
-        // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
-        return _a / _b;
-    }
-
-    /**
-    * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
-    */
-    function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
-        assert(_b <= _a);
-        return _a - _b;
-    }
-
-    /**
-    * @dev Adds two numbers, throws on overflow.
-    */
-    function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
-        c = _a + _b;
-        assert(c >= _a);
-        return c;
-    }
-}
-
-contract PseudoDaiToken {
+contract PseudoDaiToken is ERC20 {
     using SafeMath for uint256;
     // using SafeMath for uint8;
     string public name;
@@ -62,7 +18,7 @@ contract PseudoDaiToken {
 
     mapping (address => mapping (address => uint256)) internal allowed;
     mapping (address => uint256) internal balances;
-    mapping(address => AccountDetails) internal tokenOwners;
+    mapping(address => AccountDetails) internal mintingRewards;
 
     event Approval(
         address indexed owner,
@@ -82,34 +38,51 @@ contract PseudoDaiToken {
     }
 
     /**
+      * @dev Returns the state of minting rewards per user
+      * @param _user    : Index of the reward being requested.
+      */
+    function fetchRewardState(address _user) public view returns(bool,bool,bool) {
+        return (mintingRewards[_user].registered, mintingRewards[_user].secondary, mintingRewards[_user].backup);
+    }
+
+    /**
       * @dev Mints free tokens to a user. Users can have a 
+      * @param _rewardIndex    : Index of the reward being requested.
       *     max of 500 free tokens, given over 3 mints. 
       */
-    function mint() public {
+    function mint(uint256 _rewardIndex) public {
         require(
-            !tokenOwners[msg.sender].registered || 
-            !tokenOwners[msg.sender].secondary || 
-            !tokenOwners[msg.sender].backup, 
+            !mintingRewards[msg.sender].registered || 
+            !mintingRewards[msg.sender].secondary || 
+            !mintingRewards[msg.sender].backup, 
             "All free tokens have been used."
         );
-        if(tokenOwners[msg.sender].registered) {
-            if(tokenOwners[msg.sender].secondary){
-                tokenOwners[msg.sender].backup = true;
+        
+        if(mintingRewards[msg.sender].registered) {
+            if(_rewardIndex == 1 && !mintingRewards[msg.sender].secondary) {
+                mintingRewards[msg.sender].secondary = true;
                 totalSupply_.add(125);
                 balances[msg.sender] = balances[msg.sender].add(125);
                 emit Transfer(0x0, msg.sender, 125);
-            } else {
-                tokenOwners[msg.sender].secondary = true;
+                return;
+            }
+            if(_rewardIndex == 2 && !mintingRewards[msg.sender].backup){
+                mintingRewards[msg.sender].backup = true;
                 totalSupply_.add(125);
                 balances[msg.sender] = balances[msg.sender].add(125);
                 emit Transfer(0x0, msg.sender, 125);
+                return;
             }
         } else {
-            tokenOwners[msg.sender].registered = true;
-            totalSupply_.add(250);
-            balances[msg.sender] = balances[msg.sender].add(250);
-            emit Transfer(0x0, msg.sender, 250);
+            if(_rewardIndex == 0){
+                mintingRewards[msg.sender].registered = true;
+                totalSupply_.add(250);
+                balances[msg.sender] = balances[msg.sender].add(250);
+                emit Transfer(0x0, msg.sender, 250);
+                return;
+            }
         }
+        revert("Incorrect reward index");
     }
 
     /**
