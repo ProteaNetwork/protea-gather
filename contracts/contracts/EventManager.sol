@@ -71,30 +71,15 @@ contract EventManager is RewardIssuerInterface, ERC223Receiver {
       * @dev Sets the address of the admin to the 
       *     msg.sender.
       */
-    constructor () public {
-        admin = msg.sender;
-    }
-
-    /**
-      * @dev Gives the EventManager the addresses of 
-      *     the functions it may need to talk to or be called 
-      *     by (for modifiers). This function is only callable by the 
-      *     admin/creator of this contract.
-      * @param _tokenManager : The address of the token manager contract
-      * @param _rewardManager : The address of the reward manager contract
-      * @param _creationCost : The price of creating an event
-      * @param _maxAttendanceBonus : The bonus the event will recive for 
-      *     running an event that maxed out on atendance. 
-      */
-    function initContract(
+    constructor (
         address _tokenManager, 
         address _rewardManager, 
         uint256 _creationCost, 
         uint256 _maxAttendanceBonus
     ) 
         public 
-        onlyAdmin() 
     {
+        admin = msg.sender;
         tokenManager = _tokenManager;
         rewardManager = _rewardManager;
         creationCost = _creationCost;
