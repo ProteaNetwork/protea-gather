@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { Typography, Theme, Paper, Grid, Avatar } from '@material-ui/core';
 import CommunityCard from 'components/CommunityCard';
+import EventCard from 'components/EventCard';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -56,10 +57,19 @@ function Dashboard(props: Props) {
         </Paper>
       </main>
       <CommunityCard 
-        name='name' tokens={69}
+        name='name' 
+        tokens={69}
         logo='blank' 
         id='testId' 
-        onClick={(id) => console.log(id)} />
+        onClick={(id) => console.log(id)} 
+      />
+      <EventCard 
+        eventName='super awesome event #235'
+        eventID='#235'
+        image='the image'
+        comLogo='the other image'
+        onClick={(eventID) => console.log(eventID)} 
+      />
     </Fragment>
   )
 }

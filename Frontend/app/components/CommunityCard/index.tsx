@@ -27,7 +27,7 @@ interface OwnProps {
   onClick(id: string): void;
 }
 
-function MediaCard(props: OwnProps) {
+function CommunityCard(props: OwnProps) {
   const { classes, id, logo, tokens, name } = props;
   return (
     <Card key={id} className={classes.card}>
@@ -50,5 +50,5 @@ function MediaCard(props: OwnProps) {
   );
 }
 
-export default withStyles(styles,  { withTheme: true })(MediaCard);
+export default withStyles(styles,  { withTheme: true })(CommunityCard);
 
