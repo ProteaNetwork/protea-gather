@@ -55,7 +55,11 @@ function Dashboard(props: Props) {
           </Grid>
         </Paper>
       </main>
-      <CommunityCard name='name' tokens={69} logo='blank' id='string'/>
+      <CommunityCard 
+        name='name' tokens={69}
+        logo='blank' 
+        id='testId' 
+        onClick={(id) => console.log(id)} />
     </Fragment>
   )
 }

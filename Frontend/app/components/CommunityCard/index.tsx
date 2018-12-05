@@ -7,11 +7,7 @@
 import * as React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Typography from '@material-ui/core/Typography';
+import {CardActionArea, CardContent, CardMedia, Typography }from '@material-ui/core';
 
 const styles = {
   card: {
@@ -28,30 +24,28 @@ interface OwnProps {
   tokens: number;
   logo: string;
   id: string;
+  onClick(id: string): void;
 }
 
 function MediaCard(props: OwnProps) {
-  const { classes } = props;
+  const { classes, id, logo, tokens, name } = props;
   return (
-    <Card className={classes.card}>
-      <CardActionArea>
+    <Card key={id} className={classes.card}>
+      <CardActionArea onClick={() => props.onClick(id)}>
         <CardMedia
           className={classes.media}
-          image= {props.logo}
-          title= {props.name}
+          image= {logo}
+          title= {name}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            {props.name}
+            {name}
           </Typography>
           <Typography component="p">
-            Tokens: {props.tokens}
+            Tokens: {tokens}
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardActions>
-
-      </CardActions>
     </Card>
   );
 }
