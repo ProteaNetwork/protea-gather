@@ -45,7 +45,7 @@ function MediaCard(props: OwnProps) {
             {props.name}
           </Typography>
           <Typography component="p">
-            {props.tokens}
+            Tokens: {props.tokens}
           </Typography>
         </CardContent>
       </CardActionArea>
