@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper } from '@material-ui/core';
+import { Typography, Theme, Paper, Grid, Avatar } from '@material-ui/core';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -20,20 +20,42 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     alignItems: 'center',
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
   },
+  bigAvatar: {
+    margin: 10,
+    width: 60,
+    height: 60,
+  },
 });
 
-function LandingPage(props) {
-  const { classes } = props;
+interface Props {
+  classes: any;
+  image: string;
+  name: string;
+  ensName: string;
+  tokenBalance: number;
+}
+
+function Dashboard(props: Props) {
+  const { classes, image, name, ensName, tokenBalance } = props;
 
   return (
-  <Fragment>
-    <main className={classes.layout}>
-      <Paper className={classes.paper}>
-        <Typography variant='h1'>Dashboard Stuffs</Typography>
-      </Paper>
-    </main>
-  </Fragment>
+    <Fragment>
+      <main className={classes.layout}>
+        <Paper className={classes.paper}>
+          <Grid container>
+            <Grid item>
+              <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0,1)}</Avatar>
+            </Grid>
+            <Grid item>
+              <Typography variant='h2'>{name}</Typography>
+              <Typography variant='body1'>{ensName}</Typography>
+              <Typography variant='body1'>{tokenBalance} DAI</Typography>
+            </Grid>
+          </Grid>
+        </Paper>
+      </main>
+    </Fragment>
   )
 }
 
-export default withStyles(styles, { withTheme: true })(LandingPage);
+export default withStyles(styles, { withTheme: true })(Dashboard);
