@@ -22,10 +22,10 @@ import saga from './saga';
 import { logout } from './actions';
 
 import AppWrapper from '../../components/AppWrapper/index';
-import Dashboard from '../../components/Dashboard';
 
 import LandingPage from '../../components/LandingPage';
 import NotFound from 'containers/NotFoundPage';
+import DashboardPage from 'containers/DashboardPage';
 
 
 function PrivateRoute({ component: Component, isLoggedIn,...rest }) {
@@ -81,6 +81,7 @@ interface DispatchProps {
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
+
 function App(props: Props) {
   const { isLoggedIn, onLogout } = props;
 
@@ -89,7 +90,7 @@ function App(props: Props) {
   return (
     <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout}>
       <PublicRoute exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
-      <PrivateRoute path="/dashboard" component={Dashboard} isLoggedIn={isLoggedIn} />
+      <PrivateRoute path="/dashboard" component={DashboardPage} isLoggedIn={isLoggedIn} />
       <Route component={NotFound} />
     </AppWrapper>
   );

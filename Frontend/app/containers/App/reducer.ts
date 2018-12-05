@@ -8,7 +8,7 @@ import { SET_AUTH, SAVE_TOKEN, REQUEST_ERROR, CLEAR_ERROR, SENDING_REQUEST } fro
  */
 
 export const initialState = fromJS({
-  loggedIn: false,
+  loggedIn: true,
   error: '',
   currentlySending: false,
   apiToken: '',
