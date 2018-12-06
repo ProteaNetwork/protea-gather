@@ -148,7 +148,6 @@
   "dependencies": {
     "@material-ui/core": "^3.2.0",
     "@material-ui/icons": "^3.0.1",
-
     "babel-polyfill": "6.26.0",
     "chalk": "^2.4.1",
     "compression": "1.7.2",
@@ -166,6 +165,7 @@
     "ip": "1.1.5",
     "lodash": "4.17.10",
     "minimist": "1.2.0",
+    "nuka-carousel": "^4.4.3",
     "prop-types": "15.6.1",
     "react": "16.4.1",
     "react-dom": "16.4.1",

@@ -19,7 +19,7 @@ const styles = {
   },
 };
 
-interface OwnProps {
+export interface OwnProps {
   classes: any;
   eventName: string;
   eventID: string;
@@ -31,7 +31,7 @@ interface OwnProps {
 function EventCard(props: OwnProps) {
   const { classes, eventName, eventID, image } = props;
   return (
-    <Card key={eventID} className={classes.card}>
+    <Card className={classes.card}>
       <CardActionArea onClick={() => props.onClick(eventID)}>
         <CardMedia
           className={classes.media}
@@ -48,4 +48,4 @@ function EventCard(props: OwnProps) {
   );
 }
 
-export default withStyles(styles,  { withTheme: true })(EventCard);
+export default withStyles(styles)(EventCard);

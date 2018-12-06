@@ -18,7 +18,7 @@ const styles = {
   },
 };
 
-interface OwnProps {
+export interface OwnProps {
   classes: any;
   name: string;
   tokens: number;
@@ -30,7 +30,7 @@ interface OwnProps {
 function CommunityCard(props: OwnProps) {
   const { classes, id, logo, tokens, name } = props;
   return (
-    <Card key={id} className={classes.card}>
+    <Card className={classes.card}>
       <CardActionArea onClick={() => props.onClick(id)}>
         <CardMedia
           className={classes.media}
@@ -50,5 +50,5 @@ function CommunityCard(props: OwnProps) {
   );
 }
 
-export default withStyles(styles,  { withTheme: true })(CommunityCard);
+export default withStyles(styles)(CommunityCard);
 
