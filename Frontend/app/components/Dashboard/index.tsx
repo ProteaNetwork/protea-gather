@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper, Grid, Avatar } from '@material-ui/core';
+import { Typography, Theme, Paper, Grid, Avatar, WithStyles } from '@material-ui/core';
 import CommunityCard from 'components/CommunityCard';
 import EventCard from 'components/EventCard';
+import Carousel from 'nuka-carousel';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -29,16 +30,25 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   },
 });
 
-interface Props {
+interface Props extends WithStyles <typeof styles> {
   classes: any;
   image: string;
   name: string;
   ensName: string;
   tokenBalance: number;
+  communities: Array<any>;
+  events: Array<any>;
+}
+
+const carouselSettings = {
+  width: '800px',
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  withoutControls: true,
 }
 
 function Dashboard(props: Props) {
-  const { classes, image, name, ensName, tokenBalance } = props;
+  const { classes, image, name, ensName, tokenBalance, communities, events } = props;
 
   return (
     <Fragment>
@@ -56,20 +66,30 @@ function Dashboard(props: Props) {
           </Grid>
         </Paper>
       </main>
-      <CommunityCard 
-        name='name' 
-        tokens={69}
-        logo='blank' 
-        id='testId' 
-        onClick={(id) => console.log(id)} 
-      />
-      <EventCard 
-        eventName='super awesome event #235'
-        eventID='#235'
-        image='the image'
-        comLogo='the other image'
-        onClick={(eventID) => console.log(eventID)} 
-      />
+      <Typography variant='h4'>Communities</Typography>
+      <Carousel {...carouselSettings}>
+        {communities.map(C =>
+          <CommunityCard
+            key={C.id}
+            name={C.name}
+            tokens={C.tokens}
+            logo={C.logo}
+            id={C.id}
+            onClick={(id) => console.log(id)} />
+          )}
+      </Carousel>
+      <Typography variant='h4'>Events</Typography>
+      <Carousel {...carouselSettings}>
+        {events.map(E =>
+          <EventCard
+            key={E.eventID}
+            eventName={E.eventName}
+            eventID={E.eventID}
+            image={E.image}
+            comLogo={E.comLogo}
+            onClick={(eventID) => console.log(eventID)}/>
+        )}
+      </Carousel>
     </Fragment>
   )
 }
