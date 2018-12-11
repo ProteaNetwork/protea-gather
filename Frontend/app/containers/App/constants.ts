@@ -3,12 +3,16 @@
  * changes in our state.
  */
 
-export const SET_AUTH = 'SET_AUTH'
-export const SENDING_REQUEST = 'SENDING_REQUEST'
-export const LOGIN_REQUEST = 'LOGIN_REQUEST'
-export const LOGIN_ERROR = 'LOGIN_ERROR'
-export const SIGNUP_REQUEST = 'SIGNUP_REQUEST'
-export const LOGOUT = 'LOGOUT'
-export const SAVE_TOKEN = 'SAVE_TOKEN'
-export const REQUEST_ERROR = 'REQUEST_ERROR'
-export const CLEAR_ERROR = 'CLEAR_ERROR'
+enum ActionTypes {
+  SET_AUTH = 'app/Global/SET_AUTH',
+  SENDING_REQUEST = 'app/Global/SENDING_REQUEST',
+  LOGIN_REQUEST = 'app/Global/LOGIN_REQUEST',
+  LOGIN_ERROR = 'app/Global/LOGIN_ERROR',
+  SIGNUP_REQUEST = 'app/Global/SIGNUP_REQUEST',
+  LOGOUT = 'app/Global/LOGOUT',
+  SAVE_TOKEN = 'app/Global/SAVE_TOKEN',
+  REQUEST_ERROR = 'app/Global/REQUEST_ERROR',
+  CLEAR_ERROR = 'app/Global/CLEAR_ERROR'
+}
+
+export default ActionTypes

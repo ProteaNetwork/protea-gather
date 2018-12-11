@@ -3,19 +3,20 @@ import * as actions from './actions';
 import { ApplicationRootState } from 'types';
 
 /* --- STATE --- */
-interface DashboardPageState {
-
+interface CommunitiesPageState {
+  readonly searchParameter: string;
+  readonly sortParameter: number;
 }
 
 
 /* --- ACTIONS --- */
-type DashboardPageActions = ActionType<typeof actions>;
+type CommunitiesPageActions = ActionType<typeof actions>;
 
 
 /* --- EXPORTS --- */
 
 type RootState = ApplicationRootState;
-type ContainerState = DashboardPageState;
-type ContainerActions = DashboardPageActions;
+type ContainerState = CommunitiesPageState;
+type ContainerActions = CommunitiesPageActions;
 
 export { RootState, ContainerState, ContainerActions };

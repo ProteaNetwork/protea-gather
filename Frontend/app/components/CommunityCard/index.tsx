@@ -5,21 +5,32 @@
  */
 
 import * as React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import {CardActionArea, CardContent, CardMedia, Typography }from '@material-ui/core';
+// import {CardActionArea, CardContent, CardMedia, Typography, Theme } from '@material-ui/core';
+// import { withStyles } from '@material-ui/core/styles';
+// import Card from '@material-ui/core/Card';
+import {CardContent, Typography, Theme, CardMedia, CardActionArea} from '@material-ui/core';
 
-const styles = {
+const styles = ({ palette }: Theme) => createStyles({
   card: {
-    maxWidth: 345,
+    width: 400,
+    height: 400,
+  },
+  cardContent: {
+    backgroundColor: palette.secondary.light,
   },
   media: {
-    height: 140,
+    width: 400,
+    height: 300,
   },
-};
+  header: {
+    width: 400,
+    height: 20,
+  }
+});
 
 export interface OwnProps {
-  classes: any;
   name: string;
   tokens: number;
   logo: string;
@@ -27,21 +38,26 @@ export interface OwnProps {
   onClick(id: string): void;
 }
 
-function CommunityCard(props: OwnProps) {
-  const { classes, id, logo, tokens, name } = props;
+interface StyleProps {
+  classes: any;
+}
+
+type Props = OwnProps & StyleProps;
+
+function CommunityCard(props: Props) {
+  const { classes, tokens, logo, name, id } = props;
   return (
     <Card className={classes.card}>
-      <CardActionArea onClick={() => props.onClick(id)}>
+      <CardActionArea onClick={() => props.onClick(id)} >
         <CardMedia
           className={classes.media}
           image= {logo}
-          title= {name}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
+          title= {name} />
+        <CardContent className={classes.cardContent}>
+          <Typography className={classes.header} variant="h5" component="h2" gutterBottom>
             {name}
           </Typography>
-          <Typography component="p">
+          <Typography color="textSecondary">
             Tokens: {tokens}
           </Typography>
         </CardContent>

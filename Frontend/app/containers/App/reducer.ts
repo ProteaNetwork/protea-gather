@@ -1,5 +1,6 @@
-import { fromJS } from 'immutable';
-import { SET_AUTH, SAVE_TOKEN, REQUEST_ERROR, CLEAR_ERROR, SENDING_REQUEST } from './constants';
+//import ActionTypes  from './constants';
+import { ContainerState, ContainerActions } from './types';
+//import { combineReducers } from 'redux';
 
 /*
  *
@@ -7,28 +8,37 @@ import { SET_AUTH, SAVE_TOKEN, REQUEST_ERROR, CLEAR_ERROR, SENDING_REQUEST } fro
  *
  */
 
-export const initialState = fromJS({
+export const initialState = {
   loggedIn: true,
   error: '',
   currentlySending: false,
   apiToken: '',
-});
+};
 
-function appReducer(state = initialState, action) {
+export function appReducer(
+  state: ContainerState = initialState,
+  action: ContainerActions,
+): ContainerState {
   switch (action.type) {
-    case SET_AUTH:
-      return state.setIn(['loggedIn'], action.newAuthState);
-    case SAVE_TOKEN:
-      return state.setIn(['apiToken'], action.token);
-    case REQUEST_ERROR:
-      return state.setIn(['error'], action.error);
-    case CLEAR_ERROR:
-      return state.setIn(['error'], '');
-    case SENDING_REQUEST:
-      return state.setIn(['currentlySending'], action.sending)
+    // case ActionTypes.SET_AUTH:
+    //   return {...state, ...{loggedIn: action.payload} };
+    // case ActionTypes.SAVE_TOKEN:
+    //   return {...state, ...{apiToken: action.payload}};
+    // case ActionTypes.REQUEST_ERROR:
+    //   return {...state, ...{error: action.payload}};
+    // case ActionTypes.CLEAR_ERROR:
+    //   return {...state, ...{error: ''}};
+    // case ActionTypes.SENDING_REQUEST:
+    //   return {...state, ...{currentlySending: action.payload}}
     default:
       return state;
   }
 }
 
 export default appReducer;
+
+// export default combineReducers<ContainerState, ContainerActions>({
+//   global: appReducer,
+// });
+
+

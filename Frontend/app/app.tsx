@@ -34,6 +34,9 @@ import throttle from 'lodash/throttle';
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
+    secondary: {
+      main: '#0066cc'
+    }
   },
   typography: {
     useNextVariants: true,

@@ -7,7 +7,7 @@ import { initialState } from './reducer';
  * Direct selector to the communitiesPage state domain
  */
 
-const selectGlobalDomain = (state: ApplicationRootState) => {
+const selectCommunitiesPageDomain = (state: ApplicationRootState) => {
   return state ? state : initialState;
 };
 
@@ -19,10 +19,10 @@ const selectGlobalDomain = (state: ApplicationRootState) => {
  * Default selector used by CommunitiesPage
  */
 
-const selectGlobal = () =>
-  createSelector(selectGlobalDomain, substate => {
+const selectCommunitiesPage = () =>
+  createSelector(selectCommunitiesPageDomain, substate => {
     return substate;
   });
 
-export default selectGlobal;
-export { selectGlobalDomain };
+export default selectCommunitiesPage;
+export { selectCommunitiesPageDomain };
