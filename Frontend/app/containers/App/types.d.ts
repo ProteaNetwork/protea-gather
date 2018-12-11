@@ -3,19 +3,22 @@ import * as actions from './actions';
 import { ApplicationRootState } from 'types';
 
 /* --- STATE --- */
-interface DashboardPageState {
-
+interface GlobalState {
+  loggedIn: boolean,
+  error: string,
+  currentlySending: boolean,
+  apiToken: string,
 }
 
 
 /* --- ACTIONS --- */
-type DashboardPageActions = ActionType<typeof actions>;
+type GlobalActions = ActionType<typeof actions>;
 
 
 /* --- EXPORTS --- */
 
 type RootState = ApplicationRootState;
-type ContainerState = DashboardPageState;
-type ContainerActions = DashboardPageActions;
+type ContainerState = GlobalState;
+type ContainerActions = GlobalActions;
 
 export { RootState, ContainerState, ContainerActions };

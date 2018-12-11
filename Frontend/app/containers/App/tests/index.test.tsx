@@ -1,12 +1,11 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import { Route } from 'react-router-dom';
+// import React from 'react';
+// import { shallow } from 'enzyme';
 
-import App from '..';
+// import App from '..';
 
 describe('<App />', () => {
-  it('should render some routes', () => {
-    const renderedComponent = shallow(<App />);
-    expect(renderedComponent.find(Route).length).not.toBe(0);
+  it('should have tests specified', () => {
+    // const renderedComponent = shallow(<App />);
+    expect(false).toBe(true);
   });
 });

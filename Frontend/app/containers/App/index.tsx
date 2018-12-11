@@ -15,6 +15,7 @@ import * as React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import injectSaga from 'utils/injectSaga';
+import injectReducer from 'utils/injectReducer';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
 
@@ -26,6 +27,8 @@ import AppWrapper from '../../components/AppWrapper/index';
 import LandingPage from '../../components/LandingPage';
 import NotFound from 'containers/NotFoundPage';
 import DashboardPage from 'containers/DashboardPage';
+import CommunitiesPage from 'containers/CommunitiesPage';
+import reducer from './reducer';
 
 
 function PrivateRoute({ component: Component, isLoggedIn,...rest }) {
@@ -91,14 +94,17 @@ function App(props: Props) {
     <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout}>
       <PublicRoute exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
       <PrivateRoute path="/dashboard" component={DashboardPage} isLoggedIn={isLoggedIn} />
+      <PrivateRoute path="/communities" component={CommunitiesPage} isLoggedIn={isLoggedIn} />
       <Route component={NotFound} />
     </AppWrapper>
   );
 }
 
-const mapStateToProps = (state) => ({
-  isLoggedIn: state.getIn(['global', 'loggedIn']),
-})
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.global.loggedIn,
+  }
+}
 
 const mapDispatchToProps = (dispatch) => ({
   onLogout: () => {
@@ -106,22 +112,23 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-//export default connect(mapStateToProps, mapDispatchToProps)(App);
-
 const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps,
 );
 
-const withSaga = injectSaga<OwnProps>({ key: 'route', saga: saga });
+const withReducer = injectReducer({ key: 'global', reducer });
+const withSaga = injectSaga<OwnProps>({ key: 'global', saga: saga });
 
-export default compose<TRouter, TSaga, TConnect, ReturnType>(
+export default compose<TRouter, TReducer, TSaga, TConnect, ReturnType>(
   withRouter,
+  withReducer,
   withSaga,
   withConnect,
 )(App);
 
 type ReturnType = React.ComponentType<OwnProps>;
 type TRouter = ReturnType;
+type TReducer = ReturnType;
 type TSaga = ReturnType;
 type TConnect = typeof App;

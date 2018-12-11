@@ -1,6 +1,7 @@
 import { Reducer, Store } from 'redux';
-import { RouterState } from 'react-router-redux';
-import { ContainerState as DashboardPageState} from '../containers/DashboardPage/types'
+import { ContainerState as GlobalState } from '../containers/App/types'
+import { ContainerState as DashboardPageState } from '../containers/DashboardPage/types'
+import { ContainerState as CommunitiesPageState } from '../containers/CommunitiesPage/types'
 
 export interface LifeStore extends Store<{}> {
   injectedReducers?: any;
@@ -21,6 +22,7 @@ export interface InjectSagaParams {
 
 // Your root reducer type, which is your redux state types also
 export interface ApplicationRootState {
-  readonly route: RouterState;
+  readonly global: GlobalState;
   readonly dashboardpage: DashboardPageState;
+  readonly communitiespage: CommunitiesPageState;
 }

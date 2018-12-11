@@ -1,7 +1,7 @@
 import history from '../../utils/history';
 import {take, call, put, race, fork} from 'redux-saga/effects'
 
-import { LOGIN_REQUEST, LOGOUT, SIGNUP_REQUEST } from  './constants';
+import ActionTypes from  './constants';
 import { login, signUp } from '../../api/api';
 import { requestError, setAuthState, saveToken, sendingRequest, clearError } from './actions';
 
@@ -46,7 +46,7 @@ export function * loginFlow () {
   // Basically here we say "this saga is always listening for actions"
   while (true) {
     // And we're listening for `LOGIN_REQUEST` actions and destructuring its payload
-    const request = yield take(LOGIN_REQUEST)
+    const request = yield take(ActionTypes.LOGIN_REQUEST)
     const {email, password} = request.data
 
     // A `LOGOUT` action may happen while the `authorize` effect is going on, which may
@@ -54,7 +54,7 @@ export function * loginFlow () {
     // returns the "winner", i.e. the one that finished first
     const winner = yield race({
       auth: call(authorize, {email, password}),
-      logout: take(LOGOUT)
+      logout: take(ActionTypes.LOGOUT)
     })
 
     // If `authorize` was the winner...
@@ -74,7 +74,7 @@ export function * loginFlow () {
 
 export function * logoutFlow () {
   while (true) {
-    yield take(LOGOUT)
+    yield take(ActionTypes.LOGOUT)
     yield put(setAuthState(false))
     yield put(saveToken(''));
     forwardTo('/')
@@ -83,7 +83,7 @@ export function * logoutFlow () {
 
 export function * signupFlow () {
   while (true) {
-    const request = yield take(SIGNUP_REQUEST)
+    const request = yield take(ActionTypes.SIGNUP_REQUEST)
 
     const {email, password, firstName, lastName} = request.data;
     yield call(register, email, password, firstName, lastName)
