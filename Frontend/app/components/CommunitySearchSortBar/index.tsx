@@ -53,7 +53,7 @@ function CommunitySearchSortBar(props: OwnProps) {
             value={searchParameter}
             onChange={onChange} /> {/*variant='outlined'*/}
         </FormControl>
-        <FormControl variant="outlined" className={classes.formControl}>
+        <FormControl className={classes.formControl}> {/*variant='outlined'*/}
           <InputLabel htmlFor="outlined-age-simple">
             Sort
           </InputLabel>
