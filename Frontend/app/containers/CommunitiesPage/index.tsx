@@ -8,7 +8,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 // import { createStructuredSelector } from 'reselect';
 import { compose, Dispatch } from 'redux';
-import image from 'images/kiwi.jpg';
+import image from 'images/communityPlaceHolder.jpg';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
