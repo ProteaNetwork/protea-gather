@@ -85,15 +85,15 @@ module.exports = require('./webpack.base.babel')({
     }),
 
     new WebpackPwaManifest({
-      name: 'React Boilerplate',
-      short_name: 'React BP',
-      description: 'My React Boilerplate-based project!',
+      name: 'Protea',
+      short_name: 'Protea',
+      description: 'Protea',
       background_color: '#fafafa',
       theme_color: '#b1624d',
       icons: [
         {
-          src: path.resolve('app/images/icon-512x512.png'),
-          sizes: [72, 96, 120, 128, 144, 152, 167, 180, 192, 384, 512],
+          src: path.resolve('app/images/protea.png'),
+          sizes: [72, 96, 120, 128, 144, 152, 167, 180, 192, 384],
         },
       ],
     }),
