@@ -5,19 +5,34 @@
  */
 
 import * as React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import { CardActionArea, CardContent, CardMedia, Typography } from '@material-ui/core';
+import { CardActionArea, CardContent, CardMedia, Typography, Theme } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
 
 // import styled from 'styles/styled-components';
-const styles = {
+const styles = ({ palette, spacing }: Theme) => createStyles({
   card: {
-    maxWidth: 345,
+    width: 400,
+    height: 400,
+  },
+  cardContent: {
+    backgroundColor: palette.secondary.light,
   },
   media: {
-    height: 140,
+    width: 400,
+    height: 300,
   },
-};
+  chip: {
+    margin: spacing.unit,
+  },
+  header: {
+    width: 400,
+    height: 20,
+    color: "textSecondary",
+  }
+});
 
 export interface OwnProps {
   classes: any;
@@ -28,18 +43,31 @@ export interface OwnProps {
   onClick(id: string): void;
 }
 
+function handleClick() {
+  alert('You clicked the Chip.'); // eslint-disable-line no-alert
+}
+
+
 function EventCard(props: OwnProps) {
-  const { classes, eventName, eventID, image } = props;
+  const { classes, eventName, eventID, image, comLogo } = props;
   return (
     <Card className={classes.card}>
       <CardActionArea onClick={() => props.onClick(eventID)}>
+        <Chip
+          avatar={<Avatar alt="Community Name" src={comLogo} />}
+          label="Community Name"
+          className={classes.chip}
+          component="a"
+          onClick={handleClick}
+        />
         <CardMedia
           className={classes.media}
           image={image}
-          title={eventName}
+          title={eventName} 
         />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
+        
+        <CardContent className={classes.cardContent}>
+          <Typography className={classes.header} gutterBottom variant="h5" component="h2">
             {eventName}
           </Typography>
         </CardContent>

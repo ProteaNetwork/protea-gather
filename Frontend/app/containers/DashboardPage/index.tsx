@@ -10,6 +10,7 @@ import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
 import image from 'images/kiwi.jpg';
+import comImage from 'images/communityPlaceHolder.jpg';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -22,76 +23,76 @@ import Dashboard from 'components/Dashboard';
 const communities = [{
   name: 'Eth Global',
   tokens: 128,
-  logo: image,
+  logo: comImage,
   id: '1',
   onClick: (id) => console.log(id)
 }, {
   name: 'The fisherman',
   tokens: 6,
-  logo: image,
+  logo: comImage,
   id: '2',
   onClick: (id) => console.log(id)
 }, {
   name: 'Fire truckers',
   tokens: 3,
-  logo: image,
+  logo: comImage,
   id: '3',
   onClick: (id) => console.log(id)
 }, {
   name: 'Artists',
   tokens: 4,
-  logo: image,
+  logo: comImage,
   id: '4',
   onClick: (id) => console.log(id)
 }, {
   name: 'Coders',
   tokens: 239,
-  logo: image,
+  logo: comImage,
   id: '5',
   onClick: (id) => console.log(id)
 }, {
   name: 'Charities Global',
   tokens: 503,
-  logo: image,
+  logo: comImage,
   id: '6',
   onClick: (id) => console.log(id)
 }, {
   name: 'Woodworkers',
   tokens: 3,
-  logo: image,
+  logo: comImage,
   id: '7',
   onClick: (id) => console.log(id)
 }, {
   name: 'Event creators',
   tokens: 40,
-  logo: image,
+  logo: comImage,
   id: '8',
   onClick: (id) => console.log(id)
 }];
 
 const events = [{
-  eventName: '1 event name',
+  eventName: 'Eth Cape Town',
   eventID: '1',
-  image: 'the image',
-  comLogo: 'the other image',
+  image: image,
+  comLogo: comImage,
   onClick: (eventID) => console.log(eventID)
 }, {
-  eventName: '2 event name',
+  eventName: 'Artist workshop 3',
   eventID: '2',
-  image: 'the image2 ',
-  comLogo: 'the other other image2',
+  image: image,
+  comLogo: comImage,
   onClick: (eventID) => console.log(eventID)
 }, {
-  eventName: '3 event name',
+  eventName: 'Eth Berlin',
   eventID: '3',
-  image: 'the image3',
-  comLogo: 'the other other image3',
+  image: image,
+  comLogo: comImage,
   onClick: (eventID) => console.log(eventID)
 }, {
-  eventName: '4 event name',
+  eventName: 'Truck maintenance beginner',
   eventID: '4',
-  image: 'the image4',
-  comLogo: 'the other other image4',
+  image: image,
+  comLogo: comImage,
   onClick: (eventID) => console.log(eventID)
 }];
 
