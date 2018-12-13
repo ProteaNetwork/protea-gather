@@ -44,17 +44,16 @@ function CommunitySearchSortBar(props: OwnProps) {
   return (
     <Fragment>
       <Paper className={classes.paper}>
-        <FormControl variant='outlined' className={classes.formControl}>
+        <FormControl className={classes.formControl}> {/*variant='outlined'*/}
           <TextField
             id="search-parameter"
             name='searchParameter'
             label="Search"
             className={classes.textField}
-            variant="outlined"
             value={searchParameter}
-            onChange={onChange} />
+            onChange={onChange} /> {/*variant='outlined'*/}
         </FormControl>
-        <FormControl variant="outlined" className={classes.formControl}>
+        <FormControl className={classes.formControl}> {/*variant='outlined'*/}
           <InputLabel htmlFor="outlined-age-simple">
             Sort
           </InputLabel>
