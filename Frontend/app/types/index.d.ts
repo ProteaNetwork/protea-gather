@@ -2,6 +2,7 @@ import { Reducer, Store } from 'redux';
 import { ContainerState as GlobalState } from '../containers/App/types'
 import { ContainerState as DashboardPageState } from '../containers/DashboardPage/types'
 import { ContainerState as CommunitiesPageState } from '../containers/CommunitiesPage/types'
+import { ContainerState as CommunityPageState } from '../containers/CommunityPage/types'
 import { ContainerState as EventsPageState } from '../containers/EventsPage/types'
 
 export interface LifeStore extends Store<{}> {
@@ -26,5 +27,6 @@ export interface ApplicationRootState {
   readonly global: GlobalState;
   readonly dashboardpage: DashboardPageState;
   readonly communitiespage: CommunitiesPageState;
+  readonly communitypage: CommunityPageState;
   readonly eventspage: CommunitiesPageState;
 }

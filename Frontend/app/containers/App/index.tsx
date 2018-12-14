@@ -28,6 +28,7 @@ import LandingPage from '../../components/LandingPage';
 import NotFound from 'containers/NotFoundPage';
 import DashboardPage from 'containers/DashboardPage';
 import CommunitiesPage from 'containers/CommunitiesPage';
+import CommunityPage from 'containers/CommunityPage';
 import EventsPage from 'containers/EventsPage';
 import reducer from './reducer';
 
@@ -96,6 +97,7 @@ function App(props: Props) {
       <PublicRoute exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
       <PrivateRoute path="/dashboard" component={DashboardPage} isLoggedIn={isLoggedIn} />
       <PrivateRoute path="/communities" component={CommunitiesPage} isLoggedIn={isLoggedIn} />
+      <PrivateRoute path="/community" component={CommunityPage} isLoggedIn={isLoggedIn} />
       <PrivateRoute path="/events" component={EventsPage} isLoggedIn={isLoggedIn} />
       <Route component={NotFound} />
     </AppWrapper>
