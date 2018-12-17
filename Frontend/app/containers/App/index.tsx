@@ -30,6 +30,7 @@ import DashboardPage from 'containers/DashboardPage';
 import CommunitiesPage from 'containers/CommunitiesPage';
 import CommunityPage from 'containers/CommunityPage';
 import EventsPage from 'containers/EventsPage';
+import EventPage from 'containers/EventPage';
 import reducer from './reducer';
 
 
@@ -99,6 +100,7 @@ function App(props: Props) {
       <PrivateRoute path="/communities" component={CommunitiesPage} isLoggedIn={isLoggedIn} />
       <PrivateRoute path="/community" component={CommunityPage} isLoggedIn={isLoggedIn} />
       <PrivateRoute path="/events" component={EventsPage} isLoggedIn={isLoggedIn} />
+      <PrivateRoute path="/event" component={EventPage} isLoggedIn={isLoggedIn} />
       <Route component={NotFound} />
     </AppWrapper>
   );

@@ -7,6 +7,8 @@ import Carousel from 'nuka-carousel';
 import { compose } from 'redux';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
+import { Fab } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -30,6 +32,14 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     margin: 10,
     width: 60,
     height: 60,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: spacing.unit * 2,
+    right: spacing.unit * 3,
+  },
+  extendedIcon: {
+    marginRight: spacing.unit,
   },
 });
 
@@ -74,7 +84,11 @@ function Dashboard(props: Props) {
 
   return (
     <Fragment>
+      <Fab color="primary" aria-label="Add" className={classes.fab}>
+          <AddIcon />
+        </Fab>
       <Paper className={classes.paper}>
+        
         <Grid container>
           <Grid item>
             <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
@@ -114,6 +128,9 @@ function Dashboard(props: Props) {
           )}
         </Carousel>
       </Paper>
+      <Fab color="primary" aria-label="Add" className={classes.fab}>
+        <AddIcon />
+      </Fab>
     </Fragment>
   )
 }

@@ -1,6 +1,6 @@
 /**
  *
- * CommunityBanner
+ * EventBanner
  *
  */
 
@@ -27,7 +27,7 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   buttonTop: {
     margin: spacing.unit,
-    alignSelf: 'right',
+    alignSelf: 'left',
     float: "left",
   },
   button: {
@@ -35,19 +35,27 @@ const styles = ({ spacing }: Theme) => createStyles({
     alignSelf: 'right',
     float: "right",
   },
+  dateText: {
+    float: "left",
+    marginTop: spacing.unit * 46,
+    marginLeft: spacing.unit * 4,
+    alignSelf: 'right',
+  },
 });
 
 interface OwnProps {
   classes: any;
-  logo: string;
   name: string;
-  tokenSymbol: string;
-  tokenValueSymbol: string;
-  value: number;
+  tokens: number;
+  tokenName: string;
+  logo: string;
+  description: string;
+  date: string;
+  ticketsLeft: number;
 }
 
-const CommunityBanner: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { classes, name, logo, tokenSymbol, value, tokenValueSymbol } = props;
+function EventBanner(props: OwnProps) {
+  const { classes, logo, name, tokens, tokenName, ticketsLeft, date } = props;
 
   return (
     <Fragment>
@@ -56,23 +64,23 @@ const CommunityBanner: React.SFC<OwnProps> = (props: OwnProps) => {
           <Button variant="raised" color="primary" className={classes.buttonTop}>
             Back
           </Button>
+          <label className={classes.dateText}>
+            {date}
+          </label>
           <CardMedia
             className={classes.media}
             image={logo}
             title={name} />
-          <CardHeader
+          <CardHeader 
             title={name}
             subheader={
               <Typography>
-                1 {tokenSymbol} ~ {value} {tokenValueSymbol}
+                {tokens} {tokenName} - {ticketsLeft} Tickets left
                 <Button variant="contained" color="primary" className={classes.button}>
-                  Buy
-                </Button>
-                <Button variant="contained" color="secondary" className={classes.button}>
-                  Sell
+                  RSVP
                 </Button>
               </Typography>
-            } 
+            }
           />
         </Card>
       </Paper>
@@ -80,4 +88,4 @@ const CommunityBanner: React.SFC<OwnProps> = (props: OwnProps) => {
   );
 };
 
-export default withStyles(styles)(CommunityBanner);
+export default withStyles(styles)(EventBanner);

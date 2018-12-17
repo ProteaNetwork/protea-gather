@@ -15,7 +15,7 @@ import Chip from '@material-ui/core/Chip';
 const styles = ({ palette, spacing }: Theme) => createStyles({
   card: {
     width: 400,
-    height: 400,
+    height: 370,
   },
   cardContent: {
     backgroundColor: palette.secondary.light,
@@ -26,10 +26,11 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
   },
   chip: {
     margin: spacing.unit,
+    float: "left",
   },
   header: {
     width: 400,
-    height: 20,
+    height: 70,
     color: "textSecondary",
   }
 });
@@ -43,11 +44,6 @@ export interface OwnProps {
   onClick(id: string): void;
 }
 
-function handleClick() {
-  alert('You clicked the Chip.'); // eslint-disable-line no-alert
-}
-
-
 function EventCard(props: OwnProps) {
   const { classes, eventName, eventID, image, comLogo } = props;
   return (
@@ -57,15 +53,12 @@ function EventCard(props: OwnProps) {
           avatar={<Avatar alt="Community Name" src={comLogo} />}
           label="Community Name"
           className={classes.chip}
-          component="a"
-          onClick={handleClick}
         />
         <CardMedia
           className={classes.media}
           image={image}
           title={eventName} 
         />
-        
         <CardContent className={classes.cardContent}>
           <Typography className={classes.header} gutterBottom variant="h5" component="h2">
             {eventName}

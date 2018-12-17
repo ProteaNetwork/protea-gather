@@ -19,7 +19,6 @@ import reducer from './reducer';
 import saga from './saga';
 import Dashboard from 'components/Dashboard';
 
-// TODO: Remove this once hooked up to communities state tree
 const communities = [{
   name: 'Eth Global',
   tokens: 128,
@@ -101,6 +100,7 @@ function DashboardPage() {
   return (
     // @ts-ignore
     <Dashboard image='' name='test' ensName='test ens' tokenBalance={1} communities={communities} events={events} />
+    
   );
 }
 
@@ -115,7 +115,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
 const withReducer = injectReducer({ key: 'dashboardpage', reducer });
 const withSaga = injectSaga({ key: 'dashboardpage', saga });
 
