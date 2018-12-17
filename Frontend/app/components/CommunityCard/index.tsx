@@ -6,11 +6,7 @@
 
 import * as React from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-// import {CardActionArea, CardContent, CardMedia, Typography, Theme } from '@material-ui/core';
-// import { withStyles } from '@material-ui/core/styles';
-// import Card from '@material-ui/core/Card';
-import {CardContent, Typography, Theme, CardMedia, CardActionArea} from '@material-ui/core';
+import { Card, CardContent, Typography, Theme, CardMedia, CardActionArea } from '@material-ui/core';
 
 const styles = ({ palette }: Theme) => createStyles({
   card: {
