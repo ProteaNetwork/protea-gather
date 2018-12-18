@@ -20,6 +20,6 @@ export function* getData() {
 //  }
 }
 
-export default function* {{ camelCase name }}WatcherSaga() {
+export default function* loginPageWatcherSaga() {
   // yield takeLatest(ActionType, getData);
 }

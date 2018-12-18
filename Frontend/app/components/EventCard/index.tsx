@@ -10,6 +10,7 @@ import Card from '@material-ui/core/Card';
 import { CardActionArea, CardContent, CardMedia, Typography, Theme } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
+import {Link} from 'react-router-dom';
 
 // import styled from 'styles/styled-components';
 const styles = ({ palette, spacing }: Theme) => createStyles({
@@ -48,23 +49,25 @@ function EventCard(props: OwnProps) {
   const { classes, eventName, eventID, image, comLogo } = props;
   return (
     <Card className={classes.card}>
-      <CardActionArea onClick={() => props.onClick(eventID)}>
-        <Chip
-          avatar={<Avatar alt="Community Name" src={comLogo} />}
-          label="Community Name"
-          className={classes.chip}
-        />
-        <CardMedia
-          className={classes.media}
-          image={image}
-          title={eventName}
-        />
-        <CardContent className={classes.cardContent}>
-          <Typography className={classes.header} gutterBottom variant="h5" component="h2">
-            {eventName}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+      <Link to='/event'>
+        <CardActionArea onClick={() => props.onClick(eventID)}>
+          <Chip
+            avatar={<Avatar alt="Community Name" src={comLogo} />}
+            label="Community Name"
+            className={classes.chip}
+          />
+          <CardMedia
+            className={classes.media}
+            image={image}
+            title={eventName}
+          />
+          <CardContent className={classes.cardContent}>
+            <Typography className={classes.header} gutterBottom variant="h5" component="h2">
+              {eventName}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Link>
     </Card>
   );
 }

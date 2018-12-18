@@ -17,12 +17,16 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from "@material-ui/icons/Menu";
 import { NavLink } from 'react-router-dom';
+import ScrollArea from 'xico2k-react-scroll-area';
 
 const drawerWidth = 240;
 
 const styles = theme => createStyles({
   root: {
     display: 'flex',
+    maxHeight: '100%',
+    height: '100vh',
+    maxWidth: '100%'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -69,8 +73,13 @@ const styles = theme => createStyles({
     flexGrow: 1,
     minHeight: '100vh',
     padding: theme.spacing.unit * 3,
-    overflowX: 'hidden',
+    overflow: 'hidden',
   },
+  footer: {
+    zIndex: theme.zIndex.drawer + 1,
+    top: 'auto',
+    bottom: 0,
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -97,9 +106,9 @@ class AppWrapper extends React.Component<Props> {
           position="fixed"
           className={classes.appBar} >
           <Toolbar>
+            <Typography variant='h6'>Logo</Typography>
             <Typography
               variant="h6"
-              color="inherit"
               className={classes.appHeading}
               noWrap >
               Protea Webapp
@@ -115,8 +124,22 @@ class AppWrapper extends React.Component<Props> {
         </AppBar>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          {children}
+          <ScrollArea height='85%'
+            minHandlerHeight={200}
+            trackVisible>
+            {children}
+          </ScrollArea>
         </main>
+        <AppBar position="fixed" color="primary" className={classes.footer}>
+          <Toolbar className={classes.toolbar}>
+            <Typography
+              variant="h6"
+              className={classes.appHeading}
+              noWrap >
+              Footer
+            </Typography>
+          </Toolbar>
+        </AppBar>
         <Drawer
           variant="permanent"
           classes={{
@@ -130,20 +153,28 @@ class AppWrapper extends React.Component<Props> {
           </div>
           <Divider />
           <List>
-            <NavLink to="/" style={{ textDecoration: 'none' }}>
-              <ListItem button>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary={'Landing'} />
-              </ListItem>
-            </NavLink>
             <NavLink to="/dashboard" style={{ textDecoration: 'none' }}>
               <ListItem button>
                 <ListItemIcon>
                   <MailIcon />
                 </ListItemIcon>
                 <ListItemText primary={'Dashboard'} />
+              </ListItem>
+            </NavLink>
+            <NavLink to="/communities" style={{ textDecoration: 'none' }}>
+              <ListItem button>
+                <ListItemIcon>
+                  <InboxIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Communities'} />
+              </ListItem>
+            </NavLink>
+            <NavLink to="/events" style={{ textDecoration: 'none' }}>
+              <ListItem button>
+                <ListItemIcon>
+                  <InboxIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Events'} />
               </ListItem>
             </NavLink>
           </List>

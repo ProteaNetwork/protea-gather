@@ -1,4 +1,4 @@
-//import ActionTypes  from './constants';
+import ActionTypes  from './constants';
 import { ContainerState, ContainerActions } from './types';
 //import { combineReducers } from 'redux';
 
@@ -9,7 +9,7 @@ import { ContainerState, ContainerActions } from './types';
  */
 
 export const initialState = {
-  loggedIn: true,
+  loggedIn: false,
   error: '',
   currentlySending: false,
   apiToken: '',
@@ -30,6 +30,8 @@ export function appReducer(
     //   return {...state, ...{error: ''}};
     // case ActionTypes.SENDING_REQUEST:
     //   return {...state, ...{currentlySending: action.payload}}
+    case ActionTypes.TOGGLE_AUTH:
+      return {...state, ...{loggedIn: !state.loggedIn}}
     default:
       return state;
   }

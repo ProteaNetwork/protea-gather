@@ -7,6 +7,7 @@
 import * as React from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Theme, CardMedia, CardActionArea } from '@material-ui/core';
+import {Link} from 'react-router-dom';
 
 const styles = ({ palette }: Theme) => createStyles({
   card: {
@@ -44,20 +45,22 @@ function CommunityCard(props: Props) {
   const { classes, tokens, logo, name, id } = props;
   return (
     <Card className={classes.card}>
-      <CardActionArea onClick={() => props.onClick(id)} >
-        <CardMedia
-          className={classes.media}
-          image= {logo}
-          title= {name} />
-        <CardContent className={classes.cardContent}>
-          <Typography className={classes.header} variant="h5" component="h2" gutterBottom>
-            {name}
-          </Typography>
-          <Typography color="textSecondary">
-            Tokens: {tokens}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+      <Link to='/community'>
+        <CardActionArea onClick={() => props.onClick(id)} >
+          <CardMedia
+            className={classes.media}
+            image={logo}
+            title={name} />
+          <CardContent className={classes.cardContent}>
+            <Typography className={classes.header} variant="h5" component="h2" gutterBottom>
+              {name}
+            </Typography>
+            <Typography color="textSecondary">
+              Tokens: {tokens}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Link>
     </Card>
   );
 }

@@ -181,6 +181,7 @@
     "typesafe-actions": "^2.0.4",
     "warning": "4.0.1",
     "whatwg-fetch": "2.0.4",
+    "xico2k-react-scroll-area": "^1.1.1",
     "yup": "^0.26.6"
   },
   "devDependencies": {

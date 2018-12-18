@@ -71,3 +71,6 @@ export const clearError = () =>
  */
 export const saveToken = (token: string) =>
   action(ActionTypes.SAVE_TOKEN, token);
+
+export const toggleAuth = () =>
+  action(ActionTypes.TOGGLE_AUTH)

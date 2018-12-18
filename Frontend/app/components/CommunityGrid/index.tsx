@@ -64,13 +64,7 @@ function CommunityGrid(props: Props) {
           </GridListTile>
           {communities.map(c => (
             <GridListTile key={c.id} className={classes.gridListTile}>
-              <CommunityCard
-                id={c.id}
-                logo={c.logo}
-                name={c.name}
-                key={c.id}
-                tokens={c.tokens}
-                onClick={c.onClick}/>
+              <CommunityCard {...c} />
             </GridListTile>
           ))}
         </GridList>
