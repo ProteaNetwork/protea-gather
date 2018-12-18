@@ -12,7 +12,8 @@ enum ActionTypes {
   LOGOUT = 'app/Global/LOGOUT',
   SAVE_TOKEN = 'app/Global/SAVE_TOKEN',
   REQUEST_ERROR = 'app/Global/REQUEST_ERROR',
-  CLEAR_ERROR = 'app/Global/CLEAR_ERROR'
+  CLEAR_ERROR = 'app/Global/CLEAR_ERROR',
+  TOGGLE_AUTH = 'app/Global/TOGGLE_AUTH'
 }
 
 export default ActionTypes

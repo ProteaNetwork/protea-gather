@@ -37,12 +37,12 @@ module.exports = {
         return 'The name is required';
       },
     },
-    {
-      type: 'confirm',
-      name: 'wantMessages',
-      default: true,
-      message: 'Do you want i18n messages (i.e. will this component use text)?',
-    },
+    // {
+    //   type: 'confirm',
+    //   name: 'wantMessages',
+    //   default: true,
+    //   message: 'Do you want i18n messages (i.e. will this component use text)?',
+    // },
     {
       type: 'confirm',
       name: 'wantLoadable',

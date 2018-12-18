@@ -5,6 +5,7 @@ import { ContainerState as CommunitiesPageState } from '../containers/Communitie
 import { ContainerState as CommunityPageState } from '../containers/CommunityPage/types'
 import { ContainerState as EventsPageState } from '../containers/EventsPage/types'
 import { ContainerState as EventPageState } from '../containers/EventPage/types'
+import { ContainerState as LoginPageState } from '../containers/EventPage/types'
 
 export interface LifeStore extends Store<{}> {
   injectedReducers?: any;
@@ -29,6 +30,7 @@ export interface ApplicationRootState {
   readonly dashboardpage: DashboardPageState;
   readonly communitiespage: CommunitiesPageState;
   readonly communitypage: CommunityPageState;
-  readonly eventspage: CommunitiesPageState;
-  readonly eventpage: CommunitiesPageState;
+  readonly eventspage: EventsPageState;
+  readonly eventpage: EventPageState;
+  readonly loginpage: LoginPageState;
 }

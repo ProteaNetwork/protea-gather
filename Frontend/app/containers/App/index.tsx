@@ -32,6 +32,7 @@ import CommunityPage from 'containers/CommunityPage';
 import EventsPage from 'containers/EventsPage';
 import EventPage from 'containers/EventPage';
 import reducer from './reducer';
+import LoginPage from 'containers/LoginPage';
 
 
 function PrivateRoute({ component: Component, isLoggedIn, ...rest }) {
@@ -98,7 +99,8 @@ function App(props: Props) {
   return (
     <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout}>
       <Switch>
-        <PublicRoute exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
+        <Route exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
+        <PublicRoute path="/login" component={LoginPage} isLoggedIn={isLoggedIn} />
         <PrivateRoute path="/dashboard" component={DashboardPage} isLoggedIn={isLoggedIn} />
         <PrivateRoute path="/communities" component={CommunitiesPage} isLoggedIn={isLoggedIn} />
         <PrivateRoute path="/community" component={CommunityPage} isLoggedIn={isLoggedIn} />
@@ -106,7 +108,6 @@ function App(props: Props) {
         <PrivateRoute path="/event" component={EventPage} isLoggedIn={isLoggedIn} />
         <Route component={NotFound} />
       </Switch>
-
     </AppWrapper>
   );
 }

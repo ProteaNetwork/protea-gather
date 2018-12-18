@@ -4,16 +4,12 @@
  *
  */
 
-import * as React from 'react';
+import React from 'react';
+import
 
-// import styled from 'styles/styled-components';
+interface OwnProps extends WithStyles<typeof styles> {
 
-{{#if wantMessages}}
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
-{{/if}}
-
-interface OwnProps {}
+}
 
 const {{ properCase name }}: React.SFC<OwnProps> = (props: OwnProps) => {
   return (
@@ -25,4 +21,4 @@ const {{ properCase name }}: React.SFC<OwnProps> = (props: OwnProps) => {
   );
 };
 
-export default {{ properCase name }};
+export default withStyles(styles)({{ properCase name }});

@@ -61,15 +61,9 @@ function EventGrid(props: Props) {
           <GridListTile key="Subheader" cols={getGridListCols()} style={{ height: 'auto'}}>
             <ListSubheader component="div">Events</ListSubheader>
           </GridListTile>
-          {events.map(c => (
-            <GridListTile key={c.eventID} className={classes.gridListTile}>
-              <EventCard
-                eventID={c.eventID}
-                image={c.image}
-                eventName={c.eventName}
-                key={c.eventID}
-                comLogo={c.comLogo}
-                onClick={c.onClick}/>
+          {events.map(e => (
+            <GridListTile key={e.eventID} className={classes.gridListTile}>
+              <EventCard {...e} />
             </GridListTile>
           ))}
         </GridList>

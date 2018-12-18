@@ -42,9 +42,9 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     height: 60,
   },
   fab: {
-    position: 'absolute',
-    bottom: spacing.unit * 2,
-    right: spacing.unit * 3,
+    position: 'fixed',
+    bottom: spacing.unit * 13,
+    right: spacing.unit * 4,
   },
   extendedIcon: {
     marginRight: spacing.unit,
@@ -96,7 +96,6 @@ function Dashboard(props: Props) {
           <AddIcon />
         </Fab>
       <Paper className={classes.paper}>
-
         <Grid container>
           <Grid item>
             <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
@@ -109,13 +108,13 @@ function Dashboard(props: Props) {
         </Grid>
       </Paper>
       <Paper className={classes.paperCarousel}>
-        <Typography variant='h3'>Communities</Typography>
+        <Typography variant='h3'>My Communities</Typography>
         <Slider {...sliderSettings} >
           {communities.map(c => (<div key={c.id}><CommunityCard {...c} /></div>))}
         </Slider>
       </Paper>
       <Paper className={classes.paperCarousel}>
-        <Typography variant='h3'>Events</Typography>
+        <Typography variant='h3'>My Events</Typography>
         <Slider {...sliderSettings} >
           {events.map(e => (<div key={e.id}><EventCard {...e} /></div>))}
         </Slider>

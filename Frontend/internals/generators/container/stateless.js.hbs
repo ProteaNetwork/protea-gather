@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 {{#if wantHeaders}}
 import { Helmet } from 'react-helmet';
@@ -16,7 +15,7 @@ import { FormattedMessage } from 'react-intl';
 {{#if wantActionsAndReducer}}
 import { createStructuredSelector } from 'reselect';
 {{/if}}
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 {{#if wantSaga}}
 import injectSaga from 'utils/injectSaga';
@@ -33,7 +32,28 @@ import saga from './saga';
 import messages from './messages';
 {{/if}}
 
-function {{ properCase name }}() {
+// tslint:disable-next-line:no-empty-interface
+interface OwnProps {
+
+}
+
+// tslint:disable-next-line:no-empty-interface
+interface DispatchProps {
+
+}
+
+{{#if wantActionsAndReducer}}
+// tslint:disable-next-line:no-empty-interface
+interface StateProps {
+
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
+{{else}}
+type Props = DispatchProps & OwnProps;
+{{/if}}
+
+const {{ properCase name }}: React.SFC<Props> = (props: Props) => {
   return (
     <div>
     {{#if wantHeaders}}
@@ -45,38 +65,39 @@ function {{ properCase name }}() {
     {{#if wantMessages}}
       <FormattedMessage {...messages.header} />
     {{/if}}
+      {{ properCase name }}
     </div>
   );
-}
-
-{{ properCase name }}.propTypes = {
-  dispatch: PropTypes.func.isRequired,
 };
 
 {{#if wantActionsAndReducer}}
 const mapStateToProps = createStructuredSelector({
-  {{ lowerCase name }}: makeSelect{{properCase name}}(),
+  {{ camelCase name }}: makeSelect{{properCase name}}(),
 });
 {{/if}}
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
-    dispatch,
+    dispatch: dispatch,
   };
 }
 
 {{#if wantActionsAndReducer}}
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
-const withReducer = injectReducer({ key: '{{ lowerCase name }}', reducer });
+// Remember to add the key to ./app/types/index.d.ts ApplicationRootState
+// <OwnProps> restricts access to the HOC's other props. This component must not do anything with reducer hoc
+const withReducer = injectReducer<OwnProps>({ key: '{{ camelCase name }}', reducer: reducer });
 {{else}}
 const withConnect = connect(null, mapDispatchToProps);
 {{/if}}
 {{#if wantSaga}}
-const withSaga = injectSaga({ key: '{{ lowerCase name }}', saga });
+// <OwnProps> restricts access to the HOC's other props. This component must not do anything with saga hoc
+const withSaga = injectSaga<OwnProps>({ key: '{{ camelCase name }}', saga: saga });
 {{/if}}
 
-export default compose(
+// export default withReducer(withSaga(withConnect({{ properCase name }}))); // identical to compose function, but requires no explicit type declaration
+export default compose<TReducer, TSaga, TConnect, ReturnType>(
 {{#if wantActionsAndReducer}}
   withReducer,
 {{/if}}
@@ -85,3 +106,10 @@ export default compose(
 {{/if}}
   withConnect,
 )({{ properCase name }});
+
+type ReturnType = React.ComponentType<OwnProps>;
+type TReducer = ReturnType;
+type TSaga = ReturnType;
+type TConnect = typeof {{ properCase name }};
+
+

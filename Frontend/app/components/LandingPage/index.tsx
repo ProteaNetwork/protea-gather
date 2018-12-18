@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper } from '@material-ui/core';
+import { Typography, Theme, Paper, Button } from '@material-ui/core';
+import {Link} from 'react-router-dom';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
     width: 'auto',
-    display: 'block', // Fix IE 11 issue.
+    // display: 'block', // Fix IE 11 issue.
     marginLeft: spacing.unit * 3,
     marginRight: spacing.unit * 3,
     [breakpoints.up(400 + spacing.unit * 3 * 2)]: {
@@ -29,7 +30,8 @@ function LandingPage(props) {
   <Fragment>
     <main className={classes.layout}>
       <Paper className={classes.paper}>
-        <Typography variant='h1'>Welcome Stuffs</Typography>
+        <Typography variant='h1'>Protea</Typography>
+        <Link to='/login'><Button>GET STARTED</Button></Link>
       </Paper>
     </main>
   </Fragment>
