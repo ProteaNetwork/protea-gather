@@ -1,5 +1,5 @@
+# - .gitlab-ci-test.yml
 include:
-  # - .gitlab-ci-test.yml
   - .gitlab-ci-deploy.yml
 
 image: node:latest
@@ -24,10 +24,10 @@ variables:
 before_script:
   - set -xe && apt-get update && apt-get -yq -o dir::cache::archives="apt-cache" install bash git openssh-server
 
+  # - build
+  # - test
+  # - merge
 stages:
-  - build
-  - test
-  - merge
   - docker-build
   - push
   - deploy
