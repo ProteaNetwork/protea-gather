@@ -12,6 +12,8 @@ import 'babel-polyfill';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import FontFaceObserver from 'fontfaceobserver';
+import { Router } from 'react-router';
 import 'sanitize.css/sanitize.css';
 
 // Import root app
@@ -26,17 +28,27 @@ import {loadState, saveState} from './utils/localStorage';
 import history from './utils/history';
 // Import CSS reset and Global Styles
 import './styles/global-styles';
+
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { Router } from 'react-router';
 import throttle from 'lodash/throttle';
+
+const robotoObserver = new FontFaceObserver('Roboto', {});
+
+// When Open Sans is loaded, add a font-family using Open Sans to the body
+robotoObserver.load().then(() => {
+  document.body.classList.add('fontLoaded');
+}).catch(() => console.log('Error loading Roboto font'));
 
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
+    primary: {
+      main: '#f57c00',
+    },
     secondary: {
-      main: '#0066cc'
-    }
+      main: '#ffa000',
+    },
   },
   typography: {
     useNextVariants: true,
@@ -69,8 +81,8 @@ declare const module: any;
 if (module.hot) {
   module.hot.accept(['./containers/App'], () => {
     ReactDOM.unmountComponentAtNode(MOUNT_NODE);
-    // tslint:disable-next-line:max-line-length
-    const App = require('./containers/App').default; // https://github.com/webpack/webpack-dev-server/issues/100
+    // https://github.com/webpack/webpack-dev-server/issues/100
+    const App = require('./containers/App').default;
     render(App);
   });
 }

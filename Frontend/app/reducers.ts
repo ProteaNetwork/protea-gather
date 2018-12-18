@@ -3,17 +3,22 @@
  */
 
 import { combineReducers } from 'redux';
-// tslint:disable-next-line:no-duplicate-imports
 import Redux from 'redux';
-
-// tslint:disable-next-line:no-submodule-imports
-// tslint:disable-next-line:no-implicit-dependencies
 
 /**
  * Creates the main reducer with the dynamically injected ones
  */
+
+function globalReducer(state = {}, action) {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+
 export default function createReducer(injectedReducers: Redux.ReducersMapObject = {}): Redux.Reducer<any> {
   return combineReducers({
+    globalReducer,
     ...injectedReducers,
   });
 }

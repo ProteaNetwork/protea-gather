@@ -44,26 +44,26 @@ const communities = [{
   id: '4',
   onClick: (id) => console.log(id)
 }, {
-  name: 'Coders',
-  tokens: 239,
+  name: 'Eth Global',
+  tokens: 128,
   logo: comImage,
   id: '5',
   onClick: (id) => console.log(id)
 }, {
-  name: 'Charities Global',
-  tokens: 503,
+  name: 'The fisherman',
+  tokens: 6,
   logo: comImage,
   id: '6',
   onClick: (id) => console.log(id)
 }, {
-  name: 'Woodworkers',
+  name: 'Fire truckers',
   tokens: 3,
   logo: comImage,
   id: '7',
   onClick: (id) => console.log(id)
 }, {
-  name: 'Event creators',
-  tokens: 40,
+  name: 'Artists',
+  tokens: 4,
   logo: comImage,
   id: '8',
   onClick: (id) => console.log(id)
@@ -71,28 +71,28 @@ const communities = [{
 
 const events = [{
   eventName: 'Eth Cape Town',
-  eventID: '1',
+  id: '1',
   image: image,
   comLogo: comImage,
-  onClick: (eventID) => console.log(eventID)
+  onClick: (id) => console.log(id)
 }, {
   eventName: 'Artist workshop 3',
-  eventID: '2',
+  id: '2',
   image: image,
   comLogo: comImage,
-  onClick: (eventID) => console.log(eventID)
+  onClick: (id) => console.log(id)
 }, {
   eventName: 'Eth Berlin',
-  eventID: '3',
+  id: '3',
   image: image,
   comLogo: comImage,
-  onClick: (eventID) => console.log(eventID)
+  onClick: (id) => console.log(id)
 }, {
   eventName: 'Truck maintenance beginner',
-  eventID: '4',
+  id: '4',
   image: image,
   comLogo: comImage,
-  onClick: (eventID) => console.log(eventID)
+  onClick: (id) => console.log(id)
 }];
 
 function DashboardPage() {
