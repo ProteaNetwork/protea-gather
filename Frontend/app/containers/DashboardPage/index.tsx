@@ -99,13 +99,7 @@ function DashboardPage() {
 
   return (
     // @ts-ignore
-    <Dashboard
-      image=''
-      name='Vitalik'
-      ensName='vitalik.protea.eth'
-      tokenBalance={150}
-      communities={communities}
-      events={events} />
+    <Dashboard image='' name='Vitalik' ensName='vitalik.protea.eth' tokenBalance={150} communities={communities} events={events} />
   );
 }
 

@@ -46,6 +46,7 @@ export default function hocWithSaga<P>({ key, saga, mode }: InjectSagaParams) {
       public injectors = getInjectors(this.context.store);
 
       public render() {
+        // @ts-ignore
         return <WrappedComponent {...this.props} />;
       }
     }

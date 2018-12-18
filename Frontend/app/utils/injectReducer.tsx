@@ -33,6 +33,7 @@ export default function hocWithReducer<P>({ key, reducer }: InjectReducerParams)
       public injectors = getInjectors(this.context.store);
 
       public render() {
+        // @ts-ignore
         return <WrappedComponent {...this.props} />;
       }
     }
