@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { compose } from 'redux';
-import { withRouter } from 'react-router';
+import { withRouter, Switch } from 'react-router';
 
 import saga from './saga';
 import { logout } from './actions';
@@ -34,7 +34,7 @@ import EventPage from 'containers/EventPage';
 import reducer from './reducer';
 
 
-function PrivateRoute({ component: Component, isLoggedIn,...rest }) {
+function PrivateRoute({ component: Component, isLoggedIn, ...rest }) {
   return (
     <Route
       {...rest}
@@ -48,7 +48,8 @@ function PrivateRoute({ component: Component, isLoggedIn,...rest }) {
                 state: { from: props.location }
               }}
             />
-          )}
+          )
+      }
       }
     />
   );
@@ -68,14 +69,15 @@ function PublicRoute({ component: Component, isLoggedIn, ...rest }) {
                 state: { from: props.location }
               }}
             />
-          )}
+          )
+      }
       }
     />
   );
 }
 
 // tslint:disable-next-line:no-empty-interface
-interface OwnProps {}
+interface OwnProps { }
 
 // tslint:disable-next-line:no-empty-interface
 interface StateProps {
@@ -95,13 +97,16 @@ function App(props: Props) {
   // that will be connected to the store, as no props can be passed down to the child components from here.
   return (
     <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout}>
-      <PublicRoute exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
-      <PrivateRoute path="/dashboard" component={DashboardPage} isLoggedIn={isLoggedIn} />
-      <PrivateRoute path="/communities" component={CommunitiesPage} isLoggedIn={isLoggedIn} />
-      <PrivateRoute path="/community" component={CommunityPage} isLoggedIn={isLoggedIn} />
-      <PrivateRoute path="/events" component={EventsPage} isLoggedIn={isLoggedIn} />
-      <PrivateRoute path="/event" component={EventPage} isLoggedIn={isLoggedIn} />
-      <Route component={NotFound} />
+      <Switch>
+        <PublicRoute exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
+        <PrivateRoute path="/dashboard" component={DashboardPage} isLoggedIn={isLoggedIn} />
+        <PrivateRoute path="/communities" component={CommunitiesPage} isLoggedIn={isLoggedIn} />
+        <PrivateRoute path="/community" component={CommunityPage} isLoggedIn={isLoggedIn} />
+        <PrivateRoute path="/events" component={EventsPage} isLoggedIn={isLoggedIn} />
+        <PrivateRoute path="/event" component={EventPage} isLoggedIn={isLoggedIn} />
+        <Route component={NotFound} />
+      </Switch>
+
     </AppWrapper>
   );
 }

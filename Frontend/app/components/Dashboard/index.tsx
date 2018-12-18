@@ -1,12 +1,14 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { Typography, Theme, Paper, Grid, Avatar, WithStyles, withWidth } from '@material-ui/core';
-import CommunityCard from 'components/CommunityCard';
-import EventCard from 'components/EventCard';
-import Carousel from 'nuka-carousel';
+import Slider, { Settings as SliderSettings } from "react-slick";
+import '../../css/slick.css'
+import '../../css/slick-theme.css';
 import { compose } from 'redux';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
+import CommunityCard from 'components/CommunityCard';
+import EventCard from 'components/EventCard';
 import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -22,9 +24,15 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     },
   },
   paper: {
-    marginTop: spacing.unit * 8,
     display: 'flex',
+    width: '100%',
     flexDirection: 'column',
+    alignItems: 'center',
+    padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
+  },
+  paperCarousel: {
+    display: 'block',
+    width: '100%',
     alignItems: 'center',
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
   },
@@ -75,12 +83,12 @@ function Dashboard(props: Props) {
     return 1;
   }
 
-  const carouselSettings = {
-    width: `${getCarouselSlidesToShow()*400}px`,
+  const sliderSettings: SliderSettings = {
+    dots: false,
     slidesToShow: getCarouselSlidesToShow(),
     slidesToScroll: 1,
-    withoutControls: true,
-  }
+    arrows: false,
+  };
 
   return (
     <Fragment>
@@ -88,45 +96,29 @@ function Dashboard(props: Props) {
           <AddIcon />
         </Fab>
       <Paper className={classes.paper}>
-        
+
         <Grid container>
           <Grid item>
             <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
           </Grid>
           <Grid item>
-            <Typography variant='h2'>{name}</Typography>
+            <Typography variant='h3'>{name}</Typography>
             <Typography variant='body1'>{ensName}</Typography>
             <Typography variant='body1'>{tokenBalance} DAI</Typography>
           </Grid>
         </Grid>
       </Paper>
-      <Paper className={classes.paper}>
-        <Typography variant='h4'>Communities</Typography>
-        <Carousel {...carouselSettings}>
-          {communities.map(c =>
-            <CommunityCard
-              key={c.id}
-              name={c.name}
-              tokens={c.tokens}
-              logo={c.logo}
-              id={c.id}
-              onClick={c.onClick} />
-          )}
-        </Carousel>
+      <Paper className={classes.paperCarousel}>
+        <Typography variant='h3'>Communities</Typography>
+        <Slider {...sliderSettings} >
+          {communities.map(c => (<div key={c.id}><CommunityCard {...c} /></div>))}
+        </Slider>
       </Paper>
-      <Paper className={classes.paper}>
-        <Typography variant='h4'>Events</Typography>
-        <Carousel {...carouselSettings}>
-          {events.map(e =>
-            <EventCard
-              key={e.eventID}
-              eventName={e.eventName}
-              eventID={e.eventID}
-              image={e.image}
-              comLogo={e.comLogo}
-              onClick={e.onClick} />
-          )}
-        </Carousel>
+      <Paper className={classes.paperCarousel}>
+        <Typography variant='h3'>Events</Typography>
+        <Slider {...sliderSettings} >
+          {events.map(e => (<div key={e.id}><EventCard {...e} /></div>))}
+        </Slider>
       </Paper>
       <Fab color="primary" aria-label="Add" className={classes.fab}>
         <AddIcon />

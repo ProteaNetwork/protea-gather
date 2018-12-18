@@ -4,7 +4,7 @@
  *
  */
 
-import * as React from 'react';
+import React from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import { CardActionArea, CardContent, CardMedia, Typography, Theme } from '@material-ui/core';
@@ -57,7 +57,7 @@ function EventCard(props: OwnProps) {
         <CardMedia
           className={classes.media}
           image={image}
-          title={eventName} 
+          title={eventName}
         />
         <CardContent className={classes.cardContent}>
           <Typography className={classes.header} gutterBottom variant="h5" component="h2">

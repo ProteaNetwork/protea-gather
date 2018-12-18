@@ -1,7 +1,7 @@
 {
-  "name": "protea-api-server",
+  "name": "protea-webapp",
   "version": "0.2.0",
-  "description": "REST API For Protea V2",
+  "description": "Web App For Protea V2",
   "author": "Linum Labs - Michael Yankelev",
   "engines": {
     "npm": ">=5",
@@ -146,7 +146,7 @@
     ]
   },
   "dependencies": {
-    "@material-ui/core": "^3.2.0",
+    "@material-ui/core": "^3.6.0",
     "@material-ui/icons": "^3.0.1",
     "babel-polyfill": "6.26.0",
     "chalk": "^2.4.1",
@@ -172,6 +172,7 @@
     "react-loadable": "5.4.0",
     "react-redux": "5.0.7",
     "react-router-dom": "4.3.1",
+    "react-slick": "^0.23.2",
     "redux": "^4.0.0",
     "redux-saga": "0.16.0",
     "reselect": "3.0.1",
@@ -202,6 +203,7 @@
     "@types/react-redux": "^6.0.2",
     "@types/react-router": "^4.0.27",
     "@types/react-router-redux": "^5.0.15",
+    "@types/react-slick": "^0.23.2",
     "@types/redux-devtools": "^3.0.37",
     "@types/redux-devtools-dock-monitor": "^1.1.30",
     "@types/redux-devtools-log-monitor": "^1.0.30",
