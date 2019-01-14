@@ -16,6 +16,7 @@ docker-build:
     - docker-compose down
     - docker-compose push
   only:
+    - nightly
     - staging
     - production
 
@@ -43,5 +44,6 @@ deploy:
     - sed 's/_APP_/'"$CI_ENVIRONMENT_SLUG"'/g; s/_TAG_/'"$CI_BUILD_REF_NAME"'/g; s/_DATE_/'\"$(date +'%s')\"'/g' ./k8s-config/protea-deployment.yml > kubernetes.yml;
     - kubectl apply -f kubernetes.yml
   only:
+    - nightly
     - staging
     - production
