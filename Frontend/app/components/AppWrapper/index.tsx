@@ -74,11 +74,6 @@ const styles = theme => createStyles({
     minHeight: '100vh',
     padding: theme.spacing.unit * 3,
     overflow: 'hidden',
-  },
-  footer: {
-    zIndex: theme.zIndex.drawer + 1,
-    top: 'auto',
-    bottom: 0,
   }
 });
 
@@ -111,7 +106,7 @@ class AppWrapper extends React.Component<Props> {
               variant="h6"
               className={classes.appHeading}
               noWrap >
-              Protea Webapp
+              Protea
             </Typography>
             <IconButton
               color="inherit"
@@ -130,16 +125,6 @@ class AppWrapper extends React.Component<Props> {
             {children}
           </ScrollArea>
         </main>
-        <AppBar position="fixed" color="primary" className={classes.footer}>
-          <Toolbar className={classes.toolbar}>
-            <Typography
-              variant="h6"
-              className={classes.appHeading}
-              noWrap >
-              Footer
-            </Typography>
-          </Toolbar>
-        </AppBar>
         <Drawer
           variant="permanent"
           classes={{

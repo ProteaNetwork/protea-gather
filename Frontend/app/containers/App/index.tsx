@@ -97,7 +97,7 @@ function App(props: Props) {
   // The PublicRoute and PrivateRoute components below should only be used for top level components
   // that will be connected to the store, as no props can be passed down to the child components from here.
   return (
-    <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout}>
+    <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout} >
       <Switch>
         <Route exact path="/" component={LandingPage} isLoggedIn={isLoggedIn} />
         <PublicRoute path="/login" component={LoginPage} isLoggedIn={isLoggedIn} />
