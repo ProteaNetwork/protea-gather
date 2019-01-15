@@ -20,9 +20,6 @@ const styles = ({ spacing }: Theme) => createStyles({
     alignItems: 'center',
     padding: `${spacing.unit * 2}px ${spacing.unit * 2}px ${spacing.unit * 2}px`,
   },
-  fullWidth: {
-    display: 'fixed',
-  },
   media: {
     height: '40vh',
     width: 'auto',
@@ -70,18 +67,18 @@ const CommunityBanner: React.SFC<OwnProps> = (props: OwnProps) => {
         <CardHeader
           title={name}
           subheader={
-            <Typography>
-              1 {tokenSymbol} ~ {value} {tokenValueSymbol}
-              <p className={classes.descriptionStyle}>
+            <Fragment>
+              <span>1 {tokenSymbol} ~ {value} {tokenValueSymbol}</span>
+              <Typography className={classes.descriptionStyle}>
                 {description}
-              </p>
+              </Typography>
               <Button variant="contained" color="primary" className={classes.button}>
                 Sell
               </Button>
               <Button variant="contained" color="secondary" className={classes.button}>
                 Buy
               </Button>
-            </Typography>
+            </Fragment>
           }
         />
 
