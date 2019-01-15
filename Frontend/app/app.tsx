@@ -24,25 +24,27 @@ import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import 'file-loader?name=[name].[ext]!./.htaccess'; // eslint-disable-line import/extensions
 
 import configureStore from './configureStore';
-import {loadState, saveState} from './utils/localStorage';
+// import {loadState, saveState} from './utils/localStorage';
 import history from './utils/history';
-// Import CSS reset and Global Styles
-import './styles/global-styles';
 
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import throttle from 'lodash/throttle';
+// import throttle from 'lodash/throttle';
 
 const robotoObserver = new FontFaceObserver('Roboto', {});
 
-// When Open Sans is loaded, add a font-family using Open Sans to the body
+// When Roboto is loaded, add a font-family using Roboto to the body
 robotoObserver.load().then(() => {
   document.body.classList.add('fontLoaded');
 }).catch(() => console.log('Error loading Roboto font'));
 
 const theme = createMuiTheme({
   palette: {
-    type: 'dark',
+    type: 'light',
+    background: {
+      paper: "#fff",
+      default: "#fafafa"
+    },
     primary: {
       main: '#f57c00',
     },
@@ -55,12 +57,13 @@ const theme = createMuiTheme({
   },
 });
 
-const persistedState = loadState();
-const store = configureStore(persistedState);
+// const persistedState = loadState();
+// persistedState
+const store = configureStore();
 
-store.subscribe(throttle(() => {
-  saveState(store.getState());
-}, 1000));
+// store.subscribe(throttle(() => {
+//   saveState(store.getState());
+// }, 1000));
 
 const MOUNT_NODE = document.getElementById('app') as HTMLElement;
 
@@ -87,11 +90,7 @@ if (module.hot) {
   });
 }
 
-if (!window.Intl) {
-  render();
-} else {
-  render();
-}
+render();
 
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,

@@ -53,14 +53,6 @@ interface Props extends WithStyles<typeof styles> {
 }
 
 class LoginForm extends React.Component<Props> {
-  static propTypes: {
-    classes: any;
-    error: any;
-    isSubmitting: any;
-    submitForm: any;
-    innerRef: any;
-  };
-
   render() {
     const { classes, isSubmitting, submitForm, error } = this.props;
 

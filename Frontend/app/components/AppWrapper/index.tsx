@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -17,7 +17,6 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from "@material-ui/icons/Menu";
 import { NavLink } from 'react-router-dom';
-import ScrollArea from 'xico2k-react-scroll-area';
 
 const drawerWidth = 240;
 
@@ -46,8 +45,6 @@ const styles = theme => createStyles({
     textAlign: 'center',
   },
   drawerPaper: {
-    position: 'relative',
-    whiteSpace: 'nowrap',
     width: drawerWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
@@ -66,14 +63,23 @@ const styles = theme => createStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    padding: '0 8px',
     ...theme.mixins.toolbar,
   },
   content: {
     flexGrow: 1,
     minHeight: '100vh',
+    overflowX: 'hidden',
+  },
+  contentLoggedIn: {
     padding: theme.spacing.unit * 3,
-    overflow: 'hidden',
+  },
+  link: {
+    textDecoration: 'none',
+  },
+  logo: {
+    height: '60px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   }
 });
 
@@ -92,22 +98,18 @@ class AppWrapper extends React.Component<Props> {
   };
 
   render() {
-    const { classes, children } = this.props;
+    const { classes, children, isLoggedIn } = this.props;
 
     return (
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
+        {isLoggedIn &&
+          <AppBar
           position="fixed"
           className={classes.appBar} >
-          <Toolbar>
-            <Typography variant='h6'>Logo</Typography>
-            <Typography
-              variant="h6"
-              className={classes.appHeading}
-              noWrap >
-              Protea
-            </Typography>
+          <Toolbar
+            disableGutters={true}
+          >
             <IconButton
               color="inherit"
               aria-label="Open drawer"
@@ -115,18 +117,15 @@ class AppWrapper extends React.Component<Props> {
               className={classes.menuButton} >
               <MenuIcon />
             </IconButton>
+            <img src='/Protea_Logo_White.png' className={classes.logo} />
           </Toolbar>
-        </AppBar>
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <ScrollArea height='85%'
-            minHandlerHeight={200}
-            trackVisible>
-            {children}
-          </ScrollArea>
+        </AppBar> }
+
+        <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
+        {isLoggedIn && <div className={classes.toolbar} />}
+          {children}
         </main>
         <Drawer
-          variant="permanent"
           classes={{
             paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
           }}
@@ -138,7 +137,7 @@ class AppWrapper extends React.Component<Props> {
           </div>
           <Divider />
           <List>
-            <NavLink to="/dashboard" style={{ textDecoration: 'none' }}>
+            <NavLink to="/dashboard" className={classes.link} >
               <ListItem button>
                 <ListItemIcon>
                   <MailIcon />
@@ -146,7 +145,7 @@ class AppWrapper extends React.Component<Props> {
                 <ListItemText primary={'Dashboard'} />
               </ListItem>
             </NavLink>
-            <NavLink to="/communities" style={{ textDecoration: 'none' }}>
+            <NavLink to="/communities" className={classes.link} >
               <ListItem button>
                 <ListItemIcon>
                   <InboxIcon />
@@ -154,7 +153,7 @@ class AppWrapper extends React.Component<Props> {
                 <ListItemText primary={'Communities'} />
               </ListItem>
             </NavLink>
-            <NavLink to="/events" style={{ textDecoration: 'none' }}>
+            <NavLink to="/events" className={classes.link} >
               <ListItem button>
                 <ListItemIcon>
                   <InboxIcon />

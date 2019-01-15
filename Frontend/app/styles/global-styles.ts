@@ -11,7 +11,7 @@ injectGlobal`
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
   #app {
-    background-color: #000000;
+    background-color: #ffffff;
     min-height: 100%;
     min-width: 100%;
   }

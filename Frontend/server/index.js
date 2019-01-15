@@ -1,6 +1,7 @@
 /* eslint consistent-return:0 */
 
 const express = require('express');
+const path = require('path');
 const logger = require('./logger');
 
 const argv = require('./argv');
@@ -13,6 +14,8 @@ const ngrok =
     : false;
 const { resolve } = require('path');
 const app = express();
+
+app.use(express.static(path.resolve(process.cwd(), 'static')));
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);

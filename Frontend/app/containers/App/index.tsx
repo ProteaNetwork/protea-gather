@@ -34,7 +34,6 @@ import EventPage from 'containers/EventPage';
 import reducer from './reducer';
 import LoginPage from 'containers/LoginPage';
 
-
 function PrivateRoute({ component: Component, isLoggedIn, ...rest }) {
   return (
     <Route
@@ -45,7 +44,7 @@ function PrivateRoute({ component: Component, isLoggedIn, ...rest }) {
         ) : (
             <Redirect
               to={{
-                pathname: "/login",
+                pathname: "/",
                 state: { from: props.location }
               }}
             />
