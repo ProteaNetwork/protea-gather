@@ -51,10 +51,24 @@ const eventsUpcoming = [{
   comLogo: ethCTCommunity,
   comName: "ETH Cape Town",
   onClick: (id) => console.log(id)
+}, {
+  eventName: 'Blockchain Pub Quiz 2',
+  id: '3',
+  image: ethCTPubEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
+  onClick: (id) => console.log(id)
+}, {
+  eventName: 'Ethereum 101',
+  displayCommunityName: false,
+  eventID: '11',
+  image: eth101,
+  comLogo: ethCTCommunity,
+  onClick: (eventID) => console.log(eventID)
 }];
 
 const eventsPrevious = [{
-  eventName: 'Beers n Blcokchain',
+  eventName: 'Beers n Blockchain',
   displayCommunityName: false,
   eventID: '8',
   image: beerNBC,
@@ -74,6 +88,13 @@ const eventsPrevious = [{
   image: eth101,
   comLogo: ethCTCommunity,
   onClick: (eventID) => console.log(eventID)
+}, {
+  eventName: 'Cryptozombies Workshop',
+  id: '2',
+  image: zombiesEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
+  onClick: (id) => console.log(id)
 }];
 
 function CommunityPage({history}) {

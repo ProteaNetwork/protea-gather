@@ -21,19 +21,17 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
       marginRight: 'auto',
     },
   },
-  paper: { 
+  paper: {
     display: 'flex',
     width: '100%',
     flexDirection: 'column',
     alignItems: 'center',
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
-    content: "testing"
   },
   paperCarousel: {
     display: 'block',
     width: '100%',
     alignItems: 'center',
-
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
     marginTop: `${spacing.unit * 2}px`,
     marginBottom: `${spacing.unit * 2}px`
@@ -139,7 +137,7 @@ function Dashboard(props: Props) {
 
   const getCarouselSlidesToShow = () => {
     if (isWidthUp('xl', width)) {
-      return 6;
+      return 4;
     }
 
     if (isWidthUp('lg', width)) {
