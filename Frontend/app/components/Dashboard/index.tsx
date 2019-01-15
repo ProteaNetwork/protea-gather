@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper, Grid, Avatar, WithStyles, withWidth, Fab } from '@material-ui/core';
+import { Typography, Theme, Paper, WithStyles, withWidth, Fab } from '@material-ui/core';
 import Slider, { Settings as SliderSettings } from "react-slick";
 import '../../css/slick.css'
 import '../../css/slick-theme.css';
@@ -87,17 +87,16 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
       '&:hover': {
         opacity: 1
       }
-    }
-  }
+    },
+  },
+  headers: {
+    marginBottom: `${spacing.unit * 2}px`
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {
   classes: any;
   width: Breakpoint;
-  image: string;
-  name: string;
-  ensName: string;
-  tokenBalance: number;
   communities: Array<any>;
   events: Array<any>;
 }
@@ -136,7 +135,7 @@ function FabPrevious(props) {
 }
 
 function Dashboard(props: Props) {
-  const { classes, image, name, ensName, tokenBalance, communities, events, width } = props;
+  const { classes, communities, events, width } = props;
 
   const getCarouselSlidesToShow = () => {
     if (isWidthUp('xl', width)) {
@@ -173,26 +172,14 @@ function Dashboard(props: Props) {
 
   return (
     <Fragment>
-      <Paper className={classes.paper}>
-        <Grid container>
-          <Grid item>
-            <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
-          </Grid>
-          <Grid item>
-            <Typography variant='h3'>{name}</Typography>
-            <Typography variant='body1'>{ensName}</Typography>
-            <Typography variant='body1'>{tokenBalance} DAI</Typography>
-          </Grid>
-        </Grid>
-      </Paper>
       <Paper className={classes.paperCarousel}>
-        <Typography variant='h3'>My Communities</Typography>
+        <Typography variant='h3' className={classes.headers}>My Communities</Typography>
         <Slider {...sliderSettings} >
           {communities.map(c => (<div key={c.id}><CommunityCard {...c} /></div>))}
         </Slider>
       </Paper>
       <Paper className={classes.paperCarousel}>
-        <Typography variant='h3'>My Events</Typography>
+        <Typography variant='h3' className={classes.headers}>My Events</Typography>
         <Slider {...sliderSettings} >
           {events.map(e => (<div key={e.id}><EventCard {...e} /></div>))}
         </Slider>

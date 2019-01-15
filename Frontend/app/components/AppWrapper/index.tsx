@@ -7,8 +7,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
-// import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -17,6 +15,9 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from "@material-ui/icons/Menu";
 import { NavLink } from 'react-router-dom';
+import { Typography, Avatar, Divider, IconButton } from '@material-ui/core';
+
+const drawerWidth = 240;
 
 const styles = theme => createStyles({
   root: {
@@ -24,6 +25,21 @@ const styles = theme => createStyles({
     maxHeight: '100%',
     height: '100vh',
     maxWidth: '100%'
+  },
+  drawerPaper: {
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerPaperClose: {
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    width: 0
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -66,12 +82,24 @@ const styles = theme => createStyles({
   },
   spacer: {
     height: '60px'
-  }
+  },
+  bigAvatar: {
+    width: 60,
+    height: 60,
+  },
+  userInformation: {
+    paddingLeft: theme.spacing.unit * 3,
+    paddingBottom: theme.spacing.unit * 3,
+  },
 });
 
 interface Props extends WithStyles<typeof styles> {
   isLoggedIn: boolean;
   onLogout: Function;
+  name: string;
+  ensName: string;
+  tokenBalance: number;
+  image: string;
 }
 
 class AppWrapper extends React.Component<Props> {
@@ -90,7 +118,7 @@ class AppWrapper extends React.Component<Props> {
   };
 
   render() {
-    const { classes, children, isLoggedIn } = this.props;
+    const { classes, children, isLoggedIn, name, ensName, tokenBalance, image } = this.props;
 
     return (
       <div className={classes.root}>
@@ -161,6 +189,50 @@ class AppWrapper extends React.Component<Props> {
           {isLoggedIn && <div className={classes.toolbar} />}
           {children}
         </main>
+        <Drawer
+          classes={{
+            paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
+          }}
+          open={this.state.open}>
+          <div className={classes.toolbar}>
+            <IconButton onClick={this.handleDrawerToggle}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <div className={classes.userInformation}>
+            <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
+            <Typography variant='h3'>{name}</Typography>
+            <Typography variant='body1'>{ensName}</Typography>
+            <Typography variant='body1'>{tokenBalance} DAI</Typography>
+          </div>
+          <Divider />
+          <List>
+            <NavLink to="/dashboard" className={classes.link} >
+              <ListItem button>
+                <ListItemIcon>
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Dashboard'} />
+              </ListItem>
+            </NavLink>
+            <NavLink to="/communities" className={classes.link} >
+              <ListItem button>
+                <ListItemIcon>
+                  <InboxIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Communities'} />
+              </ListItem>
+            </NavLink>
+            <NavLink to="/events" className={classes.link} >
+              <ListItem button>
+                <ListItemIcon>
+                  <InboxIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Events'} />
+              </ListItem>
+            </NavLink>
+          </List>
+        </Drawer>
       </div>
     );
   }

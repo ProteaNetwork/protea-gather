@@ -13,122 +13,66 @@ import injectReducer from 'utils/injectReducer';
 import makeSelectCommunityPage from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import image from 'images/ethereum_global.jpg';
-import eventIcon from 'images/communityPlaceHolder.jpg';
+
+import image from 'images/ETHCTBanner.jpg';
+import ethCTPubEvent from 'images/QuizEvent.jpg';
+import zombiesEvent from 'images/CryptozombiesEvent.jpg';
+import ethCTCommunity from 'images/ETHCTCom.jpg';
+import femalesInBC from 'images/FemalesInBC.jpg';
+import beerNBC from 'images/BeersNBlockEvent.jpg';
+import eth101 from 'images/ETH101.jpg';
+
 import CommunityBanner from 'components/CommunityBanner';
 import CarouselEvents from 'components/CarouselEvents';
 import { withRouter } from 'react-router';
 
 const communityDetails =  {
-  name: 'Eth Global',
-  tokens: 128,
+  name: 'ETH Cape Town',
+  tokens: 12,
   logo: image,
   id: '1',
-  description: 'The Ethereum global community is dedicated to furthering the interests of the Ethereum group. We strive for block chain dominance in all world affairs...',
+  description: 'A group for developers, entrepreneurs, and enthusiasts to learn about and develop for Ethereum and digital contracts in general. Ethereum is a next-generation crypto platform that allows you to create smart contracts and provide decentralized trust (auditing) for any kind of application that you can imagine.',
   tokenSymbol: 'ETHG',
   tokenValue: 1.334,
   tokenValueSymbol: 'DAI',
 }
 
 const eventsUpcoming = [{
-  eventName: 'Eth Cape Town',
-  displayCommunityName: false,
-  eventID: '1',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
+  eventName: 'Blockchain Pub Quiz',
+  id: '1',
+  image: ethCTPubEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
+  onClick: (id) => console.log(id)
 }, {
-  eventName: 'Eth Berlin',
-  displayCommunityName: false,
-  eventID: '2',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Singapore',
-  displayCommunityName: false,
-  eventID: '3',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth London',
-  displayCommunityName: false,
-  eventID: '4',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Brussels',
-  displayCommunityName: false,
-  eventID: '5',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Tokyo',
-  displayCommunityName: false,
-  eventID: '6',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth New York',
-  displayCommunityName: false,
-  eventID: '7',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
+  eventName: 'Cryptozombies Workshop',
+  id: '2',
+  image: zombiesEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
+  onClick: (id) => console.log(id)
 }];
 
 const eventsPrevious = [{
-  eventName: 'Eth Johannesburg',
+  eventName: 'Beers n Blcokchain',
   displayCommunityName: false,
   eventID: '8',
-  image: eventIcon,
-  comLogo: image,
+  image: beerNBC,
+  comLogo: ethCTCommunity,
   onClick: (eventID) => console.log(eventID)
 }, {
-  eventName: 'Eth Vienna',
-  displayCommunityName: false,
-  eventID: '9',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Beijing',
+  eventName: 'Females in Blockchain',
   displayCommunityName: false,
   eventID: '10',
-  image: eventIcon,
-  comLogo: image,
+  image: femalesInBC,
+  comLogo: ethCTCommunity,
   onClick: (eventID) => console.log(eventID)
 }, {
-  eventName: 'Eth Rio',
+  eventName: 'Ethereum 101',
   displayCommunityName: false,
   eventID: '11',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Cairo',
-  displayCommunityName: false,
-  eventID: '12',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Sidney',
-  displayCommunityName: false,
-  eventID: '13',
-  image: eventIcon,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
-}, {
-  eventName: 'Eth Los Angeles',
-  displayCommunityName: false,
-  eventID: '14',
-  image: eventIcon,
-  comLogo: image,
+  image: eth101,
+  comLogo: ethCTCommunity,
   onClick: (eventID) => console.log(eventID)
 }];
 
@@ -143,9 +87,11 @@ function CommunityPage({history}) {
         value={communityDetails.tokenValue}
         description={communityDetails.description}
         history={history} />
+
       {/*
       // @ts-ignore */}
       <CarouselEvents events={eventsUpcoming} label={'Upcoming events'}/>
+
       {/*
       // @ts-ignore */}
       <CarouselEvents events={eventsPrevious} label={'Previous events'}/>

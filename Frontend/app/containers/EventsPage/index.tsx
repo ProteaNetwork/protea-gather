@@ -16,33 +16,42 @@ import EventGrid from 'components/EventGrid';
 import EventSearchSortBar from 'components/EventSearchSortBar';
 import { updateFilter } from './actions';
 
-import image from 'images/kiwi.jpg';
+import footyCommunityImage from 'images/footyConnunity.jpg';
+import footyEventImage from 'images/footyEvent.jpg';
+import ethCTPubEvent from 'images/QuizEvent.jpg';
+import xWingEvent from 'images/xWingEvent.jpg';
+import xWingCommunity from 'images/xWingCom.jpg';
+import zombiesEvent from 'images/CryptozombiesEvent.jpg';
+import ethCTCommunity from 'images/ETHCTCom.jpg';
 
-// TODO: Remove this once hooked up to communities state tree
 const events = [{
-  eventName: 'Eth Cape Town',
-  eventID: '1',
-  image: image,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
+  eventName: 'Blockchain Pub Quiz',
+  id: '1',
+  image: ethCTPubEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
+  onClick: (id) => console.log(id)
 }, {
-  eventName: 'Artist workshop 3',
-  eventID: '2',
-  image: image,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
+  eventName: 'Cryptozombies Workshop',
+  id: '2',
+  image: zombiesEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
+  onClick: (id) => console.log(id)
 }, {
-  eventName: 'Eth Berlin',
-  eventID: '3',
-  image: image,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
+  eventName: 'X-Wing Tournament',
+  id: '3',
+  image: xWingEvent,
+  comLogo: xWingCommunity,
+  comName: "X-Wing Cape Town",
+  onClick: (id) => console.log(id)
 }, {
-  eventName: 'Truck maintenance beginner',
-  eventID: '4',
-  image: image,
-  comLogo: image,
-  onClick: (eventID) => console.log(eventID)
+  eventName: 'BlockBlasters vs GP Vipers',
+  id: '4',
+  image: footyEventImage,
+  comLogo: footyCommunityImage,
+  comName: "Fiver Footy Cape Town",
+  onClick: (id) => console.log(id)
 }];
 
 interface StateProps {
@@ -66,7 +75,8 @@ function EventsPage(props: Props) {
   return (
     <div>
       <EventSearchSortBar searchParameter={searchParameter} sortParameter={sortParameter} onChange={updateFilter} />
-      // @ts-ignore
+      {/*
+      // @ts-ignore */}
       <EventGrid events={events} />
     </div>
   );
