@@ -80,6 +80,10 @@ const styles = theme => createStyles({
     height: '60px',
     marginLeft: 'auto',
     marginRight: 'auto',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%,-50%)'
   }
 });
 
