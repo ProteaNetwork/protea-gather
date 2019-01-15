@@ -28,8 +28,10 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   paper: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'left',
     padding: `${spacing.unit * 2}px ${spacing.unit * 2}px ${spacing.unit * 2}px`,
+    marginTop: `${spacing.unit * 2}px`,
+    marginBottom: `${spacing.unit * 2}px`
   },
 });
 

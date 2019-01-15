@@ -13,9 +13,8 @@ import injectReducer from 'utils/injectReducer';
 import makeSelectCommunityPage from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import image from 'images/kiwi.jpg';
+import image from 'images/ethereum_global.jpg';
 import eventIcon from 'images/communityPlaceHolder.jpg';
-import CommunityDescription from 'components/CommunityDescription';
 import CommunityBanner from 'components/CommunityBanner';
 import CarouselEvents from 'components/CarouselEvents';
 
@@ -24,7 +23,7 @@ const communityDetails =  {
   tokens: 128,
   logo: image,
   id: '1',
-  description: 'The best community that was ever created. Great members, great time',
+  description: 'The Etheruem global community is dedicated to furthering the interests of the Ethereum group. We strive for block chain dominance in all world affairs...',
   tokenSymbol: 'ETHG',
   tokenValue: 1.334,
   tokenValueSymbol: 'DAI',
@@ -83,11 +82,14 @@ function CommunityPage() {
         tokenSymbol={communityDetails.tokenSymbol}
         tokenValueSymbol={communityDetails.tokenValueSymbol}
         value={communityDetails.tokenValue}
+        description={communityDetails.description}
+        
         />
-      <CommunityDescription description={communityDetails.description} />
-      // @ts-ignore
+      {/*
+      // @ts-ignore */}
       <CarouselEvents events={events} label={'Upcoming events'}/>
-      // @ts-ignore
+      {/*
+      // @ts-ignore */}
       <CarouselEvents events={events} label={'Previous events'}/>
     </div>
   );
