@@ -52,16 +52,17 @@ interface OwnProps {
   description: string;
   date: string;
   ticketsLeft: number;
+  history: any;
 }
 
 function EventBanner(props: OwnProps) {
-  const { classes, logo, name, tokens, tokenName, ticketsLeft, date } = props;
+  const { classes, logo, name, tokens, tokenName, ticketsLeft, date, history } = props;
 
   return (
     <Fragment>
       <Paper className={classes.paper}>
         <Card className={classes.card}>
-          <Button variant="raised" color="primary" className={classes.buttonTop}>
+          <Button variant="raised" color="primary" className={classes.buttonTop} onClick={history.goBack}>
             Back
           </Button>
           <label className={classes.dateText}>
@@ -71,7 +72,7 @@ function EventBanner(props: OwnProps) {
             className={classes.media}
             image={logo}
             title={name} />
-          <CardHeader 
+          <CardHeader
             title={name}
             subheader={
               <Typography>

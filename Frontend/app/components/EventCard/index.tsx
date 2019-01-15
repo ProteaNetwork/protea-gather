@@ -10,7 +10,7 @@ import Card from '@material-ui/core/Card';
 import { CardActionArea, CardContent, CardMedia, Typography, Theme } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // import styled from 'styles/styled-components';
 const styles = ({ palette, spacing }: Theme) => createStyles({
@@ -45,20 +45,25 @@ export interface OwnProps {
   eventID: string;
   image: string;
   comLogo: string;
+  displayCommunityName: boolean;
   onClick(id: string): void;
 }
 
+
 function EventCard(props: OwnProps) {
-  const { classes, eventName, eventID, image, comLogo } = props;
+  const { classes, eventName, eventID, image, comLogo, displayCommunityName = true } = props;
   return (
     <Card className={classes.card}>
       <Link to='/event' className={classes.link} >
         <CardActionArea onClick={() => props.onClick(eventID)}>
-          <Chip
-            avatar={<Avatar alt="Community Name" src={comLogo} />}
-            label="Community Name"
-            className={classes.chip}
-          />
+          {displayCommunityName ?
+            <Chip
+              avatar={<Avatar alt="Community Name" src={comLogo} />}
+              label="Community Name"
+              className={classes.chip}
+            />
+            : null
+          }
           <CardMedia
             className={classes.media}
             image={image}

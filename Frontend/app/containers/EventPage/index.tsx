@@ -18,6 +18,7 @@ import EventBanner from 'components/EventBanner';
 import image from 'images/kiwi.jpg';
 import user from 'images/kiwi.jpg';
 import AttendeesCarousel from 'components/AttendeesCarousel';
+import { withRouter } from 'react-router';
 
 const eventDetails = {
   name: 'Eth Cape Town',
@@ -48,10 +49,10 @@ const attendees = [
   }
 ]
 
-function EventPage() {
+function EventPage({ history }) {
   return (
     <div>
-      <EventBanner 
+      <EventBanner
         name={eventDetails.name}
         tokens={eventDetails.tokens}
         tokenName={eventDetails.tokenName}
@@ -59,7 +60,7 @@ function EventPage() {
         description={eventDetails.description}
         date={eventDetails.date}
         ticketsLeft={eventDetails.ticketsLeft}
-      />
+        history={history} />
       <CommunityDescription description={eventDetails.description} />
       // @ts-ignore
       <AttendeesCarousel attendees={attendees}/>
@@ -67,11 +68,11 @@ function EventPage() {
   );
 }
 /**
-  * (DONE) Event banner : 
-  *   back button, logo, date, name, tokens in community 
-  *   number of tickets left, button to RSVP 
+  * (DONE) Event banner :
+  *   back button, logo, date, name, tokens in community
+  *   number of tickets left, button to RSVP
   * (DONE) Description : description
-  * Caracole of attendees 
+  * Caracole of attendees
   */
 
 const mapStateToProps = createStructuredSelector({
@@ -92,4 +93,5 @@ export default compose(
   withReducer,
   withSaga,
   withConnect,
+  withRouter,
 )(EventPage);
