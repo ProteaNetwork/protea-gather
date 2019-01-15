@@ -33,6 +33,8 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     width: '100%',
     alignItems: 'center',
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
+    marginTop: `${spacing.unit * 2}px`,
+    marginBottom: `${spacing.unit * 2}px`
   },
   bigAvatar: {
     margin: 10,
@@ -55,12 +57,34 @@ interface Props extends WithStyles<typeof styles> {
   events: Array<any>;
 }
 
+function SampleNextArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block", background: "red" }}
+      onClick={onClick}
+    />
+  );
+}
+
+function SamplePrevArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "float", background: "green" }}
+      onClick={onClick}
+    />
+  );
+}
+
 function Dashboard(props: Props) {
   const { classes, image, name, ensName, tokenBalance, communities, events, width } = props;
 
   const getCarouselSlidesToShow = () => {
     if (isWidthUp('xl', width)) {
-      return 4;
+      return 6;
     }
 
     if (isWidthUp('lg', width)) {
@@ -75,10 +99,13 @@ function Dashboard(props: Props) {
   }
 
   const sliderSettings: SliderSettings = {
-    dots: false,
+    arrows: true,
+    dots: true,
     slidesToShow: getCarouselSlidesToShow(),
     slidesToScroll: 1,
-    arrows: false,
+    infinite: false,
+    prevArrow: <SamplePrevArrow />,
+    nextArrow: <SampleNextArrow />
   };
 
   return (

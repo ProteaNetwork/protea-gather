@@ -93,6 +93,30 @@ const events = [{
   image: image,
   comLogo: comImage,
   onClick: (id) => console.log(id)
+}, {
+  eventName: 'Eth Cape Town',
+  id: '5',
+  image: image,
+  comLogo: comImage,
+  onClick: (id) => console.log(id)
+}, {
+  eventName: 'Artist workshop 3',
+  id: '6',
+  image: image,
+  comLogo: comImage,
+  onClick: (id) => console.log(id)
+}, {
+  eventName: 'Eth Berlin',
+  id: '7',
+  image: image,
+  comLogo: comImage,
+  onClick: (id) => console.log(id)
+}, {
+  eventName: 'Truck maintenance beginner',
+  id: '8',
+  image: image,
+  comLogo: comImage,
+  onClick: (id) => console.log(id)
 }];
 
 function DashboardPage() {
