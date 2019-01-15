@@ -7,8 +7,6 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
 import { Typography, Theme, Card, CardHeader, CardMedia, Button } from '@material-ui/core';
-import { NavLink } from 'react-router-dom';
-
 
 const styles = ({ spacing }: Theme) => createStyles({
   container: {
@@ -26,7 +24,7 @@ const styles = ({ spacing }: Theme) => createStyles({
     display: 'fixed',
   },
   media: {
-    height: 400,
+    height: '40vh',
     width: 'auto',
     alignContent: 'center',
   },
@@ -53,20 +51,18 @@ interface OwnProps {
   tokenValueSymbol: string;
   value: number;
   description: string;
+  history: any;
 }
 
 const CommunityBanner: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { classes, name, logo, tokenSymbol, value, tokenValueSymbol, description } = props;
+  const { classes, name, logo, tokenSymbol, value, tokenValueSymbol, description, history } = props;
 
   return (
     <Fragment>
-      <Card className={classes.fullWidth}>
-
-        <NavLink to="/dashboard" style={{ textDecoration: 'none' }}>
-          <Button variant="raised" color="primary" className={classes.buttonTop}>
-            Back
-          </Button>
-        </NavLink>
+      <Card>
+        <Button variant="raised" color="primary" className={classes.buttonTop} onClick={history.goBack} >
+          Back
+        </Button>
         <CardMedia
           className={classes.media}
           image={logo}

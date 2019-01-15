@@ -6,17 +6,19 @@
 
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper, withWidth } from '@material-ui/core';
+import { Typography, Theme, Paper, withWidth, Fab } from '@material-ui/core';
 import EventCard from 'components/EventCard';
-import Carousel from 'nuka-carousel';
+// import Carousel from 'nuka-carousel';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
 import { compose } from 'redux';
+import Slider, { Settings as SliderSettings } from "react-slick";
+
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
     width: 'auto',
-    display: 'block', 
+    display: 'block',
     marginLeft: spacing.unit * 2,
     marginRight: spacing.unit * 2,
     marginTop: spacing.unit * 2,
@@ -42,6 +44,43 @@ interface OwnProps {
   label: string;
 }
 
+function FabNext(props) {
+  const { className, style, onClick } = props;
+  return (
+    <Fab
+      className={className}
+      style={{
+        ...style,
+        display: 'block',
+        position: 'absolute',
+        top: '50%',
+        transform: 'translate(-50%,-50%)',
+        right: '10px',
+        backgroundColor: 'orange'
+      }}
+      onClick={onClick} />
+  );
+}
+
+function FabPrevious(props) {
+  const { className, style, onClick } = props;
+  return (
+    <Fab
+      className={className}
+      style={{
+        ...style,
+        display: 'block',
+        position: 'absolute',
+        top: '50%',
+        transform: 'translate(-50%,-50%)',
+        left: '60px',
+        zIndex: '1',
+        backgroundColor: 'orange'
+      }}
+      onClick={onClick} />
+  );
+}
+
 function CarouselEvents(props: OwnProps) {
   const { classes, events, width, label } = props;
 
@@ -61,28 +100,31 @@ function CarouselEvents(props: OwnProps) {
     return 1;
   }
 
-  const carouselSettings = {
-    width: `${getCarouselSlidesToShow()*400}px`,
+  const carouselSettings: SliderSettings = {
+    className: "center",
+    centerPadding: "60px",
+    arrows: true,
+    dots: true,
     slidesToShow: getCarouselSlidesToShow(),
     slidesToScroll: 1,
-    withoutControls: true,
-  }
+    infinite: true,
+    centerMode: true,
+    prevArrow: <FabPrevious />,
+    nextArrow: <FabNext />,
+    appendDots: dots => (
+      <div>
+        <ul style={{ margin: "0px" }}> {dots} </ul>
+      </div>
+    ),
+  };
 
   return (
     <Fragment>
       <Paper className={classes.paper}>
-      <Typography variant='h4'>{label}</Typography>
-        <Carousel {...carouselSettings}>
-          {events.map(e =>
-            <EventCard
-              key={e.eventID}
-              eventName={e.eventName}
-              eventID={e.eventID}
-              image={e.image}
-              comLogo={e.comLogo}
-              onClick={e.onClick} />
-          )}
-        </Carousel>
+        <Typography variant='h4'>{label}</Typography>
+        <Slider {...carouselSettings} >
+          {events.map(e => (<div key={e.id}><EventCard {...e} /></div>))}
+        </Slider>
       </Paper>
     </Fragment>
   );
