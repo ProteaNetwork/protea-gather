@@ -12,6 +12,7 @@ import {Link} from 'react-router-dom';
 const styles = ({ palette }: Theme) => createStyles({
   card: {
     width: 400,
+    height: 'auto',
   },
   cardContent: {
     backgroundColor: palette.secondary.light,
