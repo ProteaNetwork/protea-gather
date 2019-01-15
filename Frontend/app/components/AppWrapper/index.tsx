@@ -64,6 +64,10 @@ const styles = theme => createStyles({
     height: '60px',
     marginLeft: 'auto',
     marginRight: 'auto',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%,-50%)'
   },
   spacer: {
     height: '80px'
