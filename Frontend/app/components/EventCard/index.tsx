@@ -33,6 +33,9 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
     width: 400,
     height: 70,
     color: "textSecondary",
+  },
+  link: {
+    textDecoration: 'none',
   }
 });
 
@@ -49,7 +52,7 @@ function EventCard(props: OwnProps) {
   const { classes, eventName, eventID, image, comLogo } = props;
   return (
     <Card className={classes.card}>
-      <Link to='/event'>
+      <Link to='/event' className={classes.link} >
         <CardActionArea onClick={() => props.onClick(eventID)}>
           <Chip
             avatar={<Avatar alt="Community Name" src={comLogo} />}

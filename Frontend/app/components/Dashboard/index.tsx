@@ -9,8 +9,6 @@ import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
 import CommunityCard from 'components/CommunityCard';
 import EventCard from 'components/EventCard';
-import { Fab } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -41,11 +39,6 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     width: 60,
     height: 60,
   },
-  fab: {
-    position: 'fixed',
-    bottom: spacing.unit * 13,
-    right: spacing.unit * 4,
-  },
   extendedIcon: {
     marginRight: spacing.unit,
   },
@@ -61,8 +54,6 @@ interface Props extends WithStyles<typeof styles> {
   communities: Array<any>;
   events: Array<any>;
 }
-
-
 
 function Dashboard(props: Props) {
   const { classes, image, name, ensName, tokenBalance, communities, events, width } = props;
@@ -92,9 +83,6 @@ function Dashboard(props: Props) {
 
   return (
     <Fragment>
-      <Fab color="primary" aria-label="Add" className={classes.fab}>
-          <AddIcon />
-        </Fab>
       <Paper className={classes.paper}>
         <Grid container>
           <Grid item>
@@ -119,9 +107,6 @@ function Dashboard(props: Props) {
           {events.map(e => (<div key={e.id}><EventCard {...e} /></div>))}
         </Slider>
       </Paper>
-      <Fab color="primary" aria-label="Add" className={classes.fab}>
-        <AddIcon />
-      </Fab>
     </Fragment>
   )
 }

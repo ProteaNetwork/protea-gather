@@ -1,41 +1,80 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper, Button } from '@material-ui/core';
+import { Typography, Button, WithStyles } from '@material-ui/core';
 import {Link} from 'react-router-dom';
+import { Dispatch, compose } from 'redux';
+import { toggleAuth } from 'containers/App/actions';
+import { connect } from 'react-redux';
 
-const styles = ({ spacing, breakpoints }: Theme) => createStyles({
+const styles = () => createStyles({
   layout: {
-    width: 'auto',
-    // display: 'block', // Fix IE 11 issue.
-    marginLeft: spacing.unit * 3,
-    marginRight: spacing.unit * 3,
-    [breakpoints.up(400 + spacing.unit * 3 * 2)]: {
-      marginLeft: 'auto',
-      marginRight: 'auto',
-    },
-  },
-  paper: {
-    marginTop: spacing.unit * 8,
+    width: '100%',
+    height: '100vh',
     display: 'flex',
+    justifyContent: 'center',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
+    background: 'linear-gradient(135deg, #f39c12 0%, rgba(243, 156, 18, 0) 70%), ' +
+                'linear-gradient(25deg, #f1c40f 10%, rgba(241, 196, 15, 0) 80%), ' +
+                'linear-gradient(315deg, #ff9933 15%, rgba(255, 153, 51, 0) 80%), ' +
+                'linear-gradient(245deg, #d35400 100%, rgba(211, 84, 0, 0) 70%);',
   },
+  appName: {
+    color: 'white',
+  },
+  connectButton: {
+    backgroundColor: 'white',
+    color: 'black',
+  },
+  link: {
+    textDecoration: 'none',
+  }
 });
 
-function LandingPage(props) {
-  const { classes } = props;
+// tslint:disable-next-line:no-empty-interface
+interface OwnProps extends WithStyles<typeof styles>  {
 
+}
+
+// tslint:disable-next-line:no-empty-interface
+interface DispatchProps {
+  toggleLogin(): void;
+}
+
+// tslint:disable-next-line:no-empty-interface
+interface StateProps {
+
+}
+
+type Props = StateProps & DispatchProps & OwnProps;
+
+const LandingPage: React.SFC<Props> = ({toggleLogin, classes}: Props) => {
   return (
   <Fragment>
     <main className={classes.layout}>
-      <Paper className={classes.paper}>
-        <Typography variant='h1'>Protea</Typography>
-        <Link to='/login'><Button>GET STARTED</Button></Link>
-      </Paper>
+        <img src='/Protea_Logo_White.png' alt='' />
+        <Typography variant='h3' className={classes.appName}>Protea</Typography>
+        <Link to='/dashboard' className={classes.link}>
+          <Button variant='outlined' className={classes.connectButton} onClick={toggleLogin}>Connect</Button>
+        </Link>
     </main>
   </Fragment>
   )
 }
 
-export default withStyles(styles, { withTheme: true })(LandingPage);
+function mapDispatchToProps(dispatch: Dispatch) {
+  return {
+    dispatch: dispatch,
+    toggleLogin: () => {
+      dispatch(toggleAuth());
+    },
+  };
+}
+
+const withConnect = connect(null, mapDispatchToProps);
+const composeWithStyles = withStyles(styles, { withTheme: true });
+
+export default compose(
+  withConnect,
+  composeWithStyles
+)(LandingPage);

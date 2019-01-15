@@ -24,6 +24,9 @@ const styles = ({ palette }: Theme) => createStyles({
   header: {
     width: 400,
     height: 20,
+  },
+  link: {
+    textDecoration: 'none',
   }
 });
 
@@ -45,7 +48,7 @@ function CommunityCard(props: Props) {
   const { classes, tokens, logo, name, id } = props;
   return (
     <Card className={classes.card}>
-      <Link to='/community'>
+      <Link to='/community' className={classes.link} >
         <CardActionArea onClick={() => props.onClick(id)} >
           <CardMedia
             className={classes.media}

@@ -51,7 +51,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  updateFilter(data);
+  updateFilter(data): void;
 }
 
 interface OwnProps {
