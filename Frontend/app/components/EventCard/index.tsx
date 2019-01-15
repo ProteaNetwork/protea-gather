@@ -22,17 +22,20 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
     backgroundColor: palette.secondary.light,
   },
   media: {
-    width: 400,
+    width: '100%',
     height: 300,
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
   },
   chip: {
     margin: spacing.unit,
     float: "left",
   },
   header: {
-    width: 400,
-    height: 70,
-    color: "textSecondary",
+    width: '100%',
+    height: 35,
+    color: "textSecondary", //TODO: add correct size 
+    overflow: 'hidden'
   },
   link: {
     textDecoration: 'none',
