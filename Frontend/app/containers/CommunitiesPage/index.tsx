@@ -8,7 +8,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 // import { createStructuredSelector } from 'reselect';
 import { compose, Dispatch } from 'redux';
-import image from 'images/communityPlaceHolder.jpg';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -19,59 +18,38 @@ import CommunityGrid from 'components/CommunityGrid';
 import CommunitySearchSortBar from 'components/CommunitySearchSortBar';
 import { updateFilter } from './actions';
 
+import footyCommunityImage from 'images/footyConnunity.jpg';
+import xWingCommunity from 'images/xWingCom.jpg';
+import marketsCommunity from 'images/Curation Markets.jpg';
+import ethCTCommunity from 'images/ETHCTCom.jpg';
+
 
 // TODO: Remove this once hooked up to communities state tree
-const communities = [
-  {
-    name: 'Eth Global',
-    tokens: 128,
-    logo: image,
-    id: '1',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'The fisherman',
-    tokens: 6,
-    logo: image,
-    id: '2',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'Fire truckers',
-    tokens: 3,
-    logo: image,
-    id: '3',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'Artists',
-    tokens: 4,
-    logo: image,
-    id: '4',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'Coders',
-    tokens: 239,
-    logo: image,
-    id: '5',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'Charities Global',
-    tokens: 503,
-    logo: image,
-    id: '6',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'Woodworkers',
-    tokens: 3,
-    logo: image,
-    id: '7',
-    onClick: (id) => console.log(id)
-  }, {
-    name: 'Event creators',
-    tokens: 40,
-    logo: image,
-    id: '8',
-    onClick: (id) => console.log(id)
-  }
-]
+const communities = [{
+  name: 'ETH Cape Town',
+  tokens: 128,
+  logo: ethCTCommunity,
+  id: '1',
+  onClick: (id) => console.log(id)
+}, {
+  name: 'X-Wing Cape Town',
+  tokens: 6,
+  logo: xWingCommunity,
+  id: '2',
+  onClick: (id) => console.log(id)
+}, {
+  name: 'Fiver Footy Cape Town',
+  tokens: 3,
+  logo: footyCommunityImage,
+  id: '3',
+  onClick: (id) => console.log(id)
+}, {
+  name: 'Curation Markets Global',
+  tokens: 4,
+  logo: marketsCommunity,
+  id: '4',
+  onClick: (id) => console.log(id)
+}];
 
 interface StateProps {
   searchParameter: string;
@@ -94,7 +72,8 @@ function CommunitiesPage(props: Props) {
   return (
     <div>
       <CommunitySearchSortBar searchParameter={searchParameter} sortParameter={sortParameter} onChange={updateFilter} />
-      // @ts-ignore
+      {/*
+      // @ts-ignore */}
       <CommunityGrid communities={communities} />
     </div>
   );

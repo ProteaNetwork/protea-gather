@@ -48,21 +48,22 @@ export interface OwnProps {
   eventID: string;
   image: string;
   comLogo: string;
+  comName: string;
   displayCommunityName: boolean;
   onClick(id: string): void;
 }
 
 
 function EventCard(props: OwnProps) {
-  const { classes, eventName, eventID, image, comLogo, displayCommunityName = true } = props;
+  const { classes, eventName, eventID, image, comLogo, comName, displayCommunityName = true } = props;
   return (
     <Card className={classes.card}>
       <Link to='/event' className={classes.link} >
         <CardActionArea onClick={() => props.onClick(eventID)}>
           {displayCommunityName ?
             <Chip
-              avatar={<Avatar alt="Community Name" src={comLogo} />}
-              label="Community Name"
+              avatar={<Avatar alt={comName} src={comLogo} />}
+              label={comName}
               className={classes.chip}
             />
             : null

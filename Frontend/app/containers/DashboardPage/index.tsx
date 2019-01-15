@@ -9,8 +9,14 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 
-import image from 'images/kiwi.jpg';
-import comImage from 'images/communityPlaceHolder.jpg';
+import footyCommunityImage from 'images/footyConnunity.jpg';
+import footyEventImage from 'images/footyEvent.jpg';
+import ethCTPubEvent from 'images/QuizEvent.jpg';
+import xWingEvent from 'images/xWingEvent.jpg';
+import xWingCommunity from 'images/xWingCom.jpg';
+import marketsCommunity from 'images/ethereum_global.jpg';
+import zombiesEvent from 'images/CryptozombiesEvent.jpg';
+import ethCTCommunity from 'images/ETHCTCom.jpg';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -20,102 +26,58 @@ import saga from './saga';
 import Dashboard from 'components/Dashboard';
 
 const communities = [{
-  name: 'Eth Global',
+  name: 'ETH Cape Town',
   tokens: 128,
-  logo: comImage,
+  logo: ethCTCommunity,
   id: '1',
   onClick: (id) => console.log(id)
 }, {
-  name: 'The fisherman',
+  name: 'X-Wing Cape Town',
   tokens: 6,
-  logo: comImage,
+  logo: xWingCommunity,
   id: '2',
   onClick: (id) => console.log(id)
 }, {
-  name: 'Fire truckers',
+  name: 'Fiver Footy Cape Town',
   tokens: 3,
-  logo: comImage,
+  logo: footyCommunityImage,
   id: '3',
   onClick: (id) => console.log(id)
 }, {
-  name: 'Artists',
+  name: 'Curation Markets Global',
   tokens: 4,
-  logo: comImage,
+  logo: marketsCommunity,
   id: '4',
-  onClick: (id) => console.log(id)
-}, {
-  name: 'Eth Global',
-  tokens: 128,
-  logo: comImage,
-  id: '5',
-  onClick: (id) => console.log(id)
-}, {
-  name: 'The fisherman',
-  tokens: 6,
-  logo: comImage,
-  id: '6',
-  onClick: (id) => console.log(id)
-}, {
-  name: 'Fire truckers',
-  tokens: 3,
-  logo: comImage,
-  id: '7',
-  onClick: (id) => console.log(id)
-}, {
-  name: 'Artists',
-  tokens: 4,
-  logo: comImage,
-  id: '8',
   onClick: (id) => console.log(id)
 }];
 
 const events = [{
-  eventName: 'Eth Cape Town',
+  eventName: 'Blockchain Pub Quiz',
   id: '1',
-  image: image,
-  comLogo: comImage,
+  image: ethCTPubEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
   onClick: (id) => console.log(id)
 }, {
-  eventName: 'Artist workshop 3',
+  eventName: 'Cryptozombies Workshop',
   id: '2',
-  image: image,
-  comLogo: comImage,
+  image: zombiesEvent,
+  comLogo: ethCTCommunity,
+  comName: "ETH Cape Town",
   onClick: (id) => console.log(id)
 }, {
-  eventName: 'Eth Berlin',
+  eventName: 'X-Wing Tournament',
   id: '3',
-  image: image,
-  comLogo: comImage,
+  image: xWingEvent,
+  comLogo: xWingCommunity,
+  comName: "X-Wing Cape Town",
   onClick: (id) => console.log(id)
 }, {
-  eventName: 'Truck maintenance beginner',
+  eventName: 'BlockBlasters vs GP Vipers',
   id: '4',
-  image: image,
-  comLogo: comImage,
-  onClick: (id) => console.log(id)
-}, {
-  eventName: 'Eth Cape Town',
-  id: '5',
-  image: image,
-  comLogo: comImage,
-  onClick: (id) => console.log(id)
-}, {
-  eventName: 'Artist workshop 3',
-  id: '6',
-  image: image,
-  comLogo: comImage,
-  onClick: (id) => console.log(id)
-}, {
-  eventName: 'Eth Berlin',
-  id: '7',
-  image: image,
-  comLogo: comImage,
-  onClick: (id) => console.log(id)
-}, {
-  eventName: 'Truck maintenance beginner',
-  id: '8',
-  image: image,
-  comLogo: comImage,
+  image: footyEventImage,
+  comLogo: footyCommunityImage,
+  comName: "Fiver Footy Cape Town",
   onClick: (id) => console.log(id)
 }];
 
@@ -123,7 +85,7 @@ function DashboardPage() {
 
   return (
     // @ts-ignore
-    <Dashboard image='' name='Vitalik' ensName='vitalik.protea.eth' tokenBalance={150} communities={communities} events={events} />
+    <Dashboard communities={communities} events={events} />
   );
 }
 

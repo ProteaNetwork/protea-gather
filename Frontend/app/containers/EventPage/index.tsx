@@ -15,38 +15,66 @@ import reducer from './reducer';
 import saga from './saga';
 import CommunityDescription from 'components/CommunityDescription';
 import EventBanner from 'components/EventBanner';
-import image from 'images/kiwi.jpg';
-import user from 'images/kiwi.jpg';
 import AttendeesCarousel from 'components/AttendeesCarousel';
 import { withRouter } from 'react-router';
 
+import Cathy from 'images/CathyGrey.jpg';
+import Craig from 'images/CraigAndrews.jpg';
+import Emma from 'images/EmmaOdendaal.jpg';
+import Francois from 'images/FrancoisStrauss.jpg';
+import Lebo from 'images/LeboSamuels.jpg';
+import Olwethu from 'images/OlwethuHugo.jpg';
+import Zukile from 'images/ZukileNcube.jpg';
+// import image from 'images/ETHCTCom.jpg';
+import zombiesEvent from 'images/CryptozombiesEvent.jpg';
+
 const eventDetails = {
-  name: 'Eth Cape Town',
-  tokens: 12,
+  name: 'Crypto Zombies',
+  tokens: 128,
   tokenName: 'ECT',
-  logo: image,
+  logo: zombiesEvent,
   id: '1',
-  description: 'A world class Eth event in the most beautiful city',
+  description: 'CryptoZombies is an interactive code school that teaches you to write smart contracts in Solidity through building your own crypto-collectables game on Ethereum. We believe in building skills and knowledge in South Africa through hands on coding, and through this workshop together we provide a foundation for others to further their blockchain development skills. These skills are in demand, with short supply, and could be used across a wide range of industries. All you need to bring is a laptop which can connect to the internet.No special software needs to be installed as the whole course can be run through a normal internet browser. We will have our experienced developers on hand to help guide you all along the way. It will be a fun and relaxed evening followed by drinks and food where you can network with others new and experienced in the blockchain space, forming new relationships and growing with each other in the ecosystem. Like all of our events, the event is absolutely free, and open access to all.',
   date: '14 February 2019',
   ticketsLeft: 16,
 }
 
 const attendees = [
   {
-    picture: user,
-    userName: 'Event Addict',
+    picture: Francois,
+    userName: 'Francois Strauss',
     id: '1',
   },
   {
-    picture: user,
-    userName: 'James Bond',
-    id: '2',
+    picture: Craig,
+    userName: 'Craig Andrews',
+    id: '3',
   },
   {
-    picture: user,
-    userName: 'Vitalik the boi',
-    id: '3',
-  }
+    picture: Emma,
+    userName: 'Emma Odendaal',
+    id: '1',
+  },
+  {
+    picture: Cathy,
+    userName: 'Cathy Grey',
+    id: '1',
+  },
+  {
+    picture: Olwethu,
+    userName: 'Olwethu Hugo',
+    id: '1',
+  },
+  {
+    picture: Zukile,
+    userName: 'Zukile Ncube',
+    id: '1',
+  },
+  {
+    picture: Lebo,
+    userName: 'Lebo Samuels',
+    id: '1',
+  },
 ]
 
 function EventPage({ history }) {
@@ -62,7 +90,8 @@ function EventPage({ history }) {
         ticketsLeft={eventDetails.ticketsLeft}
         history={history} />
       <CommunityDescription description={eventDetails.description} />
-      // @ts-ignore
+      {/*
+      // @ts-ignore */}
       <AttendeesCarousel attendees={attendees}/>
     </div>
   );

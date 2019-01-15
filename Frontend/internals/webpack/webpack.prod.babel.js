@@ -87,6 +87,7 @@ module.exports = require('./webpack.base.babel')({
       safeToUseOptionalCaches: true,
     }),
 
+    new CopyWebpackPlugin([{ from: 'static', to: 'build/' }]),
     new WebpackPwaManifest({
       name: 'Protea',
       short_name: 'Protea',
@@ -106,6 +107,8 @@ module.exports = require('./webpack.base.babel')({
       hashDigest: 'hex',
       hashDigestLength: 20,
     }),
+
+
   ],
 
   performance: {
