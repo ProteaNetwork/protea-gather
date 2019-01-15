@@ -35,6 +35,47 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     marginTop: `${spacing.unit * 2}px`,
     marginBottom: `${spacing.unit * 2}px`
   },
+  innerCarousel: {
+    marginTop: 20,
+    marginBottom: 10,
+    "& .slick-slide > * > * > *":{
+      width: 'calc(100% - 20px)',
+      margin: '0 auto'
+    }
+  },
+  carouselDots: {
+    width: '100%',
+    position: 'absolute',
+    margin: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: -15,
+    padding: 0,
+    '& > li': {
+      display: 'block',
+      width: 10,
+      height: 10,
+      borderRadius: 20,
+      overflow: 'hidden',
+      backgroundColor: 'black',
+      margin: '0 5px',
+      opacity: 0.5,
+      transitionDuration: '200ms',
+      '& > *': {
+        cursor: 'pointer',
+        margin: 0,
+        display: 'block',
+        height: '100%',
+        width: '100%',
+        padding: 0
+      },
+      '&:hover': {
+        opacity: 1
+      }
+    }
+  }
 });
 
 interface OwnProps {
@@ -101,10 +142,11 @@ function CarouselEvents(props: OwnProps) {
   }
 
   const carouselSettings: SliderSettings = {
-    className: "center",
+    className: classes.innerCarousel,
     centerPadding: "60px",
     arrows: true,
     dots: true,
+    dotsClass: classes.carouselDots,
     slidesToShow: getCarouselSlidesToShow(),
     slidesToScroll: 1,
     infinite: true,
@@ -112,9 +154,7 @@ function CarouselEvents(props: OwnProps) {
     prevArrow: <FabPrevious />,
     nextArrow: <FabNext />,
     appendDots: dots => (
-      <div>
-        <ul style={{ margin: "0px" }}> {dots} </ul>
-      </div>
+      <ul> {dots} </ul>
     ),
   };
 

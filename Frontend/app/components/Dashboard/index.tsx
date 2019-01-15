@@ -166,7 +166,7 @@ function Dashboard(props: Props) {
     prevArrow: <FabPrevious />,
     nextArrow: <FabNext />,
     appendDots: dots => (
-      <ul style={{ margin: "0px" }}> {dots} </ul>
+      <ul> {dots} </ul>
     ),
   };
 
