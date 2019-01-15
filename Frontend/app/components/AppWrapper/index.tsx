@@ -1,13 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
 import { withStyles, createStyles, WithStyles } from '@material-ui/core/styles';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
 // import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,8 +17,6 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import MenuIcon from "@material-ui/icons/Menu";
 import { NavLink } from 'react-router-dom';
-
-const drawerWidth = 240;
 
 const styles = theme => createStyles({
   root: {
@@ -44,21 +42,6 @@ const styles = theme => createStyles({
     flexGrow: 1,
     textAlign: 'center',
   },
-  drawerPaper: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: 'hidden',
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: 0
-  },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
@@ -80,10 +63,9 @@ const styles = theme => createStyles({
     height: '60px',
     marginLeft: 'auto',
     marginRight: 'auto',
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%,-50%)'
+  },
+  spacer: {
+    height: '60px'
   }
 });
 
@@ -99,6 +81,12 @@ class AppWrapper extends React.Component<Props> {
 
   handleDrawerToggle = () => {
     this.setState({ open: !this.state.open });
+    console.log("handleDrawerToggle");
+  };
+
+  close = () => {
+    this.setState({ open: false });
+    console.log("close");
   };
 
   render() {
@@ -107,66 +95,72 @@ class AppWrapper extends React.Component<Props> {
     return (
       <div className={classes.root}>
         <CssBaseline />
-        {isLoggedIn &&
+        <ClickAwayListener onClickAway={this.close}>
+          {isLoggedIn &&
           <AppBar
-          position="fixed"
-          className={classes.appBar} >
-          <Toolbar
-            disableGutters={true}
+            position="fixed"
+            className={classes.appBar} >
+            <Toolbar
+              disableGutters={true}
+            >
+              {
+                this.state.open ?
+                  <IconButton
+                    color="inherit"
+                    aria-label="Close drawer"
+                    onClick={this.handleDrawerToggle}
+                    className={classes.menuButton} >
+                    <ChevronLeftIcon />
+                  </IconButton>
+                  :
+                  <IconButton
+                    color="inherit"
+                    aria-label="Open drawer"
+                    onClick={this.handleDrawerToggle}
+                    className={classes.menuButton} >
+                    <MenuIcon />
+                  </IconButton>
+              }
+              <img src='protea_logo_60.png' className={classes.logo} />
+            </Toolbar>
+          </AppBar> }
+          <Drawer
+            variant="persistent"
+            open={this.state.open}
           >
-            <IconButton
-              color="inherit"
-              aria-label="Open drawer"
-              onClick={this.handleDrawerToggle}
-              className={classes.menuButton} >
-              <MenuIcon />
-            </IconButton>
-            <img src='protea_logo_60.png' className={classes.logo} />
-          </Toolbar>
-        </AppBar> }
-
+            <div className={classes.spacer} />
+            <List>
+              <NavLink to="/dashboard" className={classes.link} >
+                <ListItem button>
+                  <ListItemIcon>
+                    <MailIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={'Dashboard'} />
+                </ListItem>
+              </NavLink>
+              <NavLink to="/communities" className={classes.link} >
+                <ListItem button>
+                  <ListItemIcon>
+                    <InboxIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={'Communities'} />
+                </ListItem>
+              </NavLink>
+              <NavLink to="/events" className={classes.link} >
+                <ListItem button>
+                  <ListItemIcon>
+                    <InboxIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={'Events'} />
+                </ListItem>
+              </NavLink>
+            </List>
+          </Drawer>
+        </ClickAwayListener>
         <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
-        {isLoggedIn && <div className={classes.toolbar} />}
+          {isLoggedIn && <div className={classes.toolbar} />}
           {children}
         </main>
-        <Drawer
-          classes={{
-            paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
-          }}
-          open={this.state.open}>
-          <div className={classes.toolbar}>
-            <IconButton onClick={this.handleDrawerToggle}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </div>
-          <Divider />
-          <List>
-            <NavLink to="/dashboard" className={classes.link} >
-              <ListItem button>
-                <ListItemIcon>
-                  <MailIcon />
-                </ListItemIcon>
-                <ListItemText primary={'Dashboard'} />
-              </ListItem>
-            </NavLink>
-            <NavLink to="/communities" className={classes.link} >
-              <ListItem button>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary={'Communities'} />
-              </ListItem>
-            </NavLink>
-            <NavLink to="/events" className={classes.link} >
-              <ListItem button>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary={'Events'} />
-              </ListItem>
-            </NavLink>
-          </List>
-        </Drawer>
       </div>
     );
   }
