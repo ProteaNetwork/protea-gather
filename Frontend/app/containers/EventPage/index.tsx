@@ -13,7 +13,6 @@ import injectReducer from 'utils/injectReducer';
 import makeSelectEventPage from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import CommunityDescription from 'components/CommunityDescription';
 import EventBanner from 'components/EventBanner';
 import AttendeesCarousel from 'components/AttendeesCarousel';
 import { withRouter } from 'react-router';
@@ -48,32 +47,32 @@ const attendees = [
   {
     picture: Craig,
     userName: 'Craig Andrews',
-    id: '3',
+    id: '2',
   },
   {
     picture: Emma,
     userName: 'Emma Odendaal',
-    id: '1',
+    id: '3',
   },
   {
     picture: Cathy,
     userName: 'Cathy Grey',
-    id: '1',
+    id: '4',
   },
   {
     picture: Olwethu,
     userName: 'Olwethu Hugo',
-    id: '1',
+    id: '5',
   },
   {
     picture: Zukile,
     userName: 'Zukile Ncube',
-    id: '1',
+    id: '6',
   },
   {
     picture: Lebo,
     userName: 'Lebo Samuels',
-    id: '1',
+    id: '7',
   },
 ]
 
@@ -89,20 +88,12 @@ function EventPage({ history }) {
         date={eventDetails.date}
         ticketsLeft={eventDetails.ticketsLeft}
         history={history} />
-      <CommunityDescription description={eventDetails.description} />
       {/*
       // @ts-ignore */}
       <AttendeesCarousel attendees={attendees}/>
     </div>
   );
 }
-/**
-  * (DONE) Event banner :
-  *   back button, logo, date, name, tokens in community
-  *   number of tickets left, button to RSVP
-  * (DONE) Description : description
-  * Caracole of attendees
-  */
 
 const mapStateToProps = createStructuredSelector({
   eventpage: makeSelectEventPage(),

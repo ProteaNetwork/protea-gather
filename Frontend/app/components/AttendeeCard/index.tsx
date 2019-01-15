@@ -6,12 +6,11 @@
 
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Typography, Theme, Paper, CardMedia } from '@material-ui/core';
+import { Card, CardContent, Typography, Theme, CardMedia } from '@material-ui/core';
 
 const styles = ({ palette, spacing }: Theme) => createStyles({
   card: {
     width: 400,
-    height: 400,
   },
   cardContent: {
     backgroundColor: palette.secondary.light,
@@ -23,7 +22,7 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
     padding: `${spacing.unit * 2}px ${spacing.unit * 2}px ${spacing.unit * 2}px`,
   },
   media: {
-    width: 400,
+    width: '100%',
     height: 300,
   },
   header: {
@@ -43,7 +42,7 @@ function AttendeeCard(props: OwnProps) {
 
   return (
     <Fragment>
-      <Paper className={classes.paper}>
+
         <Card className={classes.card}>
           <CardMedia
             className={classes.media}
@@ -55,7 +54,7 @@ function AttendeeCard(props: OwnProps) {
             </Typography>
           </CardContent>
         </Card>
-      </Paper>
+
     </Fragment>
   );
 };
