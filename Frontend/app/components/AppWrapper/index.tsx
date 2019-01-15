@@ -117,7 +117,7 @@ class AppWrapper extends React.Component<Props> {
               className={classes.menuButton} >
               <MenuIcon />
             </IconButton>
-            <img src='/Protea_Logo_White.png' className={classes.logo} />
+            <img src='protea_logo_60.png' className={classes.logo} />
           </Toolbar>
         </AppBar> }
 

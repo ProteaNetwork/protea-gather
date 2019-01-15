@@ -52,7 +52,7 @@ const LandingPage: React.SFC<Props> = ({toggleLogin, classes}: Props) => {
   return (
   <Fragment>
     <main className={classes.layout}>
-        <img src='/Protea_Logo_White.png' alt='' />
+        <img src='Protea_Logo_White.png' alt='' />
         <Typography variant='h3' className={classes.appName}>Protea</Typography>
         <Link to='/dashboard' className={classes.link}>
           <Button variant='outlined' className={classes.connectButton} onClick={toggleLogin}>Connect</Button>

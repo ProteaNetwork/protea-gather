@@ -1,6 +1,7 @@
 // Important modules this config uses
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OfflinePlugin = require('offline-plugin');
 const { HashedModuleIdsPlugin } = require('webpack');
@@ -59,6 +60,8 @@ module.exports = require('./webpack.base.babel')({
       },
       inject: true,
     }),
+
+    new CopyWebpackPlugin([{from: 'static'}]),
 
     // Put it in the end to capture all the HtmlWebpackPlugin's
     // assets manipulations and do leak its manipulations to HtmlWebpackPlugin
