@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper, Grid, Avatar, WithStyles, withWidth } from '@material-ui/core';
+import { Typography, Theme, Paper, Grid, Avatar, WithStyles, withWidth, Fab } from '@material-ui/core';
 import Slider, { Settings as SliderSettings } from "react-slick";
 import '../../css/slick.css'
 import '../../css/slick-theme.css';
@@ -32,6 +32,7 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     display: 'block',
     width: '100%',
     alignItems: 'center',
+
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
     marginTop: `${spacing.unit * 2}px`,
     marginBottom: `${spacing.unit * 2}px`
@@ -44,6 +45,9 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   extendedIcon: {
     marginRight: spacing.unit,
   },
+  carouselButton: {
+    backgroundColor: 'orange',
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -57,25 +61,36 @@ interface Props extends WithStyles<typeof styles> {
   events: Array<any>;
 }
 
-function SampleNextArrow(props) {
+function FabNext(props) {
   const { className, style, onClick } = props;
   return (
-    <div
+    <Fab
       className={className}
-      style={{ ...style, display: "block", background: "red" }}
-      onClick={onClick}
-    />
+      style={{...style,
+        display: 'block',
+        position: 'absolute',
+        top: '50%',
+        transform: 'translate(-50%,-50%)',
+        right: '10px',
+        backgroundColor: 'orange'}}
+      onClick={onClick} />
   );
 }
 
-function SamplePrevArrow(props) {
+function FabPrevious(props) {
   const { className, style, onClick } = props;
   return (
-    <div
+    <Fab
       className={className}
-      style={{ ...style, display: "float", background: "green" }}
-      onClick={onClick}
-    />
+      style={{...style,
+        display: 'block',
+        position: 'absolute',
+        top: '50%',
+        transform: 'translate(-50%,-50%)',
+        left: '60px',
+        zIndex: '1',
+        backgroundColor: 'orange'}}
+      onClick={onClick} />
   );
 }
 
@@ -99,13 +114,21 @@ function Dashboard(props: Props) {
   }
 
   const sliderSettings: SliderSettings = {
+    className: "center",
+    centerPadding: "60px",
     arrows: true,
     dots: true,
     slidesToShow: getCarouselSlidesToShow(),
     slidesToScroll: 1,
-    infinite: false,
-    prevArrow: <SamplePrevArrow />,
-    nextArrow: <SampleNextArrow />
+    infinite: true,
+    centerMode: true,
+    prevArrow: <FabPrevious />,
+    nextArrow: <FabNext />,
+    appendDots: dots => (
+      <div>
+        <ul style={{ margin: "0px" }}> {dots} </ul>
+      </div>
+    ),
   };
 
   return (
