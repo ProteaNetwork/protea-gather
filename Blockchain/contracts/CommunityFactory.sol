@@ -5,9 +5,9 @@ import "./RewardManager.sol";
 import "./TokenManager.sol";
 
 contract CommunityFactory {
-
     address public admin;
     address public daiAddress;
+
     struct Community {
         string name;
         address creator;
@@ -18,13 +18,12 @@ contract CommunityFactory {
 
     mapping(uint256 => Community) internal communities;
     uint256 internal numberOfCommunities = 0;
-    uint256[] allCommunitiesIndex;
 
     event communityCreated(
-        uint256 index, 
+        uint256 indexed index, 
         address indexed tokenManager, 
-        address indexed rewardManager, 
-        address indexed eventManager
+        address rewardManager, 
+        address eventManager
     );
 
     constructor (address _daiTokenAddress) public {
@@ -34,42 +33,46 @@ contract CommunityFactory {
 
     function createCommunity(
         string _communityName,
-        string _communityTokenName,
-        bytes32 _communityTokenSymbol
+        string _communitySymbol
         
     )
         public
         returns(uint256)
     {
         address tokenManager = new TokenManager(
-            _communityTokenName,
-            _communityTokenSymbol,
+            _communityName,
+            _communitySymbol,
             daiAddress
         );
-        address rewardManager = new RewardManager();
+        address rewardManager = new RewardManager(
+            tokenManager
+        );
         address eventManager = new EventManager(
             tokenManager,
             rewardManager,
-            20,
             5
         );
-        numberOfCommunities++;
-        communities[numberOfCommunities] = Community({
+
+        uint256 index = numberOfCommunities;
+
+        communities[index] = Community({
             name: _communityName,
             creator: msg.sender,
             tokenManagerAddress: tokenManager,
             rewardManagerAddress: rewardManager,
             eventManagerAddress: eventManager
         });
-        allCommunitiesIndex.push(numberOfCommunities);
+
+        numberOfCommunities++;
 
         emit communityCreated(
-            numberOfCommunities, 
+            index, 
             tokenManager, 
             rewardManager, 
             eventManager
         );
-        return numberOfCommunities;
+
+        return index;
     }
 
     function getCommunity(uint256 _index)
@@ -90,11 +93,4 @@ contract CommunityFactory {
         _tokenManagerAddress = communities[_index].tokenManagerAddress;
     }
 
-    function getAllCommunityIndexes()
-        public
-        view 
-        returns(uint256[])
-    {
-        return allCommunitiesIndex;
-    }
 }
