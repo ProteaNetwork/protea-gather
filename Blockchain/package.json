@@ -6,7 +6,11 @@
   "directories": {
     "lib": "lib"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "truffle compile",
+    "start": "ganache-cli",
+    "test": "truffle test"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

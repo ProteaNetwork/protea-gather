@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./openzeppelin-solidity/token/ERC20/IERC20.sol";
-import "./RewardIssuerInterface.sol";
+import "./IRewardIssuer.sol";
 
 contract RewardManager {
     mapping (address => bool) public approvedIssuer;
@@ -12,8 +12,11 @@ contract RewardManager {
 
     address internal admin;
 
-    constructor() public{
+    address internal tokenManager;
+
+    constructor(address _tokenManager) public{
         admin = msg.sender;
+        tokenManager = _tokenManager;
     }
 
     modifier onlyAdmin() {
@@ -31,12 +34,12 @@ contract RewardManager {
 
     /// Need to return struct to have dynamic reputation tracking
     function claimReward(address _issuer, uint256 _index) public {
-        require(approvedIssuer[_issuer], "Moduled not authoried to reward");
-        RewardIssuerInterface issuer = RewardIssuerInterface(_issuer);
-        IERC20 token = IERC20(_issuer);
+        require(approvedIssuer[_issuer], "Module not authoried to reward");
+        IRewardIssuer issuer = IRewardIssuer(_issuer);
+        IERC20 token = IERC20(tokenManager);
         uint256 payout = issuer.payout(msg.sender, _index);
         token.transfer(msg.sender, payout);    
-        reputation[msg.sender] += 150; // To be dynamic with strut returns
+        reputation[msg.sender] += 100; // To be dynamic with strut returns
         emit RewardClaimed(msg.sender, payout);
     }
 

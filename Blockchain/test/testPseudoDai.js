@@ -18,10 +18,13 @@ contract('Pseudo DAI', accounts => {
         it('Is initiated correctly', async () => {
             let name = await pseudoDaiToken.name();
             assert.equal(name, "PseudoDAI", "The name is correct"); 
+
             let symbol = await pseudoDaiToken.symbol();
             assert.equal(symbol, "PDAI", "The symbol is correct");
+
             let decimal = await pseudoDaiToken.decimals();
             assert.equal(decimal, 18, "Decimal is correct");
+
             let totalSupply = await pseudoDaiToken.totalSupply();
             assert.equal(totalSupply, 0, "The supply is empty");
         });
@@ -29,12 +32,15 @@ contract('Pseudo DAI', accounts => {
         it('User can only withdraw 500 free DAI', async () => {
             let balanceBefore = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(balanceBefore, 0, "User owns no tokens before minting");
+
             await pseudoDaiToken.mint(0, {from: userAddress});
             let balance = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(balance, 250, "Balance increased from registration");
+
             await pseudoDaiToken.mint(1, {from: userAddress});
             let balanceAfter = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(balanceAfter, 375, "Balance increases after second withdraw");
+
             await pseudoDaiToken.mint(2, {from: userAddress});
             let lastBalance = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(lastBalance, 500, "The user has withdrawn the max amount of tokens");
@@ -49,10 +55,12 @@ contract('Pseudo DAI', accounts => {
         it('Transfer functionality', async () => {
             let balanceBefore = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(balanceBefore, 0, "User owns no tokens before minting");
+
             await pseudoDaiToken.mint(0, {from: userAddress});
             let balanceAfter = await pseudoDaiToken.balanceOf(userAddress);
             assert.equal(balanceAfter, 250, "Balance increases after withdraw");
-            pseudoDaiToken.transfer(anotherUserAddress, 100, {from: userAddress}); 
+
+            await pseudoDaiToken.transfer(anotherUserAddress, 100, {from: userAddress}); 
             let balanceAfterTransferSender = await pseudoDaiToken.balanceOf(userAddress);
             let balanceAfterTransferReceiver = await pseudoDaiToken.balanceOf(anotherUserAddress);
             assert.equal(balanceAfterTransferSender, 150, "User account has correct funds removed");

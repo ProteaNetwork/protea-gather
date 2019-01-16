@@ -120,7 +120,6 @@ contract PseudoDaiToken is ERC20 {
         public 
         returns (bool)
     {
-        // FREE DAI TOKENS :D
         require(_value <= balances[_from]);
         require(_value <= allowed[_from][msg.sender]);
         require(_to != address(0));
@@ -205,7 +204,7 @@ contract PseudoDaiToken is ERC20 {
     ----------------------------------------------------
     view functions
     ----------------------------------------------------            
- */
+    */
 
     /**
       * @dev Function to check the amount of tokens that an owner allowed to a spender.

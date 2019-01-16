@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./ERC223/ERC223.sol";
+import "./ERC223/ERC223Receiver.sol";
 import "./openzeppelin-solidity/token/ERC20/IERC20.sol";
 import "./openzeppelin-solidity/math/SafeMath.sol";
 
@@ -9,7 +10,7 @@ contract TokenManager is ERC223 {
     uint256 internal totalSupply_;
     uint256 public poolBalance;
     string public name;
-    bytes32 public symbol;
+    string public symbol;
     uint256 public gradientDenominator = 2000; // numerator/denominator DAI/Token
     uint256 public decimals = 10**18; // For now, assume 10^18 decimal precision
     address public reserveToken;
@@ -29,9 +30,9 @@ contract TokenManager is ERC223 {
 
     constructor(
         string _name,
-        bytes32 _symbol,
+        string _symbol,
         address _reserveToken
-    )
+    ) 
         public
     {
         name = _name;
@@ -39,18 +40,18 @@ contract TokenManager is ERC223 {
         reserveToken = _reserveToken;
     }
 
-    function totalSupply()
-        public
+    function totalSupply() 
+        public 
         view
-        returns (uint256 _totalSupply)
+        returns (uint256 _totalSupply) 
     {
         return totalSupply_;
     }
 
-    function allowance(address _owner, address _spender)
-        public
-        view
-        returns (uint256)
+    function allowance(address _owner, address _spender) 
+        public 
+        view 
+        returns (uint256) 
     {
         return allowed[_owner][_spender];
     }
@@ -79,34 +80,34 @@ contract TokenManager is ERC223 {
         totalSupply_ = totalSupply_.add(_value);
         emit Transfer(_from, _to, _value);
         success = true;
-    }
-
+    } 
+    
     function approve(
-        address _spender,
+        address _spender, 
         uint256 _value
-    )
-        public
-        returns (bool success)
+    ) 
+        public 
+        returns (bool success) 
     {
         allowed[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         success = true;
     }
 
-    function balanceOf(address _owner)
-        public
+    function balanceOf(address _owner) 
+        public 
         view
-        returns (uint256 balance)
+        returns (uint256 balance) 
     {
         return balances[_owner];
     }
 
     function transfer(
-        address _to,
+        address _to, 
         uint256 _value
-    )
-        public
-        returns (bool success)
+    ) 
+        public 
+        returns (bool success) 
     {
         require(_value <= balances[msg.sender]);
         require(_to != address(0));
@@ -116,42 +117,60 @@ contract TokenManager is ERC223 {
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
-
+    
+    /**
+     * @dev Transfer the specified amount of tokens to the specified address.
+     *      Invokes the `tokenFallback` function if the recipient is a contract.
+     *      The token transfer fails if the recipient is a contract
+     *      but does not implement the `tokenFallback` function
+     *      or the fallback function to receive funds.
+     *
+     * @param _to    Receiver address.
+     * @param _value Amount of tokens that will be transferred.
+     * @param _data  Transaction metadata.
+    */
     function transfer(address _to, uint _value, bytes _data) public {
-        require(this.call(_data));
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
+
+        ERC223Receiver receiver = ERC223Receiver(_to);
+        receiver.tokenFallback(msg.sender, _value, _data);
+
+        emit Transfer(msg.sender, _to, _value);
     }
 
-    /// @dev        Calculate the integral from 0 to x tokens supply
+      /// @dev        Calculate the integral from 0 to x tokens supply
     /// @param x    The number of tokens supply to integrate to
     /// @return     The total supply in tokens
     function curveIntegral(uint256 x) internal view returns (uint256) {
-				/** This is the formula for the curve
-					f(x) = gradient*x + c
-					f(x) indicates it is a function of x, where x is the token supply
-					the gradient is the gradient of the curve i.e. the change in price over the change in token supply
-					c is the y-offset, which is set to 0 for now.
-					For more information visit:
-					https://en.wikipedia.org/wiki/Linear_function
-				*/
-				uint256 c = 0;
+	    /** This is the formula for the curve
+	    	f(x) = gradient*x + c
+	    	f(x) indicates it is a function of x, where x is the token supply
+	    	the gradient is the gradient of the curve i.e. the change in price over the change in token supply
+	    	c is the y-offset, which is set to 0 for now.
+	    	For more information visit:
+	    	https://en.wikipedia.org/wiki/Linear_function
+	    */
 
-				/* The gradient of a curve is the rate at which it increases its slope.
-					For example, to increase at a value of 5 DAI for every 1 token,
-					our gradient would be (change in y)/(change in x) = 5/1 = 5 DAI/Token
-					Remember that contracts deal with uint256 integers with 18 decimal points, not floating points, so:
-					to represent our gradient of 0.0005 DAI/Token, we simply divide by the denominator, to avoid floating points,
-					so we end up with 1/0.0005 = 2000 as our denominator.
-				*/
-
-				/* We need to calculate the definite integral from zero to the defined token supply, x.
-					A definite integral is essentially the area under the curve, from zero to the defined token supply.
-					The area under the curve is equivalent to the value of the tokens up until that point.
-					The integral of the linear curve, f(x), is calculated as:
-					gradient*0.5*x^2 + cx; where c = 0
-					Because we are essentially squaring the decimal scaling in the calculation,
-					we need to divide the result by the scaling factor before returning - this hurt my mind a bit, but mathematically holds true.
-				*/
-				return ((x**2).div(2*gradientDenominator) + c.mul(x)).div(decimals);
+	    uint256 c = 0;
+	    
+        /* The gradient of a curve is the rate at which it increases its slope.
+	    	For example, to increase at a value of 5 DAI for every 1 token,
+	    	our gradient would be (change in y)/(change in x) = 5/1 = 5 DAI/Token
+	    	Remember that contracts deal with uint256 integers with 18 decimal points, not floating points, so:
+	    	to represent our gradient of 0.0005 DAI/Token, we simply divide by the denominator, to avoid floating points,
+	    	so we end up with 1/0.0005 = 2000 as our denominator.
+	    */
+	    
+        /* We need to calculate the definite integral from zero to the defined token supply, x.
+	    	A definite integral is essentially the area under the curve, from zero to the defined token supply.
+	    	The area under the curve is equivalent to the value of the tokens up until that point.
+	    	The integral of the linear curve, f(x), is calculated as:
+	    	gradient*0.5*x^2 + cx; where c = 0
+	    	Because we are essentially squaring the decimal scaling in the calculation,
+	    	we need to divide the result by the scaling factor before returning - this hurt my mind a bit, but mathematically holds true.
+	    */
+	    return ((x**2).div(2*gradientDenominator) + c.mul(x)).div(decimals);
     }
 
     /// @return  Price, in DAI, for mint
@@ -175,7 +194,7 @@ contract TokenManager is ERC223 {
         balances[msg.sender] = balances[msg.sender].sub(numTokens);
         poolBalance = poolBalance.sub(rewardForTokens);
         require(
-            IERC20(reserveToken).transfer(msg.sender, rewardForTokens),
+            IERC20(reserveToken).transfer(msg.sender, rewardForTokens), 
             "Require transferFrom to succeed"
         );
 
@@ -184,13 +203,13 @@ contract TokenManager is ERC223 {
 
     /// @dev                    Mint new tokens with ether
     /// @param numTokens        The number of tokens you want to mint
-    /// @dev priceForTokens     Value in DAI, for tokens minted
+    /// @dev priceForTokens     Value in wei, for tokens minted
     /// Notes: We have modified the minting function to tax the purchase tokens
     /// This behaves as a sort of stake on buyers to participate even at a small scale
     function mint(uint256 numTokens) public {
         uint256 priceForTokens = priceToMint(numTokens);
         require(
-            IERC20(reserveToken).transferFrom(msg.sender, this, priceForTokens),
+            IERC20(reserveToken).transferFrom(msg.sender, this, priceForTokens), 
             "Require transferFrom to succeed"
         );
         totalSupply_ = totalSupply_.add(numTokens);
