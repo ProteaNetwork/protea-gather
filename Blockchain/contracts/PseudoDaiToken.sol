@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./openzeppelin-solidity/token/ERC20/ERC20.sol";
 
@@ -10,15 +10,9 @@ contract PseudoDaiToken is ERC20 {
     uint8 public decimals;
     uint256 internal totalSupply_;
 
-    struct AccountDetails {
-        bool registered;
-        bool secondary;
-        bool backup;
-    }
-
     mapping (address => mapping (address => uint256)) internal allowed;
     mapping (address => uint256) internal balances;
-    mapping(address => AccountDetails) internal mintingRewards;
+    mapping (address => bool) internal mintingRewards;
 
     event Approval(
         address indexed owner,
@@ -31,7 +25,7 @@ contract PseudoDaiToken is ERC20 {
         uint256 value
     );
 
-    constructor(string _name, string _symbol, uint8 _decimals) public {
+    constructor(string memory _name, string memory _symbol, uint8 _decimals) public {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
@@ -41,48 +35,24 @@ contract PseudoDaiToken is ERC20 {
       * @dev Returns the state of minting rewards per user
       * @param _user    : Index of the reward being requested.
       */
-    function fetchRewardState(address _user) public view returns(bool,bool,bool) {
-        return (mintingRewards[_user].registered, mintingRewards[_user].secondary, mintingRewards[_user].backup);
+    function fetchRewardState(address _user) public view returns(bool) {
+        return mintingRewards[_user];
     }
 
     /**
       * @dev Mints free tokens to a user. Users can have a 
-      * @param _rewardIndex    : Index of the reward being requested.
       *     max of 500 free tokens, given over 3 mints. 
       */
-    function mint(uint256 _rewardIndex) public {
+    function mint() public {
         require(
-            !mintingRewards[msg.sender].registered || 
-            !mintingRewards[msg.sender].secondary || 
-            !mintingRewards[msg.sender].backup, 
+            !mintingRewards[msg.sender],
             "All free tokens have been used."
         );
         
-        if(mintingRewards[msg.sender].registered) {
-            if(_rewardIndex == 1 && !mintingRewards[msg.sender].secondary) {
-                mintingRewards[msg.sender].secondary = true;
-                totalSupply_.add(125);
-                balances[msg.sender] = balances[msg.sender].add(125);
-                emit Transfer(0x0, msg.sender, 125);
-                return;
-            }
-            if(_rewardIndex == 2 && !mintingRewards[msg.sender].backup){
-                mintingRewards[msg.sender].backup = true;
-                totalSupply_.add(125);
-                balances[msg.sender] = balances[msg.sender].add(125);
-                emit Transfer(0x0, msg.sender, 125);
-                return;
-            }
-        } else {
-            if(_rewardIndex == 0){
-                mintingRewards[msg.sender].registered = true;
-                totalSupply_.add(250);
-                balances[msg.sender] = balances[msg.sender].add(250);
-                emit Transfer(0x0, msg.sender, 250);
-                return;
-            }
-        }
-        revert("Incorrect reward index");
+        mintingRewards[msg.sender] = true;
+        totalSupply_.add(1000000000000000000000);
+        balances[msg.sender] = balances[msg.sender].add(1000000000000000000000);
+        emit Transfer(address(0), msg.sender, 1000000000000000000000);
     }
 
     /**

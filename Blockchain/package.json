@@ -7,9 +7,11 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "truffle compile",
-    "start": "ganache-cli",
-    "test": "truffle test"
+    "start": "etherlime ganache",
+    "build": "etherlime compile",
+    "test": "etherlime test",
+    "deploy:local": "etherlime deploy --runs=500",
+    "deploy:rinkeby": "etherlime deploy --network=rinkeby --runs=500"
   },
   "author": "",
   "license": "ISC",
@@ -17,9 +19,9 @@
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "dotenv": "^6.1.0",
+    "etherlime": "^0.10.5",
+    "mathjs": "^5.4.1",
     "openzeppelin-solidity": "^2.0.0",
-    "truffle": "^4.1.14",
-    "truffle-hdwallet-provider": "0.0.6",
-    "web3-eth-abi": "^1.0.0-beta.36"
+    "solc": "0.5.2"
   }
 }
