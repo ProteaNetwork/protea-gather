@@ -1,12 +1,12 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./EventManager.sol";
 import "./RewardManager.sol";
 import "./TokenManager.sol";
 
 contract CommunityFactory {
-    address public admin;
-    address public daiAddress;
+    address internal admin;
+    address internal daiAddress;
 
     struct Community {
         string name;
@@ -32,26 +32,26 @@ contract CommunityFactory {
     }
 
     function createCommunity(
-        string _communityName,
-        string _communitySymbol
+        string memory _communityName,
+        string memory _communitySymbol
         
     )
         public
         returns(uint256)
     {
-        address tokenManager = new TokenManager(
+        address tokenManager = address(new TokenManager(
             _communityName,
             _communitySymbol,
             daiAddress
-        );
-        address rewardManager = new RewardManager(
+        ));
+        address rewardManager = address(new RewardManager(
             tokenManager
-        );
-        address eventManager = new EventManager(
+        ));
+        address eventManager = address(new EventManager(
             tokenManager,
             rewardManager,
             5
-        );
+        ));
 
         uint256 index = numberOfCommunities;
 
@@ -79,7 +79,7 @@ contract CommunityFactory {
         public
         view
         returns(
-            string _name,
+            string memory _name,
             address _creator,
             address _tokenManagerAddress,
             address _rewardManagerAddress,

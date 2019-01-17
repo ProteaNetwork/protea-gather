@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./openzeppelin-solidity/math/SafeMath.sol";
 import "./IRewardIssuer.sol";
@@ -79,7 +79,7 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         _;
     }
 
-    modifier onlyAcceptedFunction(bytes _data, uint256 _value) {
+    modifier onlyAcceptedFunction(bytes memory _data, uint256 _value) {
         bytes4 functionSignature = extractSignature(_data);
         require(functionSignature == CREATE_EVENT_SIG || functionSignature == RSVP_SIG, "Function Signature not recognised");
         if(functionSignature == RSVP_SIG){
@@ -148,7 +148,7 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
       *     event. 
       */
     function _createEvent(
-        string _name, 
+        string calldata _name, 
         uint24 _maxAttendees, 
         address _organiser, 
         uint256 _requiredStake
@@ -183,7 +183,7 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         public 
         view 
         returns(
-            string _name, 
+            string memory _name, 
             uint24 _maxAttendees, 
             address _organiser,
             uint256 _requiredStake, 
@@ -322,12 +322,13 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
       * @param _value : The amount of tokens sent with the call.
       * @param _data : The encoded function call. 
       */
-    function tokenFallback(address _from, uint _value, bytes _data) 
+    function tokenFallback(address _from, uint _value, bytes calldata _data) 
         external 
         onlyToken() 
         onlyAcceptedFunction(_data, _value)
     {
-        require(address(this).call(_data), "Call on encoded function failed.");
+        (bool success, bytes memory data) = address(this).call(_data);
+        require(success, "Call on encoded function failed.");
     }
 
     /**
@@ -372,7 +373,7 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
       * @dev Extract the signature from calldata bytes
       * @param _data : Calldata to be parse to extract signature 
       */
-    function extractSignature(bytes _data) private pure returns (bytes4) {
+    function extractSignature(bytes memory _data) private pure returns (bytes4) {
         return (bytes4(_data[0]) | bytes4(_data[1]) >> 8 |
             bytes4(_data[2]) >> 16 | bytes4(_data[3]) >> 24);
     }
@@ -381,7 +382,7 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
       * @dev Extract the signature from calldata bytes
       * @param _data : Calldata to be parse to extract signature 
       */
-    function extractIndex(bytes _data) private pure returns (uint256) {
+    function extractIndex(bytes memory _data) private pure returns (uint256) {
         uint256 outInt;
         
         // We here skip the function signature (4 bytes so skipping 0x20 + 4)

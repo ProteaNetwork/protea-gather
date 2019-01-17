@@ -61,3 +61,9 @@ typings/
 .next
 /out
 /build
+
+# Etherlime
+node_modules
+build
+.etherlime-store
+coverage
