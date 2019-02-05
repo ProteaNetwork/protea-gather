@@ -22,5 +22,3 @@ This project is built off of [React Boilerplate](https://github.com/react-boiler
   asynchronicity helpers, etc.
 - [Typescript](https://github.com/Can-Sahin/react-boilerplate-typescript/blob/master/docs/general/typescript.md) React Boilerplate + Typescript
 - [**Troubleshooting**](https://github.com/react-boilerplate/react-boilerplate/blob/master/docs/general/gotchas.md): Solutions to common problems faced by developers.
-
-TEEMP CHAAANGE!

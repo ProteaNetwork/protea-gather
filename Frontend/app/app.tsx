@@ -24,12 +24,12 @@ import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import 'file-loader?name=[name].[ext]!./.htaccess'; // eslint-disable-line import/extensions
 
 import configureStore from './configureStore';
-// import {loadState, saveState} from './utils/localStorage';
+import {loadState, saveState} from './utils/localStorage';
 import history from './utils/history';
 
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-// import throttle from 'lodash/throttle';
+import throttle from 'lodash/throttle';
 
 const robotoObserver = new FontFaceObserver('Roboto', {});
 
@@ -57,13 +57,12 @@ const theme = createMuiTheme({
   },
 });
 
-// const persistedState = loadState();
-// persistedState
-const store = configureStore();
+const persistedState = loadState();
+const store = configureStore(persistedState);
 
-// store.subscribe(throttle(() => {
-//   saveState(store.getState());
-// }, 1000));
+store.subscribe(throttle(() => {
+  saveState(store.getState());
+}, 1000));
 
 const MOUNT_NODE = document.getElementById('app') as HTMLElement;
 

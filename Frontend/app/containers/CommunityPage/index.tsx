@@ -31,7 +31,7 @@ const communityDetails =  {
   tokens: 12,
   logo: image,
   id: '1',
-  description: 'A group for developers, entrepreneurs, and enthusiasts to learn about and develop for Ethereum and digital contracts in general. Ethereum is a next-generation crypto platform that allows you to create smart contracts and provide decentralized trust (auditing) for any kind of application that you can imagine.',
+  description: 'The Ethereum global community is dedicated to furthering the interests of the Ethereum group. We strive for block chain dominance in all world affairs...',
   tokenSymbol: 'ETHG',
   tokenValue: 1.334,
   tokenValueSymbol: 'DAI',
