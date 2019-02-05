@@ -34,7 +34,7 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
   header: {
     width: '100%',
     height: 35,
-    color: "textSecondary", //TODO: add correct size 
+    color: "textSecondary", //TODO: add correct size
     overflow: 'hidden'
   },
   link: {
@@ -48,25 +48,23 @@ export interface OwnProps {
   eventID: string;
   image: string;
   comLogo: string;
-  comName: string;
   displayCommunityName: boolean;
   onClick(id: string): void;
 }
 
 
 function EventCard(props: OwnProps) {
-  const { classes, eventName, eventID, image, comLogo, comName, displayCommunityName = true } = props;
+  const { classes, eventName, eventID, image, comLogo, displayCommunityName = true } = props;
   return (
     <Card className={classes.card}>
       <Link to='/event' className={classes.link} >
         <CardActionArea onClick={() => props.onClick(eventID)}>
-          {displayCommunityName ?
+          {displayCommunityName &&
             <Chip
-              avatar={<Avatar alt={comName} src={comLogo} />}
-              label={comName}
+              avatar={<Avatar alt="Community Name" src={comLogo} />}
+              label="Community Name"
               className={classes.chip}
             />
-            : null
           }
           <CardMedia
             className={classes.media}

@@ -60,7 +60,7 @@ function EventBanner(props: OwnProps) {
       <Card>
         <Button variant="raised" color="primary" className={classes.buttonTop} onClick={history.goBack}>
           Back
-          </Button>
+        </Button>
 
         <CardMedia
           className={classes.media}

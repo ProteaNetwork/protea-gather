@@ -24,7 +24,6 @@ import Francois from 'images/FrancoisStrauss.jpg';
 import Lebo from 'images/LeboSamuels.jpg';
 import Olwethu from 'images/OlwethuHugo.jpg';
 import Zukile from 'images/ZukileNcube.jpg';
-// import image from 'images/ETHCTCom.jpg';
 import zombiesEvent from 'images/CryptozombiesEvent.jpg';
 
 const eventDetails = {
