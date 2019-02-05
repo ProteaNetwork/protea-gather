@@ -1,8 +1,6 @@
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 
-const helpers = require('./helpers.js');
-
 var EventManager = require('../build/EventManager.json');
 var TokenManager = require('../build/TokenManager.json');
 var PseudoDaiToken = require('../build/PseudoDaiToken.json');
@@ -44,7 +42,6 @@ const createABI =  {
     "stateMutability": "nonpayable",
     "type": "function"
 };
-
 const rsvpABI = {
     "constant": false,
     "inputs": [
@@ -68,7 +65,6 @@ const rsvpABI = {
     "stateMutability": "nonpayable",
     "type": "function"
 };
-
 const transferABI = {
     "constant": false,
     "inputs": [
@@ -97,10 +93,22 @@ const daiSettings = {
     symbol: "PDAI",
     decimals: 18
 }
+const tokenManagerSettings = {
+    name: "community",
+    symbol: "com"
+}
+const communitySettings = {
+    name: "Community 1",
+    symbol: "COM1",
+
+}
+const eventManagerSettings = {
+    creationCost: 5,
+    updatedCreationCost: 20
+}
 
 describe('Event Manager', () => {
     let deployer;
-
     let adminAccount = accounts[1];
     let userAccount = accounts[2];
     let tokenOwnerAccount = accounts[3];
@@ -114,28 +122,41 @@ describe('Event Manager', () => {
 
     beforeEach('', async () => {
         deployer = new etherlime.EtherlimeGanacheDeployer(adminAccount.secretKey);
-        
-        pseudoDaiInstance = await deployer.deploy(PseudoDaiToken, false, daiSettings.name, daiSettings.symbol, daiSettings.decimals);
-        
-        tokenManagerInstance = await deployer.deploy(TokenManager, false, 
-            "community",
-            "com",
+        pseudoDaiInstance = await deployer.deploy(
+            PseudoDaiToken, 
+            false, 
+            daiSettings.name, 
+            daiSettings.symbol, 
+            daiSettings.decimals
+        );
+        tokenManagerInstance = await deployer.deploy(
+            TokenManager, 
+            false, 
+            tokenManagerSettings.name,
+            tokenManagerSettings.symbol,
             pseudoDaiInstance.contract.address
         );
-
-        rewardManagerInstance = await deployer.deploy(RewardManager, false, 
+        rewardManagerInstance = await deployer.deploy(
+            RewardManager, 
+            false, 
             tokenManagerInstance.contract.address
         );
-        
-        eventManagerInstance = await deployer.deploy(EventManager, false, 
+        eventManagerInstance = await deployer.deploy(
+            EventManager, 
+            false, 
             tokenManagerInstance.contract.address,
             rewardManagerInstance.contract.address,
-            5
+            eventManagerSettings.creationCost
         );
 
         // Loading accounts with tokens
-        await pseudoDaiInstance.from(userAccount).mint(); // {from: userAccount}
-        await pseudoDaiInstance.from(userAccount).approve(tokenManagerInstance.contract.address, helpers.floatToUint256(400));
+        await pseudoDaiInstance.from(userAccount.wallet.address).mint(); // {from: userAccount}
+        await pseudoDaiInstance
+            .from(userAccount.wallet.address)
+            .approve(
+                tokenManagerInstance.contract.address, 
+                ethers.utils.parseUnits("400", 18)
+            );
 
         // let priceOfMint = await tokenManagerInstance.from(userAccount).priceToMint(helpers.floatToUint256(30));
         // console.log(priceOfMint)
@@ -151,38 +172,71 @@ describe('Event Manager', () => {
         // await tokenManagerInstance.from(adminAccount).mint(helpers.floatToUint256(30));
         // let balanceOfAdmin = await tokenManagerInstance.from(adminAccount).balanceOf(adminAccount.wallet.address);
         // assert.equal(balanceOfAdmin.toNumber(), helpers.floatToUint256(30), "Admin has 30 tokens");
-        
-    })
+    });
 
     describe("Protea Token Functions", () => {
 
         it("Contract set up with correct details", async () => {
-            let tokenManagerAddress = await eventManagerInstance.from(userAccount).tokenManager();
-            assert.equal(tokenManagerAddress, tokenManagerInstance.contract.address, "Incorrect token manager");
+            let tokenManagerAddress = await eventManagerInstance
+                .from(userAccount.wallet.address)
+                .tokenManager();
+            assert.equal(
+                tokenManagerAddress, 
+                tokenManagerInstance.contract.address, 
+                "Incorrect token manager address"
+            );
 
-            let rewardManagerAddress = await eventManagerInstance.from(userAccount).rewardManager();
-            assert.equal(rewardManagerAddress, rewardManagerInstance.contract.address, "Incorrect reward manager");
+            let rewardManagerAddress = await eventManagerInstance
+                .from(userAccount.wallet.address)
+                .rewardManager();
+            assert.equal(
+                rewardManagerAddress, 
+                rewardManagerInstance.contract.address, 
+                "Incorrect reward manager address"
+            );
 
-            let eventManagerAdmin = await eventManager.from(userAccount).admin();
-            assert.equal(eventManagerAdmin, communityDeployOwner.wallet.address, "Incorrect owner");
+            let eventManagerAdmin = await eventManagerInstance
+                .from(userAccount.wallet.address)
+                .admin();
+            assert.equal(
+                eventManagerAdmin, 
+                adminAccount.wallet.address,
+                "Incorrect owner"
+            );
             
-            let creationCost = await eventManager.from(userAccount).creationCost();
-            assert.equal(creationCost.toNumber(), 20, "Creation cost incorrect");
+            let creationCost = await eventManagerInstance
+                .from(userAccount.wallet.address)
+                .creationCost();
+            assert.equal(
+                creationCost.toNumber(), 
+                eventManagerSettings.creationCost, 
+                "Creation cost incorrect"
+            );
         });
 
         it("Admin can update stakes", async () => {
-            let creationCost = await eventManager.creationCost();
-            assert.equal(creationCost, 20, "Correct owner");
-            
-            let maxAttendanceBonus = await eventManager.maxAttendanceBonus();
-            assert.equal(maxAttendanceBonus, 5, "Correct owner");
+            let creationCost = await eventManagerInstance
+                .from(userAccount.wallet.address)
+                .creationCost();
+            assert.equal(
+                creationCost, 
+                eventManagerSettings.creationCost, 
+                "Creation cost incorrect"
+            );
 
-            await eventManager.updateStakes(25, 10, {from: communityDeployOwner});
-            let creationCostAfter = await eventManager.creationCost();
-            assert.equal(creationCostAfter, 25, "Correct owner");
-            
-            let maxAttendanceBonusAfter = await eventManager.maxAttendanceBonus();
-            assert.equal(maxAttendanceBonusAfter, 10, "Correct owner");
+            await eventManagerInstance
+                .from(adminAccount.wallet.address)
+                .updateStakes(
+                    eventManagerSettings.updatedCreationCost
+            );
+            let creationCostAfter = await eventManagerInstance
+                .from(userAccount.wallet.address)
+                .creationCost();
+            assert.equal(
+                creationCostAfter, 
+                20, 
+                "Creation cost not updated"
+            );
         });
 
         it("Create Event", async () => {

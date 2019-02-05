@@ -1,167 +1,340 @@
-const web3Abi = require('web3-eth-abi');
+const etherlime = require('etherlime');
+const ethers = require('ethers');
 
-var TokenManager = artifacts.require('./TokenManager.sol');
-var PseudoDaiToken = artifacts.require('./PseudoDaiToken.sol');
-const web3 = TokenManager.web3;
+var TokenManager = require('../build/TokenManager.json');
+var PseudoDaiToken = require('../build/PseudoDaiToken.json');
 
-contract('Token Manager', accounts => {
-    tokenOwnerAddress = accounts[0];
-    adminAddress = accounts[1];
-    userAddress = accounts[2];
-    anotherUserAddress = accounts[3];
+const tokenManagerSettings = {
+    name: "community",
+    symbol: "com"
+}
+const daiSettings = {
+    name: "PDAI",
+    symbol: "PDAI",
+    decimals: 18
+}
+
+describe('Token Manager', () => {
+    let deployer;
+    let adminAccount = accounts[1];
+    let tokenOwnerAccount = accounts[2];
+    let anotherTokenOwnerAccount = accounts[3];
+
+    let tokenManagerInstance, pseudoDaiInstance;
   
     beforeEach('', async () => {
-        pseudoDaiToken = await PseudoDaiToken.new("DAI", "DAI", 18);
-        tokenManager = await TokenManager.new("tokenMan", "PDAI", pseudoDaiToken.address);
+        deployer = new etherlime.EtherlimeGanacheDeployer(adminAccount.secretKey);
+        pseudoDaiInstance = await deployer.deploy(
+            PseudoDaiToken, 
+            false, 
+            daiSettings.name, 
+            daiSettings.symbol, 
+            daiSettings.decimals
+        );
+        tokenManagerInstance = await deployer.deploy(
+            TokenManager,
+            false,
+            tokenManagerSettings.name,
+            tokenManagerSettings.symbol,
+            pseudoDaiInstance.contract.address
+        );
     });
 
-    describe('Functionality', async () => {
-        it('Is initiated correctly', async () => {
-            let name = await tokenManager.name();
-            assert.equal(name, "tokenMan", "Name is correct");
+    describe('Token functionality', async () => {
+        describe('Bonded creation curve functionality', async () => {
+            it('Minting tests', async () => {
+                let priceOfMint = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("10", 18));
+                let userPDAIBalance = await pseudoDaiInstance.from(
+                    tokenOwnerAccount.wallet.address
+                ).balanceOf(
+                    tokenOwnerAccount.wallet.address
+                );
+    
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint();
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address)
+                    .approve(
+                        tokenManagerInstance.contract.address,
+                        priceOfMint
+                    );
+                let approvedAmount = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .allowance(
+                        tokenOwnerAccount.wallet.address,
+                        tokenManagerInstance.contract.address
+                );
+                assert.equal(
+                    approvedAmount.toString(), 
+                    priceOfMint.toString(),
+                    "The contract has the incorrect PDAI allowance"
+                );
 
-            let symbol = await tokenManager.symbol();
-            assert.equal(
-                symbol, 
-                "PDAI", 
-                "symbol is correct"
-            );
-            
-            let decimals = await tokenManager.decimals();
-            assert.equal(decimals['c'], 10000, "Decimals correct");
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .mint(ethers.utils.parseUnits("10", 18)
+                );
+                let userTokenBalance = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                let userPDAIBalanceAfter = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(userTokenBalance, 18),
+                    10,
+                    "User dose not have tokens"
+                );
+                assert.notEqual(
+                    userPDAIBalanceAfter.toString(),
+                    userPDAIBalance.toString(),
+                    "Users PDAI has not decreased"
+                );
+            });
+
+            it('Burning tests', async () => {
+                let priceOfMint = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("10", 18)
+                );
+                let userPDAIBalanceBeforeMint = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+    
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint();
+                await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .approve(
+                        tokenManagerInstance.contract.address,
+                        priceOfMint
+                );
+                let approvedAmount = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .allowance(
+                        tokenOwnerAccount.wallet.address,
+                        tokenManagerInstance.contract.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(approvedAmount, 18),
+                    ethers.utils.formatUnits(priceOfMint, 18),
+                    "The contract has the incorrect PDAI allowance"
+                );
+
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .mint(ethers.utils.parseUnits("10", 18)
+                );
+                let userTokenBalanceAfterMint = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                let userPDAIBalanceAfterMint = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(userTokenBalanceAfterMint, 18),
+                    10,
+                    "User dose not have tokens"
+                );
+                assert.notEqual(
+                    userPDAIBalanceAfterMint,
+                    userPDAIBalanceBeforeMint,
+                    "Users PDAI has not decreased"
+                );
+
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .burn(ethers.utils.parseUnits("5", 18));
+                let userTokenBalanceAfterBurn = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                let userPDAIBalanceAfterBurn = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                assert.notEqual(
+                    ethers.utils.formatUnits(userPDAIBalanceAfterBurn, 18),
+                    ethers.utils.formatUnits(userPDAIBalanceAfterMint, 18),
+                    "Users PDAI balance has not changed between mint and burn"
+                );
+                assert.notEqual(
+                    ethers.utils.formatUnits(userTokenBalanceAfterBurn, 18),
+                    ethers.utils.formatUnits(userTokenBalanceAfterMint, 18),
+                    "Users token balance has not changed between mint and burn"
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(userTokenBalanceAfterBurn, 18),
+                    5,
+                    "Users has incorrect token balance"
+                );
+            });
+
+            it('Curve gradient test', async () => {
+                let priceOfOneBefore = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("1", 18)
+                );
+                let priceOfMint = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("10", 18)
+                );
+    
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint();
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address)
+                    .approve(
+                        tokenManagerInstance.contract.address,
+                        priceOfMint
+                    );
+                let approvedAmount = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .allowance(
+                        tokenOwnerAccount.wallet.address,
+                        tokenManagerInstance.contract.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(approvedAmount, 18),
+                    ethers.utils.formatUnits(priceOfMint, 18),
+                    "The contract has the incorrect PDAI allowance"
+                );
+
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .mint(ethers.utils.parseUnits("10", 18)
+                );
+                let oneTokenPrice = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("1", 18)
+                );
+                assert.notEqual(
+                    ethers.utils.formatUnits(priceOfOneBefore, 18),
+                    ethers.utils.formatUnits(oneTokenPrice, 18),
+                    "The price to mint 1 token has not changed after minting"
+                );
+            });
+
+            it('Total supply changes with minting and burning', async () => {
+                let priceOfMint = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("10", 18)
+                );
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint();
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address)
+                    .approve(
+                        tokenManagerInstance.contract.address,
+                        priceOfMint
+                    );
+                let totalSupplyBeforeMinting = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .totalSupply();
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .mint(ethers.utils.parseUnits("10", 18)
+                );
+                let totalSupplyAfterMinting = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .totalSupply();
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .burn(ethers.utils.parseUnits("5", 18)
+                );
+                let totalSupplyAfterBurning = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .totalSupply();
+                assert.notEqual(
+                    ethers.utils.formatUnits(totalSupplyBeforeMinting, 18),
+                    ethers.utils.formatUnits(totalSupplyAfterMinting, 18),
+                    "Total supply has not changed after minting"
+                );
+                assert.notEqual(
+                    ethers.utils.formatUnits(totalSupplyAfterMinting, 18),
+                    ethers.utils.formatUnits(totalSupplyAfterBurning, 18),
+                    "Total supply has not changed after burning"
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(totalSupplyBeforeMinting, 18),
+                    0,
+                    "Total supply is not 0 before minting"
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(totalSupplyAfterMinting, 18),
+                    10,
+                    "Total supply is not 10 after minting 10"
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(totalSupplyAfterBurning, 18),
+                    5,
+                    "Total supply is not affected by burning"
+                );
+            });
         });
 
-        it('Transferring functionality', async () => {
-            await pseudoDaiToken.mint(0, {from: userAddress});
-            await pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
-            await tokenManager.mint(10, {from: userAddress});
-            let balanceOfUser = await tokenManager.balanceOf(userAddress);
-            assert.equal(balanceOfUser.toNumber(), 10, "User has 10 tokens");
+        describe('Transferring', async () => {
+            it('Transferring functionality', async () => {
+                let priceOfMint = await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits("10", 18)
+                );
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint();
+                await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address)
+                    .approve(
+                        tokenManagerInstance.contract.address,
+                        priceOfMint
+                    );
+                let approvedAmount = await pseudoDaiInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .allowance(
+                        tokenOwnerAccount.wallet.address,
+                        tokenManagerInstance.contract.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(approvedAmount, 18),
+                    ethers.utils.formatUnits(priceOfMint, 18),
+                    "The contract has the incorrect PDAI allowance"
+                );
 
-            await tokenManager.transfer(anotherUserAddress, 5, {from: userAddress});
-            let balanceOfUserAfter = await tokenManager.balanceOf(userAddress);
-            let balanceOfReceiver = await tokenManager.balanceOf(anotherUserAddress);
-            assert.equal(balanceOfUserAfter.toNumber(), balanceOfReceiver.toNumber(), "User and sender have same balance");
-            assert.equal(balanceOfUserAfter.toNumber(), 5, "User has 5 tokens");
-            assert.equal(balanceOfReceiver.toNumber(), 5, "Receiver has 5 tokens");
-        });
-
-    });
-
-    describe('Bonded creation curve functionality', async () => {
-        it('Minting tests', async () => {
-            let priceOfMint = await tokenManager.priceToMint(10);
-
-            console.log("Price object", priceOfMint);
-            assert.equal(priceOfMint.toNumber(), 125, "The price to mint is 125");
-
-            await pseudoDaiToken.mint(0, {from: userAddress});
-            let balanceOfUser = await pseudoDaiToken.balanceOf(userAddress);
-            assert.equal(balanceOfUser.toNumber(), 250, "Balance of user is correct");
-
-            await pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
-            let allowance = await pseudoDaiToken.allowance(userAddress, tokenManager.address);
-            assert.equal(allowance.toNumber(), 125, "Approved amount is correct");
-
-            let contactBalance = await pseudoDaiToken.balanceOf(tokenManager.address);
-            assert.equal(contactBalance.toNumber(), 0, "Contract has no DAI");
-
-            await tokenManager.mint(10, {from: userAddress});
-            let contactBalanceAfter = await pseudoDaiToken.balanceOf(tokenManager.address);
-            assert.equal(contactBalanceAfter.toNumber(), 125, "The contract has DAI from the user");
-
-            let balance = await tokenManager.balanceOf(userAddress);
-            assert.equal(balance.toNumber(), 10, "Balance after minting is 10");
-
-            let oneTokenPrice = await tokenManager.priceToMint(1);
-            assert.equal(oneTokenPrice.toNumber(), 26, "The price of the 11th token is correct");
-
-            let priceOfMintAfter = await tokenManager.priceToMint(10);
-            assert.equal(
-                priceOfMintAfter.toNumber(), 
-                375, 
-                "The price changes after the first mint"
-            );
-            assert.notEqual(
-                priceOfMintAfter.toNumber(), 
-                priceOfMint.toNumber(), 
-                "The price changes"
-            );
-        });
-
-        it('Curve gradient test', async () => {
-            let priceOfMint = await tokenManager.priceToMint(10);
-            assert.equal(priceOfMint.toNumber(), 125, "The price to mint is 125");
-
-            await pseudoDaiToken.mint(0, {from: userAddress});
-            await pseudoDaiToken.approve(tokenManager.address, priceOfMint, {from: userAddress});
-            await tokenManager.mint(10, {from: userAddress});
-            let oneTokenPrice = await tokenManager.priceToMint(1);
-            let balanceAfter = await tokenManager.balanceOf(userAddress);
-            assert.equal(balanceAfter, 10, "Balance is 10");
-            assert.equal(oneTokenPrice.toNumber(), 26, "Initial price is 26");
-
-            await pseudoDaiToken.mint(1, {from: userAddress});
-            //mint twice to give user enough DAI to buy another 10
-            await pseudoDaiToken.mint(2, {from: userAddress});
-            let priceOfMintAfter = await tokenManager.priceToMint(10);
-            await pseudoDaiToken.approve(
-                tokenManager.address, 
-                priceOfMintAfter, 
-                {from: userAddress}
-            );
-            await tokenManager.mint(10, {from: userAddress});
-            let oneTokenPriceAfter = await tokenManager.priceToMint(1);
-            assert.notEqual(
-                oneTokenPrice.toNumber(), 
-                oneTokenPriceAfter.toNumber(), 
-                "Different prices"
-            );
-            assert.equal(oneTokenPriceAfter.toNumber(), 51, "After price is 51");
-        });
-
-        it('Burning tests', async () => {
-            await pseudoDaiToken.mint(0, {from: userAddress});
-            await pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
-            await tokenManager.mint(10, {from: userAddress});
-            let balance = await tokenManager.balanceOf(userAddress);
-            assert.equal(balance.toNumber(), 10, "10 tokens where bought");
-
-            let tokenManagerBalance = await pseudoDaiToken.balanceOf(tokenManager.address);
-            assert.equal(
-                tokenManagerBalance.toNumber(), 
-                125, 
-                "Token manager has correct number of DAI"
-            );
-
-            let rewardForBurn = await tokenManager.rewardForBurn(10);
-            assert.equal(rewardForBurn.toNumber(), 125, "Reward for burn correct");
-
-            await tokenManager.burn(10, {from: userAddress});
-            let balanceAfter = await tokenManager.balanceOf(userAddress);
-            assert.equal(balanceAfter.toNumber(), 0, "All tokens are burnt");
-
-            let balanceOfManagerAfter = await pseudoDaiToken.balanceOf(tokenManager.address);
-            assert.equal(balanceOfManagerAfter.toNumber(), 0, "Token manager no longer has DAI");
-
-            let priceOfMint = await tokenManager.priceToMint(10);
-            assert.equal(
-                priceOfMint.toNumber(), 
-                125, 
-                "Price of minting moves back down the curve"
-            );
-        });
-
-        it('Total supply changes with minting and burning', async () => {
-            await pseudoDaiToken.mint(0, {from: userAddress});
-            await pseudoDaiToken.approve(tokenManager.address, 125, {from: userAddress});
-            await tokenManager.mint(10, {from: userAddress});
-            let supply = await tokenManager.totalSupply();
-            assert.equal(supply.toNumber(), 10, "Total supply affected by minting");
-
-            await tokenManager.burn(10, {from: userAddress});
-            let supplyAfterBurn = await tokenManager.totalSupply();
-            assert.equal(supplyAfterBurn.toNumber(), 0, "Supply change with burn");
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .mint(ethers.utils.parseUnits("10", 18)
+                );
+                await tokenManagerInstance
+                    .from(tokenOwnerAccount.wallet.address)
+                    .approve(
+                        anotherTokenOwnerAccount.wallet.address,
+                        ethers.utils.parseUnits("5", 18)
+                );
+                await tokenManagerInstance.from(anotherTokenOwnerAccount.wallet.address).transferFrom(
+                    tokenOwnerAccount.wallet.address,
+                    anotherTokenOwnerAccount.wallet.address,
+                    ethers.utils.parseUnits("5", 18),
+                );
+                let userTokenBalance = await tokenManagerInstance.from(
+                    tokenOwnerAccount.wallet.address
+                    ).balanceOf(
+                        tokenOwnerAccount.wallet.address
+                );
+                let otherUserTokenBalance = await tokenManagerInstance.from(
+                        anotherTokenOwnerAccount.wallet.address
+                    ).balanceOf(
+                        anotherTokenOwnerAccount.wallet.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(userTokenBalance, 18),
+                    ethers.utils.formatUnits(otherUserTokenBalance, 18),
+                    "Tokens where not transferer to other address"
+                );
+            });
         });
     });
 });
