@@ -1,9 +1,9 @@
 pragma solidity ^0.5.2;
 
-import "./openzeppelin-solidity/math/SafeMath.sol";
-import "./IRewardIssuer.sol";
-import "./ERC223/ERC223Receiver.sol";
-import "./openzeppelin-solidity/token/ERC20/IERC20.sol";
+import "../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import "../membershipManager/IRewardIssuer.sol";
+import "../_resources/ERC223/ERC223Receiver.sol";
+import "../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 
 contract EventManager is IRewardIssuer, ERC223Receiver {
     using SafeMath for uint256;

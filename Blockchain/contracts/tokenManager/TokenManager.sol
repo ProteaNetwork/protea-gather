@@ -1,9 +1,9 @@
 pragma solidity ^0.5.2;
 
-import "./ERC223/ERC223.sol";
-import "./ERC223/ERC223Receiver.sol";
-import "./openzeppelin-solidity/token/ERC20/IERC20.sol";
-import "./openzeppelin-solidity/math/SafeMath.sol";
+import "../_resources/ERC223/ERC223.sol";
+import "../_resources/ERC223/ERC223Receiver.sol";
+import "../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import "../_resources/openzeppelin-solidity/math/SafeMath.sol";
 
 contract TokenManager  /* is ERC223*/ {
     using SafeMath for uint256;
@@ -45,22 +45,7 @@ contract TokenManager  /* is ERC223*/ {
         reserveToken = _reserveToken;
     }
 
-    /**
-      * @dev Gets the balance of the specified address.
-      * @param _owner The address to query the the balance of.
-      * @return An uint256 representing the amount owned by the passed address.
-      */
-    function balanceOf(address _owner) public view returns (uint256) {
-        return balances[_owner];
-    }
-
-    /**
-      * @dev Total number of tokens in existence
-      */
-    function totalSupply() public view returns (uint256) {
-        return totalSupply_;
-    }
-
+    
     /**
       * @dev Transfer ownership token from msg.sender to a specified address
       * @param _to The address to transfer to.
@@ -102,39 +87,7 @@ contract TokenManager  /* is ERC223*/ {
         success = true;
     } 
 
-    /// @dev        Calculate the integral from 0 to x tokens supply
-    /// @param x    The number of tokens supply to integrate to
-    /// @return     The total supply in tokens, not wei
-    function curveIntegral(uint256 x) internal view returns (uint256) {
-        /** This is the formula for the curve
-            f(x) = gradient*(x + b) + c
-            f(x) indicates it is a function of x, where x is the token supply
-            the gradient is the gradient of the curve i.e. the change in price over the change in token supply
-            c is the y-offset, which is set to 0 for now.
-            For more information visit:
-            https://en.wikipedia.org/wiki/Linear_function
-        */
 
-        uint256 c = 0;
-
-        /* The gradient of a curve is the rate at which it increases its slope.
-	    	For example, to increase at a value of 5 DAI for every 1 token,
-	    	our gradient would be (change in y)/(change in x) = 5/1 = 5 DAI/Token
-	    	Remember that contracts deal with uint256 integers with 18 decimal points, not floating points, so:
-	    	to represent our gradient of 0.0005 DAI/Token, we simply divide by the denominator, to avoid floating points,
-	    	so we end up with 1/0.0005 = 2000 as our denominator.
-	    */
-
-        /* We need to calculate the definite integral from zero to the defined token supply, x.
-	    	A definite integral is essentially the area under the curve, from zero to the defined token supply.
-	    	The area under the curve is equivalent to the value of the tokens up until that point.
-	    	The integral of the linear curve, f(x), is calculated as:
-	    	gradient*0.5*x^2 + cx; where c = 0
-	    	Because we are essentially squaring the decimal scaling in the calculation,
-	    	we need to divide the result by the scaling factor before returning - this hurt my mind a bit, but mathematically holds true.
-	    */
-        return ((x**2).div(2*gradientDenominator) + c.mul(x)).div(decimals);
-    }
 
 
     /// @return  Price, in wei, for mint
@@ -224,4 +177,56 @@ contract TokenManager  /* is ERC223*/ {
 
         emit Transfer(msg.sender, _to, _value);
     }
+
+    /**
+      * @dev Gets the balance of the specified address.
+      * @param _owner The address to query the the balance of.
+      * @return An uint256 representing the amount owned by the passed address.
+      */
+    function balanceOf(address _owner) public view returns (uint256) {
+        return balances[_owner];
+    }
+
+    /**
+      * @dev Total number of tokens in existence
+      */
+    function totalSupply() public view returns (uint256) {
+        return totalSupply_;
+    }
+
+    /// @dev        Calculate the integral from 0 to x tokens supply
+    /// @param x    The number of tokens supply to integrate to
+    /// @return     The total supply in tokens, not wei
+    function curveIntegral(uint256 x) internal view returns (uint256) {
+        /** This is the formula for the curve
+            f(x) = gradient*(x + b) + c
+            f(x) indicates it is a function of x, where x is the token supply
+            the gradient is the gradient of the curve i.e. the change in price over the change in token supply
+            c is the y-offset, which is set to 0 for now.
+            For more information visit:
+            https://en.wikipedia.org/wiki/Linear_function
+        */
+
+        uint256 c = 0;
+
+        /* The gradient of a curve is the rate at which it increases its slope.
+	    	For example, to increase at a value of 5 DAI for every 1 token,
+	    	our gradient would be (change in y)/(change in x) = 5/1 = 5 DAI/Token
+	    	Remember that contracts deal with uint256 integers with 18 decimal points, not floating points, so:
+	    	to represent our gradient of 0.0005 DAI/Token, we simply divide by the denominator, to avoid floating points,
+	    	so we end up with 1/0.0005 = 2000 as our denominator.
+	    */
+
+        /* We need to calculate the definite integral from zero to the defined token supply, x.
+	    	A definite integral is essentially the area under the curve, from zero to the defined token supply.
+	    	The area under the curve is equivalent to the value of the tokens up until that point.
+	    	The integral of the linear curve, f(x), is calculated as:
+	    	gradient*0.5*x^2 + cx; where c = 0
+	    	Because we are essentially squaring the decimal scaling in the calculation,
+	    	we need to divide the result by the scaling factor before returning - this hurt my mind a bit, but mathematically holds true.
+	    */
+        return ((x**2).div(2*gradientDenominator) + c.mul(x)).div(decimals);
+    }
+
+    
 }

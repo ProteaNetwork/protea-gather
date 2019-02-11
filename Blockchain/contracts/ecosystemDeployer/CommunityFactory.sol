@@ -1,8 +1,8 @@
 pragma solidity ^0.5.2;
 
-import "./EventManager.sol";
-import "./RewardManager.sol";
-import "./TokenManager.sol";
+import "../utilities/EventManager.sol";
+import "../membershipManager/RewardManager.sol";
+import "../tokenManager/TokenManager.sol";
 
 contract CommunityFactory {
     address internal admin;
@@ -13,7 +13,7 @@ contract CommunityFactory {
         address creator;
         address tokenManagerAddress;
         address rewardManagerAddress;
-        address eventManagerAddress;
+        address eventManagerAddress; // Consider removing
     }
 
     mapping(uint256 => Community) internal communities;
@@ -23,7 +23,7 @@ contract CommunityFactory {
         uint256 indexed index, 
         address indexed tokenManager, 
         address rewardManager, 
-        address eventManager
+        address eventManager// Consider removing
     );
 
     constructor (address _daiTokenAddress) public {
