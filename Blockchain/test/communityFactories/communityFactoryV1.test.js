@@ -7,6 +7,7 @@ var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 const communitySettings = {
     name: "Community 1",
     symbol: "COM1",
+    gradientDemoninator: 2000, // Unused but required for the interface
     contributionRate: (ethers.utils.parseUnits("0.1", 18)).toHexString()
 }
 const daiSettings = {
@@ -38,7 +39,7 @@ describe('Community factory', () => {
             CommunityFactoryV1, 
             false, 
             pseudoDaiInstance.contract.address,
-            proteaAdmin.wallet.address
+            proteaAdmin.wallet.address,
         );
     });
 
@@ -50,6 +51,7 @@ describe('Community factory', () => {
                     communitySettings.name,
                     communitySettings.symbol,
                     communityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
                     communitySettings.contributionRate
                 )).wait();
 
@@ -76,6 +78,7 @@ describe('Community factory', () => {
                     communitySettings.name,
                     communitySettings.symbol,
                     communityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
                     communitySettings.contributionRate
                 )).wait();
             let communityDetails = await communityFactoryInstance
@@ -97,6 +100,7 @@ describe('Community factory', () => {
                     `Not${communitySettings.name}`,
                     `Not${communitySettings.symbol}`,
                     anotherCommunityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
                     communitySettings.contributionRate
                 )).wait();
 

@@ -8,6 +8,7 @@ var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 const communitySettings = {
     name: "community",
     symbol: "com",
+    gradientDemoninator: 2000, // Unused but required for the interface
     contributionRate: 10
 }
 const daiSettings = {
@@ -49,6 +50,7 @@ describe('Token Manager', () => {
                 communitySettings.name,
                 communitySettings.symbol,
                 communityCreatorAccount.wallet.address,
+                communitySettings.gradientDemoninator,
                 communitySettings.contributionRate
             )).wait();
         let communityDetails = await communityFactoryInstance

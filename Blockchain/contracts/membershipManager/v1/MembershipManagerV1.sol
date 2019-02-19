@@ -9,7 +9,7 @@ import "../../tokenManager/ITokenManager.sol";
 
 /// @author Ryan @ Protea 
 /// @title V1 Membership Manager
-contract MembershipManager {
+contract MembershipManagerV1 {
     using SafeMath for uint256;
     using Roles for Roles.Role;
 

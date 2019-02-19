@@ -4,109 +4,26 @@ const ethers = require('ethers');
 var EventManager = require('../../build/EventManager.json');
 var TokenManager = require('../../build/TokenManager.json');
 var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
-var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
-var RewardManager = require('../../build/RewardManager.json');
 
-const createABI =  {
-    "constant": false,
-    "inputs": [
-        {
-            "name": "_name",
-            "type": "string"
-        },
-        {
-            "name": "_maxAttendees",
-            "type": "uint24"
-        },
-        {
-            "name": "_organiser",
-            "type": "address"
-        },
-        {
-            "name": "_requiredStake",
-            "type": "uint256"
-        },
-        {
-            "name": "_participantLimit",
-            "type": "uint256"
-        }
-    ],
-    "name": "_createEvent",
-    "outputs": [
-        {
-            "name": "",
-            "type": "bool"
-        }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-};
-const rsvpABI = {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_index",
-        "type": "uint256"
-      },
-      {
-        "name": "_member",
-        "type": "address"
-      }
-    ],
-    "name": "_rsvp",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-};
-const transferABI = {
-    "constant": false,
-    "inputs": [
-        {
-            "name": "_to",
-            "type": "address"
-        },
-        {
-            "name": "_value",
-            "type": "uint256"
-        },
-        {
-            "name": "_data",
-            "type": "bytes"
-        }
-    ],
-    "name": "transfer",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-};
+const eventManagerSettings = {
+}
 
+const communitySettings = {
+    name: "community",
+    symbol: "com",
+    contributionRate: 10
+}
 const daiSettings = {
     name: "PDAI",
     symbol: "PDAI",
     decimals: 18
 }
-const tokenManagerSettings = {
-    name: "community",
-    symbol: "com"
-}
-const communitySettings = {
-    name: "Community 1",
-    symbol: "COM1",
 
-}
-const eventManagerSettings = {
-}
+const defaultTokenVolume = 100;
 
 describe('Event Manager', () => {
     let deployer;
+    let proteaAccount = devnetAccounts[0];
     let adminAccount = devnetAccounts[1];
     let userAccount = devnetAccounts[2];
     let tokenOwnerAccount = devnetAccounts[3];
@@ -115,7 +32,6 @@ describe('Event Manager', () => {
 
     let tokenManagerInstance, 
     pseudoDaiInstance, 
-    rewardManagerInstance,
     eventManagerInstance;
 
     beforeEach('', async () => {
@@ -134,11 +50,11 @@ describe('Event Manager', () => {
             tokenManagerSettings.symbol,
             pseudoDaiInstance.contract.address
         );
-        rewardManagerInstance = await deployer.deploy(
-            RewardManager, 
-            false, 
-            tokenManagerInstance.contract.address
-        );
+        // rewardManagerInstance = await deployer.deploy(
+        //     RewardManager, 
+        //     false, 
+        //     tokenManagerInstance.contract.address
+        // );
         eventManagerInstance = await deployer.deploy(
             EventManager, 
             false, 

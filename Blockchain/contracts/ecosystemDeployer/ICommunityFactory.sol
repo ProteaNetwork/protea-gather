@@ -26,6 +26,7 @@ contract ICommunityFactory {
     /// @param _communityName           :string Name of the community
     /// @param _communitySymbol         :string Symbol of the community token
     /// @param _communityManager        :address The address of the super admin
+    /// @param _gradientDemoninator     :uint256 The gradient modifier in the curve, not required in V1
     /// @param _contributionRate        :uint256 Percentage of incoming DAI to be diverted to the community account
     /// @return uint256                 Index of the deployed ecosystem
     /// @notice                         Also sets a super admin for changing factories at a later stage, unused at present
@@ -34,6 +35,7 @@ contract ICommunityFactory {
         string memory _communityName,
         string memory _communitySymbol,
         address _communityManager,
+        uint256 _gradientDemoninator,
         uint256 _contributionRate
     )
         public

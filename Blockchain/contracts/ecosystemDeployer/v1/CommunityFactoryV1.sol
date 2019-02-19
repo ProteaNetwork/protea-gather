@@ -1,7 +1,7 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
 import "../../tokenManager/basicLinear/BasicLinearTokenManager.sol";
-import "../../membershipManager/v1/MembershipManager.sol";
+import "../../membershipManager/v1/MembershipManagerV1.sol";
 import "../../utilities/eventManager/v1/EventManager.sol";
 import "../ICommunityFactory.sol";
 
@@ -27,6 +27,7 @@ contract CommunityFactoryV1 is ICommunityFactory{
     /// @param _communityName           :string Name of the community
     /// @param _communitySymbol         :string Symbol of the community token
     /// @param _communityManager        :address The address of the super admin
+    /// @param _gradientDemoninator     :uint256 The gradient modifier in the curve, not required in V1
     /// @param _contributionRate        :uint256 Percentage of incoming DAI to be diverted to the community account, from 0 to 100
     /// @return uint256                 Index of the deployed ecosystem
     /// @dev                            Also sets a super admin for changing factories at a later stage, unused at present
@@ -35,13 +36,14 @@ contract CommunityFactoryV1 is ICommunityFactory{
         string memory _communityName,
         string memory _communitySymbol,
         address _communityManager,
+        uint256 _gradientDemoninator,
         uint256 _contributionRate
     )
         public
         returns(uint256)
     {
         address membershipManagerAddress = address(
-            new MembershipManager(
+            new MembershipManagerV1(
                 _communityManager
         ));
 
