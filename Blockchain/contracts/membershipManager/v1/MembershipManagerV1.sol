@@ -25,9 +25,8 @@ contract MembershipManagerV1 {
     mapping(address => Membership) internal membershipState_;
    
     struct RegisteredUtility{
-        uint8 usageCost;
         bool active;
-        mapping(uint256 => uint256) stakedPool; // When contribution points are staked, each utility gets a pool of skin in the game colateral
+        mapping(uint256 => uint256) lockedStakePool; // Total Stake withheld by the utility
         mapping(uint256 => mapping(address => uint256)) contributions; // Traking individual token values sent in
     }
 
@@ -42,10 +41,10 @@ contract MembershipManagerV1 {
     event UtilityRemoved(address issuer);
     event ReputationRewardSet(address indexed issuer, uint8 id, uint256 amount);
 
-    event CommitmentLocked(address indexed member, address indexed utility, uint8 amount);
-    event CommitmentUnlocked(address indexed member, address indexed utility, uint8 amount);
+    event StakeLocked(address indexed member, address indexed utility, uint256 tokenAmount);
+    event StakeUnlocked(address indexed member, address indexed utility, uint256 tokenAmount);
 
-    event MembershipStaked(address member, uint8 indexed id);
+    event MembershipStaked(address indexed member, uint256 tokensStaked);
    
     constructor(address _communityManager) public {
         admins_.add(_communityManager);
@@ -68,52 +67,42 @@ contract MembershipManagerV1 {
         _;
     }
 
-    function initialize(address _tokenManager) public onlySystemAdmin returns(bool) {
+    function initialize(address _tokenManager) external onlySystemAdmin returns(bool) {
         require(tokenManager_ == address(0), "Contracts initalised");
         tokenManager_ = _tokenManager;
         systemAdmins_.remove(msg.sender);
     }
 
-    function addMembershipType() public onlyAdmin returns(uint256) {
-
-    }
-
-    function deactivateMembershipType() public onlyAdmin{
-
-    }
-
-    function addUtility(address _utility, uint8 _usageCost) public onlyAdmin{
+    function addUtility(address _utility, uint8 _usageCost) external onlyAdmin{
         registeredUtility_[_utility].active = true;
-        registeredUtility_[_utility].usageCost = _usageCost;
     }
 
-    function removeUtility(address _utility) public onlyAdmin{
+    function removeUtility(address _utility) external onlyAdmin{
         registeredUtility_[_utility].active = false;
-        registeredUtility_[_utility].usageCost = 0;
     }
 
-    function setRewardEvent(address _utility, uint8 _id, uint256 _rewardAmount) public onlyAdmin onlyUtility(_utility){
+    function setReputationRewardEvent(address _utility, uint8 _id, uint256 _rewardAmount) external onlyAdmin onlyUtility(_utility){
         reputationRewards_[_utility][_id] = _rewardAmount;
     }
 
   
-    function registerMembership(uint256 _colateral, address _member) external /** onlySelf() */ {
+    function registerMembership(uint256 _colateral, address _member) external  {
         membershipState_[_member].currentDate = now;
         membershipState_[_member].tokensStaked = _colateral;
     }
 
 
-    function lockCommitment(address _member, uint256 _index) external returns (bool) /* onlyUtility(msg.sender)*/  {
+    function lockCommitment(address _member, uint256 _index, uint256 _daiValue) external returns (bool) /* onlyUtility(msg.sender)*/  {
         // Calculates the amount of the membership tokens are being staked with the contribution
         // TODO: calculate contribution value 
         
-        uint256 contribution = membershipState_[_member].tokensStaked.div(
-            registeredUtility_[msg.sender].usageCost
-        );
+        // uint256 contribution = membershipState_[_member].tokensStaked.div(
+        //     registeredUtility_[msg.sender].usageCost
+        // );
 
-        membershipState_[_member].activeCommitment = membershipState_[_member].activeCommitment + registeredUtility_[msg.sender].usageCost;
-        registeredUtility_[msg.sender].contributions[_index][_member] = contribution;
-        registeredUtility_[msg.sender].stakedPool[_index] = registeredUtility_[msg.sender].stakedPool[_index].add(contribution);
+        // membershipState_[_member].activeCommitment = membershipState_[_member].activeCommitment + registeredUtility_[msg.sender].usageCost;
+        // registeredUtility_[msg.sender].contributions[_index][_member] = contribution;
+        // registeredUtility_[msg.sender].stakedPool[_index] = registeredUtility_[msg.sender].stakedPool[_index].add(contribution);
 
         return true;
     }
@@ -121,7 +110,7 @@ contract MembershipManagerV1 {
     function unlockCommitment(address _member, uint256 _index) external returns (bool) /* onlyUtility(msg.sender)*/  {
         // TODO: check the commitment locked by the utility
 
-        membershipState_[_member].activeCommitment = membershipState_[_member].activeCommitment - registeredUtility_[msg.sender].usageCost;
+        // membershipState_[_member].activeCommitment = membershipState_[_member].activeCommitment - registeredUtility_[msg.sender].usageCost;
         return true;
     }
 
@@ -141,7 +130,7 @@ contract MembershipManagerV1 {
         );
     }
 
-    function tokenManager() public view returns(address) {
+    function tokenManager() external view returns(address) {
         return tokenManager_;
     }
 

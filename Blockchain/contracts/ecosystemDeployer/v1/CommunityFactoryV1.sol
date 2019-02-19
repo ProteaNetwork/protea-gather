@@ -33,13 +33,13 @@ contract CommunityFactoryV1 is ICommunityFactory{
     /// @dev                            Also sets a super admin for changing factories at a later stage, unused at present
     /// @author Ryan
     function createCommunity(
-        string memory _communityName,
-        string memory _communitySymbol,
+        string calldata _communityName,
+        string calldata _communitySymbol,
         address _communityManager,
         uint256 _gradientDemoninator,
         uint256 _contributionRate
     )
-        public
+        external
         returns(uint256)
     {
         address membershipManagerAddress = address(
@@ -58,13 +58,14 @@ contract CommunityFactoryV1 is ICommunityFactory{
                 membershipManagerAddress
         ));
 
+        MembershipManagerV1(membershipManagerAddress).initialize(tokenManagerAddress);
+
         address eventManagerAddress = address( 
             new EventManager(
                 tokenManagerAddress,
                 membershipManagerAddress
         ));
 
-    // TODO: check set up on membership
         uint256 index = numberOfCommunities_;
         numberOfCommunities_ = numberOfCommunities_ + 1;
         

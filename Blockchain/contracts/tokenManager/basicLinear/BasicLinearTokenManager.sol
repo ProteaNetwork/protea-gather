@@ -58,7 +58,7 @@ contract BasicLinearTokenManager {
 
     /// @dev                Selling tokens back to the bonding curve for collateral
     /// @param _numTokens   The number of tokens that you want to burn
-    function burn(uint256 _numTokens) public returns(bool) {
+    function burn(uint256 _numTokens) external returns(bool) {
         require(balances[msg.sender] >= _numTokens, "Not enough tokens available");
 
         uint256 rewardForTokens = rewardForBurn(_numTokens);
@@ -79,7 +79,7 @@ contract BasicLinearTokenManager {
     /// @param _to          :address Address to mint tokens to
     /// @param _numTokens   :uint256 The number of tokens you want to mint
     /// @dev                We have modified the minting function to divert a portion of the purchase tokens
-    function mint(address _to, uint256 _numTokens) public returns(bool) {
+    function mint(address _to, uint256 _numTokens) external returns(bool) {
         uint256 priceForTokens = priceToMint(_numTokens);
         require(
             IERC20(reserveToken_).transferFrom(msg.sender, address(this), priceForTokens), 
@@ -111,7 +111,7 @@ contract BasicLinearTokenManager {
         address _spender, 
         uint256 _value
     ) 
-        public 
+        external 
         returns (bool) 
     {
         allowed[msg.sender][_spender] = _value;
@@ -229,7 +229,7 @@ contract BasicLinearTokenManager {
     /// @dev                This function returns the amount of tokens one can receive for a specified amount of collateral token
     ///                     Including Protea & Community contributions
     /// @param  _colateralTokenOffered  :uint256 Amount of reserve token offered for purchase
-    function colateralToTokenBuying(uint256 _colateralTokenOffered) public view returns(uint256) {
+    function colateralToTokenBuying(uint256 _colateralTokenOffered) external view returns(uint256) {
         uint256 correctedForContribution = _colateralTokenOffered.sub(_colateralTokenOffered.div(101)); // Removing 1 percent
         return inverseCurveIntegral(curveIntegral(totalSupply_) + correctedForContribution) - totalSupply_;
     }
@@ -237,7 +237,7 @@ contract BasicLinearTokenManager {
     /// @dev                 This function returns the amount of tokens needed to be burnt to withdraw a specified amount of reserve token
     ///                                 Including Protea & Community contributions
     /// @param  _collateralTokenNeeded  :uint256 Amount of dai to be withdraw
-    function colateralToTokenSelling(uint256 _collateralTokenNeeded) public view returns(uint256) {
+    function colateralToTokenSelling(uint256 _collateralTokenNeeded) external view returns(uint256) {
         return uint256(totalSupply_ - inverseCurveIntegral(curveIntegral(totalSupply_) - _collateralTokenNeeded));
     }
 

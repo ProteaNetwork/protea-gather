@@ -118,5 +118,8 @@ describe('Community factory', () => {
                 "The community owner is incorrect"
             );
         });
+
+        it('(WIP)Initalizes membership manager correctly', async () =>{
+        })
     });
 });
