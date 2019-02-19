@@ -8,10 +8,13 @@
   },
   "scripts": {
     "start": "etherlime ganache",
+    "start:devnet": "docker image pull yodascholtz/parity-ubuntu:latest && docker run -p 8545:8545 yodascholtz/parity-ubuntu:latest",
     "build": "etherlime compile",
     "test": "etherlime test",
-    "deploy:local": "etherlime deploy --runs=500",
-    "deploy:rinkeby": "etherlime deploy --network=rinkeby --runs=500"
+    "test:debug": "node --inspect-brk ./node_modules/etherlime/cli.js --timeout 30000 test",
+    "deploy:local": "etherlime deploy --network=devnet --runs=500",
+    "deploy:rinkeby": "etherlime deploy --network=rinkeby --runs=500",
+    "deploy:rinkeby:debug": "node --inspect-brk ./node_modules/etherlime/cli.js --timeout 30000 deploy --network=rinkeby --runs=50"
   },
   "author": "",
   "license": "ISC",
@@ -19,10 +22,10 @@
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "dotenv": "^6.1.0",
-    "etherlime": "^0.10.5",
+    "etherlime": "BenSchZA/etherlime#temp-feature",
     "ethers": "^4.0.23",
     "mathjs": "^5.4.1",
     "openzeppelin-solidity": "^2.0.0",
-    "solc": "0.5.2"
+    "solc": "0.5.3"
   }
 }

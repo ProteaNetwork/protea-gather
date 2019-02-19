@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity >=0.5.3 < 0.6.0;
 
 import "./_resources/openzeppelin-solidity/token/ERC20/ERC20.sol";
 
@@ -19,6 +19,7 @@ contract PseudoDaiToken is ERC20 {
         address indexed spender,
         uint256 value
     );
+    
     event Transfer(
         address indexed from, 
         address indexed to, 
@@ -31,18 +32,14 @@ contract PseudoDaiToken is ERC20 {
         decimals = _decimals;
     }
 
-    /**
-      * @dev Returns the state of minting rewards per user
-      * @param _user    : Index of the reward being requested.
-      */
+    /// @notice         Returns the state of minting rewards per user
+    /// @param _user    :address Index of the reward being requested.
     function fetchRewardState(address _user) public view returns(bool) {
         return mintingRewards[_user];
     }
 
-    /**
-      * @dev Mints free tokens to a user. Users can have a 
-      *     max of 500 free tokens, given over 3 mints. 
-      */
+    
+    /// @notice Mints 10 000 free tokens to a user.
     function mint() public {
         require(
             !mintingRewards[msg.sender],

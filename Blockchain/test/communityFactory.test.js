@@ -7,7 +7,7 @@ var CommunityFactory = require('../build/CommunityFactory.json');
 const communitySettings = {
     name: "Community 1",
     symbol: "COM1",
-
+    contributionRate: (ethers.utils.parseUnits("0.1", 18)).toHexString()
 }
 const daiSettings = {
     name: "PDAI",
@@ -17,14 +17,15 @@ const daiSettings = {
 
 describe('Community factory', () => {
     let deployer;
-    let adminAccount = accounts[1];
-    let communityCreatorAccount = accounts[2];
-    let anotherCommunityCreatorAccount = accounts[3];
+    let proteaAdmin = devnetAccounts[0];
+    let adminAccount = devnetAccounts[1];
+    let communityCreatorAccount = devnetAccounts[2];
+    let anotherCommunityCreatorAccount = devnetAccounts[3];
 
     let communityFactoryInstance, pseudoDaiInstance;
 
     beforeEach('', async () => {
-        deployer = new etherlime.EtherlimeGanacheDeployer(adminAccount.secretKey);
+        deployer = new etherlime.EtherlimeDevnetDeployer(proteaAdmin.secretKey);
         pseudoDaiInstance = await deployer.deploy(
             PseudoDaiToken, 
             false, 
@@ -32,21 +33,27 @@ describe('Community factory', () => {
             daiSettings.symbol, 
             daiSettings.decimals
         );
+
         communityFactoryInstance = await deployer.deploy(
             CommunityFactory, 
             false, 
-            pseudoDaiInstance.contract.address
+            pseudoDaiInstance.contract.address,
+            proteaAdmin.wallet.address
         );
     });
 
     describe('Deployment', async () => {
         it('Creates a community', async () => {
-            await communityFactoryInstance
-                .from(communityCreatorAccount.wallet.address)
+            const txReceipt = await(await communityFactoryInstance
+                .from(communityCreatorAccount)
                 .createCommunity(
                     communitySettings.name,
-                    communitySettings.symbol
-                );
+                    communitySettings.symbol,
+                    communityCreatorAccount.wallet.address,
+                    communitySettings.contributionRate
+                )).wait();
+
+
             let communityDetails = await communityFactoryInstance
                 .from(communityCreatorAccount.wallet.address)
                 .getCommunity(0);
@@ -63,12 +70,14 @@ describe('Community factory', () => {
         });
 
         it('returns a community', async () => {
-            await communityFactoryInstance
-                .from(communityCreatorAccount.wallet.address)
+            const txReceipt = await(await communityFactoryInstance
+                .from(communityCreatorAccount)
                 .createCommunity(
                     communitySettings.name,
-                    communitySettings.symbol
-            );
+                    communitySettings.symbol,
+                    communityCreatorAccount.wallet.address,
+                    communitySettings.contributionRate
+                )).wait();
             let communityDetails = await communityFactoryInstance
                 .from(communityCreatorAccount.wallet.address)
                 .getCommunity(0);
@@ -82,12 +91,15 @@ describe('Community factory', () => {
                 "The community owner is incorrect"
             );
 
-            await communityFactoryInstance
-                .from(anotherCommunityCreatorAccount.wallet.address)
+            const txReceipt2 = await(await communityFactoryInstance
+                .from(anotherCommunityCreatorAccount)
                 .createCommunity(
                     `Not${communitySettings.name}`,
-                    `Not${communitySettings.symbol}`
-            );
+                    `Not${communitySettings.symbol}`,
+                    anotherCommunityCreatorAccount.wallet.address,
+                    communitySettings.contributionRate
+                )).wait();
+
             let communityDetails2 = await communityFactoryInstance
                 .from(anotherCommunityCreatorAccount.wallet.address)
                 .getCommunity(1);

@@ -12,14 +12,14 @@ const daiSettings = {
 
 describe('Pseudo DAI', () => {
     let deployer;
-    let adminAccount = accounts[1];
-    let tokenOwnerAccount = accounts[2];
-    let anotherTokenOwnerAccount = accounts[3];
+    let adminAccount = devnetAccounts[1];
+    let tokenOwnerAccount = devnetAccounts[2];
+    let anotherTokenOwnerAccount = devnetAccounts[3];
 
     let pseudoDaiInstance;
 
     beforeEach('', async () => {
-        deployer = new etherlime.EtherlimeGanacheDeployer(adminAccount.secretKey);
+        deployer = new etherlime.EtherlimeDevnetDeployer(adminAccount.secretKey);
         pseudoDaiInstance = await deployer.deploy(
             PseudoDaiToken, 
             false, 

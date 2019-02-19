@@ -103,16 +103,14 @@ const communitySettings = {
 
 }
 const eventManagerSettings = {
-    creationCost: 5,
-    updatedCreationCost: 20
 }
 
 describe('Event Manager', () => {
     let deployer;
-    let adminAccount = accounts[1];
-    let userAccount = accounts[2];
-    let tokenOwnerAccount = accounts[3];
-    let communityDeployOwnerAccount = accounts[3];
+    let adminAccount = devnetAccounts[1];
+    let userAccount = devnetAccounts[2];
+    let tokenOwnerAccount = devnetAccounts[3];
+    let communityDeployOwnerAccount = devnetAccounts[3];
 
 
     let tokenManagerInstance, 
@@ -121,7 +119,7 @@ describe('Event Manager', () => {
     eventManagerInstance;
 
     beforeEach('', async () => {
-        deployer = new etherlime.EtherlimeGanacheDeployer(adminAccount.secretKey);
+        deployer = new etherlime.EtherlimeDevnetDeployer(adminAccount.secretKey);
         pseudoDaiInstance = await deployer.deploy(
             PseudoDaiToken, 
             false, 
@@ -145,8 +143,7 @@ describe('Event Manager', () => {
             EventManager, 
             false, 
             tokenManagerInstance.contract.address,
-            rewardManagerInstance.contract.address,
-            eventManagerSettings.creationCost
+            rewardManagerInstance.contract.address
         );
 
         // Loading accounts with tokens
