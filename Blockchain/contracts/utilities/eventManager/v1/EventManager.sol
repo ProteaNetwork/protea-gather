@@ -1,33 +1,28 @@
-pragma solidity ^0.5.2;
+pragma solidity >=0.5.3 < 0.6.0;
 
-import "../_resources/openzeppelin-solidity/math/SafeMath.sol";
-import "../membershipManager/IRewardIssuer.sol";
-import "../_resources/ERC223/ERC223Receiver.sol";
-import "../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import "../../../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import "../../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 
-contract EventManager is IRewardIssuer, ERC223Receiver {
+/// @author Ryan @ Protea
+/// @title Basic staked event manager
+contract EventManager {
     using SafeMath for uint256;
 
-    address public tokenManager;
-    address public rewardManager;
-    address public admin; // Debug admin
+    address internal tokenManager_;
+    address internal membershipManager_;
+    address internal admin; // Debug admin // 
 
-    uint256 public creationCost = 5; // Defaulting for demo
-    uint256 public numberOfEvents = 0;
+    uint256 internal numberOfEvents = 0;
 
    
-    mapping(uint256 => EventData) public events;
+    mapping(uint256 => EventData) internal events;
     /// For a reward to be issued, user state must be set to 99, meaning "Rewardable" this is to be considered the final state of users in issuer contracts
-    mapping(uint256 => mapping(address => uint8)) public memberState;
+    mapping(uint256 => mapping(address => uint8)) internal memberState;
     // States:
     // 0: Not registered
     // 1: RSVP'd
     // 98: Paid
     // 99: Attended (Rewardable)
-
-    // Encoded function sigs 
-    bytes4 CREATE_EVENT_SIG = bytes4(keccak256("_createEvent(string,uint24,address,uint256,uint256)"));
-    bytes4 RSVP_SIG = bytes4(keccak256("_rsvp(uint256,address)"));
 
     // Ordered for struct packing
     struct EventData{
@@ -35,7 +30,6 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         uint256 requiredStake;
         uint256 totalStaked;
         uint256 payout;
-        uint256 creationDeposit;
         uint24 state;
         uint24 maxAttendees;
         uint24 currentAttendees;
@@ -59,12 +53,12 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
     }
 
     modifier onlyToken(){
-        require(msg.sender == address(tokenManager), "Not registered token address");
+        require(msg.sender == address(tokenManager_), "Not registered token address");
         _;
     }
 
-    modifier onlyRewardManager() {
-        require(msg.sender == rewardManager, "Only reward manager authorised");
+    modifier onlyMembershipManager() {
+        require(msg.sender == membershipManager_, "Only membership manager authorised");
         _;
     }
 
@@ -76,18 +70,6 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
     // Pseudo private modifier for function through staking execution 
     modifier onlySelf(){
         require(msg.sender == address(this), "Callable through staking only");
-        _;
-    }
-
-    modifier onlyAcceptedFunction(bytes memory _data, uint256 _value) {
-        bytes4 functionSignature = extractSignature(_data);
-        require(functionSignature == CREATE_EVENT_SIG || functionSignature == RSVP_SIG, "Function Signature not recognised");
-        if(functionSignature == RSVP_SIG){
-            uint256 index = extractIndex(_data);
-            require(events[index].requiredStake == _value, "Incorrect staking amount");
-        } else {
-            require(_value == creationCost, "Incorrect staking amount");
-        }
         _;
     }
 
@@ -112,30 +94,13 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
       */
     constructor (
         address _tokenManager, 
-        address _rewardManager, 
-        uint256 _creationCost
+        address _membershipManager
     ) 
         public 
     {
         admin = msg.sender;
-        tokenManager = _tokenManager;
-        rewardManager = _rewardManager;
-        creationCost = _creationCost;
-    }
-
-    /**
-      * @dev Updates the creation cost and bonus for events 
-      *     that max out attendance. This function is only callable by the 
-      *     admin/creator of this contract.
-      * @param _creationCost : The price of creating an event
-      */
-    function updateStakes(
-        uint256 _creationCost
-    ) 
-        public 
-        onlyAdmin()
-    {
-        creationCost = _creationCost;
+        tokenManager_ = _tokenManager;
+        membershipManager_ = _membershipManager;
     }
 
     /**
@@ -157,7 +122,6 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         onlySelf() 
         returns(bool) 
     {
-        require(_forwardStake(creationCost), "Must forward funds to the reward manager");
         uint256 index = numberOfEvents;
         
         events[index].name = _name;
@@ -165,7 +129,6 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         events[index].organiser = _organiser;
         events[index].requiredStake = _requiredStake;
         events[index].state = 1;
-        events[index].creationDeposit = creationCost;
 
         memberState[index][_organiser] = 99;
 
@@ -264,18 +227,6 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         emit EventConcluded(_index, msg.sender, events[_index].state);
     }
 
-    /**
-      * @dev Forwards an amount of a members stake. 
-      * @param _amount : The amount of stake to forward.
-      */
-    function _forwardStake(uint256 _amount) 
-        internal 
-        returns(bool) 
-    {
-        IERC20 token = IERC20(tokenManager);
-        token.transfer(rewardManager, _amount);    
-        return true;
-    }
 
     /**
       * @dev Allows a member to RSVP for an event.
@@ -289,11 +240,12 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
         returns (bool)
     {
         require(memberState[_index][_member] == 0, "RSVP not available");
-        require(_forwardStake(events[_index].requiredStake), "Must forward funds to the reward manager");
+        // require(_forwardStake(events[_index].requiredStake), "Must forward funds to the reward manager");
+        // TODO: lock up collateral in MM
         /// Send stake to reward manager
         /// Updated state
         memberState[_index][_member] = 1;
-        events[_index].totalStaked.add(events[_index].requiredStake);
+        events[_index].totalStaked.add(events[_index].requiredStake); // TODO: Get this from MM 
         events[_index].currentAttendees++;
         emit MemberRegistered(_index, _member);
         return true;
@@ -316,22 +268,6 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
 
   
     /**
-      * @dev Allows the token manager to execute functions having been sent stake 
-      *      in one call/
-      * @param _from : The original account executing the function call.
-      * @param _value : The amount of tokens sent with the call.
-      * @param _data : The encoded function call. 
-      */
-    function tokenFallback(address _from, uint _value, bytes calldata _data) 
-        external 
-        onlyToken() 
-        onlyAcceptedFunction(_data, _value)
-    {
-        (bool success, bytes memory data) = address(this).call(_data);
-        require(success, "Call on encoded function failed.");
-    }
-
-    /**
       * @dev Calculates the payout for atendees.
       * @param _index : The index of the event in the event manager.
       */
@@ -349,16 +285,11 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
       */
     function payout(address _member, uint256 _index) 
         external 
-        onlyRewardManager() 
         onlyMember(_member, _index) 
         returns(uint256)
     {
         require(memberState[_index][_member] == 99, "No stake available to be returned");
         require(events[_index].state == 3 || events[_index].state == 4, "Event not ended");
-        if(events[_index].organiser == _member){
-            memberState[_index][_member] = 98;
-            return events[_index].creationDeposit;
-        }
 
         if(events[_index].state == 3){
             memberState[_index][_member] = 98;
@@ -367,29 +298,5 @@ contract EventManager is IRewardIssuer, ERC223Receiver {
             memberState[_index][_member] = 98;
             return events[_index].requiredStake;
         }
-    }
-
-    /**
-      * @dev Extract the signature from calldata bytes
-      * @param _data : Calldata to be parse to extract signature 
-      */
-    function extractSignature(bytes memory _data) private pure returns (bytes4) {
-        return (bytes4(_data[0]) | bytes4(_data[1]) >> 8 |
-            bytes4(_data[2]) >> 16 | bytes4(_data[3]) >> 24);
-    }
-
-    /**
-      * @dev Extract the signature from calldata bytes
-      * @param _data : Calldata to be parse to extract signature 
-      */
-    function extractIndex(bytes memory _data) private pure returns (uint256) {
-        uint256 outInt;
-        
-        // We here skip the function signature (4 bytes so skipping 0x20 + 4)
-        assembly {
-            outInt := mload(add(_data, 0x24))
-        }
-
-        return outInt;
     }
 }
