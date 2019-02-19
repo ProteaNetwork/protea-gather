@@ -46,7 +46,7 @@ contract ICommunityFactory {
     /// @return Community               Returns a Community struct matching the provided index
     /// @author Ryan
     function getCommunity(uint256 _index)
-        public
+        external
         view
         returns(
             string memory,

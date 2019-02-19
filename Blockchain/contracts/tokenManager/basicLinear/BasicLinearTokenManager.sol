@@ -165,7 +165,7 @@ contract BasicLinearTokenManager {
     /// @param _spender     :address The account that will receive the funds.
     /// @return             An uint256 representing the amount owned by the passed address.
     function allowance(address _owner, address _spender) 
-        public 
+        external 
         view 
         returns (uint256) 
     {
@@ -175,37 +175,37 @@ contract BasicLinearTokenManager {
     /// @dev                Gets the balance of the specified address.
     /// @param _owner       :address The address to query the the balance of.
     /// @return             An uint256 representing the amount owned by the passed address.
-    function balanceOf(address _owner) public view returns (uint256) {
+    function balanceOf(address _owner) external view returns (uint256) {
         return balances[_owner];
     }
 
     /// @dev                Total number of tokens in existence
     /// @return             A uint256 representing the total supply of tokens in this market
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external view returns (uint256) {
         return totalSupply_;
     }
 
     /// @dev                Returns the address where community revenue is sent
     /// @return             :address Address of the revenue storing account
-    function revenueTarget() public view returns(address) {
+    function revenueTarget() external view returns(address) {
         return revenueTarget_;
     }
 
     /// @dev                Returns the contribution rate for the community on Token purchase
     /// @return             :uint256 The percentage of incoming collateral collected as revenue
-    function contributionRate() public view returns(uint256) {
+    function contributionRate() external view returns(uint256) {
         return contributionRate_;
     }
 
     /// @dev                Returns the decimals set for the community
     /// @return             :uint256 The decimals set for the community
-    function decimals() public view returns(uint256) {
+    function decimals() external view returns(uint256) {
         return decimals_;
     }
 
     /// @dev                Returns the gradient for the communities curve
     /// @return             :uint256 The gradient for the communities curve
-    function gradientDenominator() public view returns(uint256) {
+    function gradientDenominator() external view returns(uint256) {
         return gradientDenominator_;
     }
 

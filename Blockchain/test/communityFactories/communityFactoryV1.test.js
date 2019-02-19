@@ -119,7 +119,6 @@ describe('Community factory', () => {
             );
         });
 
-        it('(WIP)Initalizes membership manager correctly', async () =>{
-        })
+        it('(WIP)Initalizes membership manager correctly')
     });
 });
