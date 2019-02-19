@@ -1,8 +1,8 @@
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 
-var PseudoDaiToken = require('../build/PseudoDaiToken.json');
-var CommunityFactory = require('../build/CommunityFactory.json');
+var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
+var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 
 const communitySettings = {
     name: "Community 1",
@@ -35,7 +35,7 @@ describe('Community factory', () => {
         );
 
         communityFactoryInstance = await deployer.deploy(
-            CommunityFactory, 
+            CommunityFactoryV1, 
             false, 
             pseudoDaiInstance.contract.address,
             proteaAdmin.wallet.address

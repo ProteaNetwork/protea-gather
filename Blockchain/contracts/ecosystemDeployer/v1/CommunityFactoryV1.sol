@@ -1,13 +1,13 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import "../../tokenManager/basicLinear/TokenManager.sol";
+import "../../tokenManager/basicLinear/BasicLinearTokenManager.sol";
 import "../../membershipManager/v1/MembershipManager.sol";
 import "../../utilities/eventManager/v1/EventManager.sol";
 import "../ICommunityFactory.sol";
 
 /// @author Ryan @ Protea 
 /// @title V1 Community ecosystem factory
-contract CommunityFactory is ICommunityFactory{
+contract CommunityFactoryV1 is ICommunityFactory{
     address internal admin_;
     address internal daiAddress_;
     address internal proteaAccount_;
@@ -46,7 +46,7 @@ contract CommunityFactory is ICommunityFactory{
         ));
 
         address tokenManagerAddress = address(
-            new TokenManager(
+            new BasicLinearTokenManager(
                 _communityName,
                 _communitySymbol,
                 daiAddress_,

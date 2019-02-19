@@ -1,9 +1,9 @@
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 
-var PseudoDaiToken = require('../build/PseudoDaiToken.json');
-var TokenManager = require('../build/TokenManager.json');
-var CommunityFactory = require('../build/CommunityFactory.json');
+var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
+var BasicLinearTokenManager = require('../../build/BasicLinearTokenManager.json');
+var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 
 const communitySettings = {
     name: "community",
@@ -37,7 +37,7 @@ describe('Token Manager', () => {
         );
 
         communityFactoryInstance = await deployer.deploy(
-            CommunityFactory, 
+            CommunityFactoryV1, 
             false, 
             pseudoDaiInstance.contract.address,
             proteaAdmin.wallet.address
@@ -54,7 +54,7 @@ describe('Token Manager', () => {
         let communityDetails = await communityFactoryInstance
             .from(communityCreatorAccount.wallet.address)
             .getCommunity(0);
-        tokenManagerInstance = await etherlime.ContractAtDevnet(TokenManager, communityDetails[3]);
+        tokenManagerInstance = await etherlime.ContractAtDevnet(BasicLinearTokenManager, communityDetails[3]);
     });
 
     describe('Token functionality', async () => {

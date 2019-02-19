@@ -6,7 +6,7 @@ import "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
 /// @author Ben, Veronica & Ryan of Linum Labs
 /// @author Ryan N.                 RyRy79261
 /// @title Basic Linear Token Manager
-contract TokenManager {
+contract BasicLinearTokenManager {
     using SafeMath for uint256;
 
     address internal membershipManager_;

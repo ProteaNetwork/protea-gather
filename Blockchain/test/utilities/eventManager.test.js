@@ -1,11 +1,11 @@
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 
-var EventManager = require('../build/EventManager.json');
-var TokenManager = require('../build/TokenManager.json');
-var PseudoDaiToken = require('../build/PseudoDaiToken.json');
-var PseudoDaiToken = require('../build/PseudoDaiToken.json');
-var RewardManager = require('../build/RewardManager.json');
+var EventManager = require('../../build/EventManager.json');
+var TokenManager = require('../../build/TokenManager.json');
+var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
+var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
+var RewardManager = require('../../build/RewardManager.json');
 
 const createABI =  {
     "constant": false,
