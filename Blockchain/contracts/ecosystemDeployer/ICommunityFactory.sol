@@ -22,14 +22,14 @@ contract ICommunityFactory {
         address[] utilities
     );
 
-    /// @dev                            Allows the creation of a community
+    /// Allows the creation of a community
     /// @param _communityName           :string Name of the community
     /// @param _communitySymbol         :string Symbol of the community token
     /// @param _communityManager        :address The address of the super admin
     /// @param _gradientDemoninator     :uint256 The gradient modifier in the curve, not required in V1
-    /// @param _contributionRate        :uint256 Percentage of incoming DAI to be diverted to the community account
+    /// @param _contributionRate        :uint256 Percentage of incoming DAI to be diverted to the community account, from 0 to 100
     /// @return uint256                 Index of the deployed ecosystem
-    /// @notice                         Also sets a super admin for changing factories at a later stage, unused at present
+    /// @dev                            Also sets a super admin for changing factories at a later stage, unused at present
     /// @author Ryan
     function createCommunity(
         string calldata _communityName,
@@ -41,8 +41,9 @@ contract ICommunityFactory {
         external
         returns(uint256);
 
-    /// @dev                            Fetches all data and contract addresses of deployed communities by index
+    /// Fetching community data
     /// @param _index                   :uint256 Index of the community
+    /// @dev                            Fetches all data and contract addresses of deployed communities by index
     /// @return Community               Returns a Community struct matching the provided index
     /// @author Ryan
     function getCommunity(uint256 _index)

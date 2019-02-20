@@ -4,6 +4,7 @@ const ethers = require('ethers');
 var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
 var ITokenManager = require('../../build/ITokenManager.json');
 var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
+var MembershipManagerV1 = require('../../build/MembershipManagerV1.json');
 
 const communitySettings = {
     name: "community",
@@ -24,8 +25,7 @@ describe('V1 Membership Manager', () => {
     let proteaAdmin = devnetAccounts[0];
     let userAccount = devnetAccounts[1];
     let communityCreatorAccount = devnetAccounts[2];
-    let anotherCommunityCreatorAccount = devnetAccounts[3];
-    let tokenManagerInstance, pseudoDaiInstance, communityFactoryInstance;
+    let membershipManagerInstance, tokenManagerInstance, pseudoDaiInstance, communityFactoryInstance;
   
     beforeEach('', async () => {
         deployer = new etherlime.EtherlimeDevnetDeployer(proteaAdmin.secretKey);
@@ -57,6 +57,7 @@ describe('V1 Membership Manager', () => {
             .from(communityCreatorAccount.wallet.address)
             .getCommunity(0);
         tokenManagerInstance = await etherlime.ContractAtDevnet(BasicLinearTokenManager, communityDetails[3]);
+        membershipManagerInstance = await etherlime.ContractAtDevnet(MembershipManagerV1, communityDetails[2]);
     });
 
     describe('Deployment checks', async () => {
@@ -95,7 +96,15 @@ describe('V1 Membership Manager', () => {
     describe("Meta data view tests", async () => {
         it("Gets membership status")
         it("Gets reputation of member")
-        it("Returns the token manager")
+        it("Returns the token manager", async () => {
+            // const tokenManager = await membershipManagerInstance
+            //     .from(communityCreatorAccount.wallet.address)
+            //     .tokenManager();
+            // assert.equal(
+            //     tokenManager,
+            //     tokenManagerInstance.contract.address
+            // )
+        })
         it("Returns utility data")
         it("Returns utility item data")
         it("Returns members contribution to utility item")

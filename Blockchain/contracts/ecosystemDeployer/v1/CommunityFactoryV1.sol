@@ -12,10 +12,10 @@ contract CommunityFactoryV1 is ICommunityFactory{
     address internal daiAddress_;
     address internal proteaAccount_;
 
-    /// @notice                         Constructor of V1 factory
+    /// Constructor of V1 factory
     /// @param _daiTokenAddress         Address of the DAI token account
     /// @param _proteaAccount           Address of the Protea DAI account
-    /// @dev                            Also sets a super admin for changing factories at a later stage, unused at present
+    /// @notice                         Also sets a super admin for changing factories at a later stage, unused at present
     /// @author Ryan                
     constructor (address _daiTokenAddress, address _proteaAccount) public {
         admin_ = msg.sender;
@@ -23,7 +23,7 @@ contract CommunityFactoryV1 is ICommunityFactory{
         proteaAccount_ = _proteaAccount;
     }
 
-    /// @notice                         Allows the creation of a community
+    /// Allows the creation of a community
     /// @param _communityName           :string Name of the community
     /// @param _communitySymbol         :string Symbol of the community token
     /// @param _communityManager        :address The address of the super admin
@@ -86,8 +86,9 @@ contract CommunityFactoryV1 is ICommunityFactory{
         return index;
     }
 
-    /// @notice                         Fetches all data and contract addresses of deployed communities by index
+    /// Fetching community data
     /// @param _index                   :uint256 Index of the community
+    /// @dev                            Fetches all data and contract addresses of deployed communities by index
     /// @return Community               Returns a Community struct matching the provided index
     /// @author Ryan
     function getCommunity(uint256 _index)
