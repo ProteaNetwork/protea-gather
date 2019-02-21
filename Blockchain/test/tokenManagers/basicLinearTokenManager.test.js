@@ -19,7 +19,7 @@ const daiSettings = {
 
 const defaultTokenVolume = 100;
 
-describe('Token Manager', () => {
+describe('V1 Token Manager', () => {
     let deployer;
     let proteaAdmin = devnetAccounts[0];
     let userAccount = devnetAccounts[1];
