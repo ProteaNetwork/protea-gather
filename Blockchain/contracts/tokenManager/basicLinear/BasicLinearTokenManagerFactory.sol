@@ -5,6 +5,10 @@ import { BaseFactory } from "../../shared/interfaces/BaseFactory.sol";
 import { ITokenManagerFactory } from "../ITokenManagerFactory.sol";
 
 contract BasicLinearTokenManagerFactory is BaseFactory, ITokenManagerFactory {
+    constructor(address _rootFactory) public BaseFactory(_rootFactory) {
+
+    }
+    
     function deployMarket(
         string calldata _name,
         string calldata _symbol,

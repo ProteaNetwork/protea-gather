@@ -4,6 +4,10 @@ const ethers = require('ethers');
 var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
 var BasicLinearTokenManager = require('../../build/BasicLinearTokenManager.json');
 var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
+var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
+var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory.json');
+var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
+
 
 const communitySettings = {
     name: "community",
@@ -41,8 +45,36 @@ describe('V1 Token Manager', () => {
             CommunityFactoryV1, 
             false, 
             pseudoDaiInstance.contract.address,
-            proteaAdmin.wallet.address
+            proteaAdmin.wallet.address,
         );
+
+        const tokenManagerFactoryInstance = await deployer.deploy(
+            BasicLinearTokenManagerFactory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const membershipManagerFactoryInstance = await deployer.deploy(
+            MembershipManagerV1Factory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const eventManagerFactoryInstance = await deployer.deploy(
+            EventManagerV1Factory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const result = await (await communityFactoryInstance
+            .from(proteaAdmin.wallet.address)
+            .initialize(
+                [
+                    tokenManagerFactoryInstance.contract.address,
+                    membershipManagerFactoryInstance.contract.address,
+                    eventManagerFactoryInstance.contract.address
+                ]
+            )).wait();
 
         const txReceipt = await(await communityFactoryInstance
             .from(communityCreatorAccount)

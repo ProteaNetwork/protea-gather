@@ -3,6 +3,9 @@ const ethers = require('ethers');
 
 var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
 var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
+var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
+var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory.json');
+var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
 
 const communitySettings = {
     name: "Community 1",
@@ -26,7 +29,7 @@ describe('Community factory', () => {
     let communityFactoryInstance, pseudoDaiInstance;
 
     beforeEach('', async () => {
-        deployer = new etherlime.EtherlimeDevnetDeployer(proteaAdmin.secretKey);
+        deployer = new etherlime.EtherlimeDevnetDeployer(adminAccount.secretKey);
         pseudoDaiInstance = await deployer.deploy(
             PseudoDaiToken, 
             false, 
@@ -41,6 +44,34 @@ describe('Community factory', () => {
             pseudoDaiInstance.contract.address,
             proteaAdmin.wallet.address,
         );
+
+        const tokenManagerFactoryInstance = await deployer.deploy(
+            BasicLinearTokenManagerFactory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const membershipManagerFactoryInstance = await deployer.deploy(
+            MembershipManagerV1Factory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const eventManagerFactoryInstance = await deployer.deploy(
+            EventManagerV1Factory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const result = await (await communityFactoryInstance
+            .from(adminAccount.wallet.address)
+            .initialize(
+                [
+                    tokenManagerFactoryInstance.contract.address,
+                    membershipManagerFactoryInstance.contract.address,
+                    eventManagerFactoryInstance.contract.address
+                ]
+            )).wait();
     });
 
     describe('Deployment', async () => {
@@ -119,6 +150,12 @@ describe('Community factory', () => {
             );
         });
 
-        it('(WIP)Initalizes membership manager correctly')
+        it('Initalizes factories correctly correctly')
+        it('Initalizes membership manager correctly')
     });
+    describe("Admin controls", () => {
+        it("Sets the token manager factory");
+        it("Sets the membership manager factory");
+        it("Sets the event manager factory");
+    })
 });

@@ -2,7 +2,7 @@ pragma solidity >=0.5.3 < 0.6.0;
 
 /// @author Ryan @ Protea 
 /// @title Community Factory interface for later expansion 
-contract ICommunityFactory {
+contract BaseCommunityFactory {
     struct Community {
         string name;
         address creator;
@@ -30,6 +30,17 @@ contract ICommunityFactory {
         address[] utilities
     );
 
+    /// Constructor of V1 factory
+    /// @param _daiTokenAddress         Address of the DAI token account
+    /// @param _proteaAccount           Address of the Protea DAI account
+    /// @notice                         Also sets a super admin for changing factories at a later stage, unused at present
+    /// @author Ryan                
+    constructor (address _daiTokenAddress, address _proteaAccount) public {
+        admin_ = msg.sender;
+        daiAddress_ = _daiTokenAddress;
+        proteaAccount_ = _proteaAccount;
+    }
+    
     modifier onlyAdmin() {
         require(msg.sender == admin_, "Not authorised");
         _;
@@ -78,4 +89,6 @@ contract ICommunityFactory {
             address,
             address[] memory
         );
+
+    function getFactories() external view returns (address[] memory);
 }

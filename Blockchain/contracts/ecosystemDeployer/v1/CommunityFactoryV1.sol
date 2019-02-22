@@ -4,13 +4,11 @@ import { ITokenManagerFactory } from "../../tokenManager/ITokenManagerFactory.so
 import { IMembershipFactory } from "../../membershipManager/IMembershipFactory.sol";
 import { IMembershipManager } from "../../membershipManager/IMembershipManager.sol";
 import { IEventManagerFactory } from "../../utilities/eventManager/IEventManagerFactory.sol";
-import { ICommunityFactory } from "../ICommunityFactory.sol";
+import { BaseCommunityFactory } from "../BaseCommunityFactory.sol";
 
 /// @author Ryan @ Protea 
 /// @title V1 Community ecosystem factory
-contract CommunityFactoryV1 is ICommunityFactory{
-    address internal daiAddress_;
-    address internal proteaAccount_;
+contract CommunityFactoryV1 is BaseCommunityFactory{
     address internal eventManagerFactory_;
 
     /// Constructor of V1 factory
@@ -18,10 +16,7 @@ contract CommunityFactoryV1 is ICommunityFactory{
     /// @param _proteaAccount           Address of the Protea DAI account
     /// @notice                         Also sets a super admin for changing factories at a later stage, unused at present
     /// @author Ryan                
-    constructor (address _daiTokenAddress, address _proteaAccount) public {
-        admin_ = msg.sender;
-        daiAddress_ = _daiTokenAddress;
-        proteaAccount_ = _proteaAccount;
+    constructor (address _daiTokenAddress, address _proteaAccount) public BaseCommunityFactory(_daiTokenAddress, _proteaAccount) {
     }
 
     /// @dev                            By passing through a list, this allows greater flexibility of the interface for different factories
@@ -75,7 +70,7 @@ contract CommunityFactoryV1 is ICommunityFactory{
         external
         returns(uint256)
     {
-        address membershipManagerAddress = IMembershipFactory(membershipManagerFactory_).deployMembershipModule(_communityManager);
+        address membershipManagerAddress = IMembershipFactory(membershipManagerFactory_).deployMembershipManager(_communityManager);
 
         address tokenManagerAddress = ITokenManagerFactory(tokenManagerFactory_).deployMarket(
             _communityName,
@@ -87,7 +82,7 @@ contract CommunityFactoryV1 is ICommunityFactory{
             membershipManagerAddress
         );
 
-        IMembershipManager(membershipManagerAddress).initialize(tokenManagerAddress);
+        IMembershipFactory(membershipManagerFactory_).initialize(tokenManagerAddress, membershipManagerAddress);
 
         address eventManagerAddress = IEventManagerFactory(eventManagerFactory_).deployEventManager(
             tokenManagerAddress,
@@ -139,4 +134,12 @@ contract CommunityFactoryV1 is ICommunityFactory{
         );
     }
 
+    function getFactories() external view returns (address[] memory) {
+        address[] memory factories = new address[](3);
+        factories[0] = tokenManagerFactory_;
+        factories[1] = membershipManagerFactory_;
+        factories[2] = eventManagerFactory_;
+
+        return factories;
+    }
 }

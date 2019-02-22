@@ -72,6 +72,7 @@ contract MembershipManagerV1 {
         require(tokenManager_ == address(0), "Contracts initalised");
         tokenManager_ = _tokenManager;
         systemAdmins_.remove(msg.sender);
+        return true;
     }
 
     function addUtility(address _utility) external onlyAdmin{
