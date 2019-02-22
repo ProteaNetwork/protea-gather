@@ -1,6 +1,6 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import { ERC20 } from "./_resources/openzeppelin-solidity/token/ERC20/ERC20.sol";
+import { ERC20, SafeMath } from "./_resources/openzeppelin-solidity/token/ERC20/ERC20.sol";
 
 contract PseudoDaiToken is ERC20 {
     using SafeMath for uint256;
