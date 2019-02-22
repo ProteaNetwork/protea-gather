@@ -61,7 +61,7 @@ contract CommunityFactoryV1 is ICommunityFactory{
         MembershipManagerV1(membershipManagerAddress).initialize(tokenManagerAddress);
 
         address eventManagerAddress = address( 
-            new EventManager(
+            new EventManagerV1(
                 tokenManagerAddress,
                 membershipManagerAddress
         ));

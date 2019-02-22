@@ -5,7 +5,7 @@ import "../../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 
 /// @author Ryan @ Protea
 /// @title Basic staked event manager
-contract EventManager {
+contract EventManagerV1 {
     using SafeMath for uint256;
 
     address internal tokenManager_;
