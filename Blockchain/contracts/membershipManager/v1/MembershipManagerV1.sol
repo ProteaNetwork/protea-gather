@@ -1,9 +1,9 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
-import "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
-import "../../_resources/openzeppelin-solidity/access/Roles.sol";
-import "../../tokenManager/ITokenManager.sol";
+import { IERC20 } from "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import { SafeMath } from "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import { Roles } from "../../_resources/openzeppelin-solidity/access/Roles.sol";
+import { ITokenManager } from "../../tokenManager/ITokenManager.sol";
 
 // Use Library for Roles: https://openzeppelin.org/api/docs/learn-about-access-control.html
 

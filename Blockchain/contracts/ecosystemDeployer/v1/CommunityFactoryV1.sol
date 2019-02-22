@@ -1,16 +1,17 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import "../../tokenManager/basicLinear/BasicLinearTokenManager.sol";
-import "../../membershipManager/v1/MembershipManagerV1.sol";
-import "../../utilities/eventManager/v1/EventManagerV1.sol";
-import "../ICommunityFactory.sol";
+import { ITokenManagerFactory } from "../../tokenManager/ITokenManagerFactory.sol";
+import { IMembershipFactory } from "../../membershipManager/IMembershipFactory.sol";
+import { IMembershipManager } from "../../membershipManager/IMembershipManager.sol";
+import { IEventManagerFactory } from "../../utilities/eventManager/IEventManagerFactory.sol";
+import { ICommunityFactory } from "../ICommunityFactory.sol";
 
 /// @author Ryan @ Protea 
 /// @title V1 Community ecosystem factory
 contract CommunityFactoryV1 is ICommunityFactory{
-    address internal admin_;
     address internal daiAddress_;
     address internal proteaAccount_;
+    address internal eventManagerFactory_;
 
     /// Constructor of V1 factory
     /// @param _daiTokenAddress         Address of the DAI token account
@@ -21,6 +22,38 @@ contract CommunityFactoryV1 is ICommunityFactory{
         admin_ = msg.sender;
         daiAddress_ = _daiTokenAddress;
         proteaAccount_ = _proteaAccount;
+    }
+
+    /// @dev                            By passing through a list, this allows greater flexibility of the interface for different factories
+    /// @param _factories               :address[]  List of factories
+    /// @notice                         Introspection or interface confirmation should be used at later stages
+    function initialize(address[] calldata _factories) external onlyAdmin(){
+        require(tokenManagerFactory_ == address(0), "Already initialised");
+        tokenManagerFactory_ = _factories[0];
+        membershipManagerFactory_ = _factories[1];
+        eventManagerFactory_ = _factories[2];
+
+        emit FactoryRegistered(address(0), tokenManagerFactory_);
+        emit FactoryRegistered(address(0), membershipManagerFactory_);
+        emit FactoryRegistered(address(0), eventManagerFactory_);
+    }
+
+    function setTokenManagerFactory(address _newFactory) external onlyAdmin() {
+        address oldFactory = tokenManagerFactory_;
+        tokenManagerFactory_ = _newFactory;
+        emit FactoryRegistered(oldFactory, tokenManagerFactory_);
+    }
+
+    function setMembershipManagerFactory(address _newFactory) external onlyAdmin() {
+        address oldFactory = membershipManagerFactory_;
+        membershipManagerFactory_ = _newFactory;
+        emit FactoryRegistered(oldFactory, membershipManagerFactory_);
+    }
+
+    function setEventManagerFactory(address _newFactory) external onlyAdmin() {
+        address oldFactory = eventManagerFactory_;
+        eventManagerFactory_ = _newFactory;
+        emit FactoryRegistered(oldFactory, eventManagerFactory_);
     }
 
     /// Allows the creation of a community
@@ -42,29 +75,24 @@ contract CommunityFactoryV1 is ICommunityFactory{
         external
         returns(uint256)
     {
-        address membershipManagerAddress = address(
-            new MembershipManagerV1(
-                _communityManager
-        ));
+        address membershipManagerAddress = IMembershipFactory(membershipManagerFactory_).deployMembershipModule(_communityManager);
 
-        address tokenManagerAddress = address(
-            new BasicLinearTokenManager(
-                _communityName,
-                _communitySymbol,
-                daiAddress_,
-                proteaAccount_,
-                _communityManager,
-                _contributionRate,
-                membershipManagerAddress
-        ));
+        address tokenManagerAddress = ITokenManagerFactory(tokenManagerFactory_).deployMarket(
+            _communityName,
+            _communitySymbol,
+            daiAddress_,
+            proteaAccount_,
+            _communityManager,
+            _contributionRate,
+            membershipManagerAddress
+        );
 
-        MembershipManagerV1(membershipManagerAddress).initialize(tokenManagerAddress);
+        IMembershipManager(membershipManagerAddress).initialize(tokenManagerAddress);
 
-        address eventManagerAddress = address( 
-            new EventManagerV1(
-                tokenManagerAddress,
-                membershipManagerAddress
-        ));
+        address eventManagerAddress = IEventManagerFactory(eventManagerFactory_).deployEventManager(
+            tokenManagerAddress,
+            membershipManagerAddress
+        );
 
         uint256 index = numberOfCommunities_;
         numberOfCommunities_ = numberOfCommunities_ + 1;

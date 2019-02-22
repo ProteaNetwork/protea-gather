@@ -1,7 +1,7 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
-import "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import { IERC20 } from "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import { SafeMath } from "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
 
 /// @author Ben, Veronica & Ryan of Linum Labs
 /// @author Ryan N.                 RyRy79261

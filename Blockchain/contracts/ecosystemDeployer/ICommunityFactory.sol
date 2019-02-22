@@ -14,6 +14,14 @@ contract ICommunityFactory {
     mapping(uint256 => Community) internal communities_;
     uint256 internal numberOfCommunities_ = 0;
 
+    address internal daiAddress_;
+    address internal proteaAccount_;
+    address internal admin_;
+    address internal tokenManagerFactory_;
+    address internal membershipManagerFactory_;
+
+    event FactoryRegistered(address oldFactory, address newFactory);
+
     event CommunityCreated(
         address indexed publisher,
         uint256 index, 
@@ -21,6 +29,11 @@ contract ICommunityFactory {
         address indexed membershipManager, 
         address[] utilities
     );
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin_, "Not authorised");
+        _;
+    }
 
     /// Allows the creation of a community
     /// @param _communityName           :string Name of the community
@@ -40,6 +53,15 @@ contract ICommunityFactory {
     )
         external
         returns(uint256);
+
+    /// @dev                            By passing through a list, this allows greater flexibility of the interface for different factories
+    /// @param _factories               :address[]  List of factories
+    /// @notice                         Introspection or interface confirmation should be used at later stages
+    function initialize(address[] calldata _factories) external;
+
+    function setTokenManagerFactory(address _newFactory) external;
+
+    function setMembershipManagerFactory(address _newFactory) external;
 
     /// Fetching community data
     /// @param _index                   :uint256 Index of the community
