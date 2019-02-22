@@ -2,7 +2,8 @@ pragma solidity >=0.5.3 < 0.6.0;
 
 import "../../tokenManager/basicLinear/BasicLinearTokenManager.sol";
 import "../../membershipManager/v1/MembershipManagerV1.sol";
-import "../../utilities/eventManager/v1/EventManager.sol";
+import "../../utilities/eventManager/v1/EventManagerV1.sol";
+import "../ICommunityFactory.sol";
 
 /// @author Ryan @ Protea 
 /// @title V1 Community ecosystem factory
