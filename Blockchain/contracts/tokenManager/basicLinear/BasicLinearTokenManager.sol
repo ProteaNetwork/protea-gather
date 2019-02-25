@@ -154,7 +154,9 @@ contract BasicLinearTokenManager {
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+        if(msg.sender != membershipManager_){
+            allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+        }
         totalSupply_ = totalSupply_.add(_value);
         emit Transfer(_from, _to, _value);
         return true;

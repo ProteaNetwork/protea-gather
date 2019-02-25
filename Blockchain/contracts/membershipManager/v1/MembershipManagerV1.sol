@@ -114,13 +114,13 @@ contract MembershipManagerV1 {
     }
   
     function stakeMembership(uint256 _daiValue, address _member) external returns(bool) {
-        // uint256 requiredTokens = ITokenManager(tokenManager_).colateralToTokenSelling(_daiValue);
-        // require(ITokenManager(tokenManager_).transferFrom(_member, address(this), requiredTokens), "Transfer was not complete");
-        // if(membershipState_[_member].currentDate == 0){
-        //     membershipState_[_member].currentDate = now;
-        // }
-        // membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(requiredTokens);
-        // // Emit event
+        uint256 requiredTokens = ITokenManager(tokenManager_).colateralToTokenSelling(_daiValue);
+        require(ITokenManager(tokenManager_).transferFrom(_member, address(this), requiredTokens), "Transfer was not complete");
+        if(membershipState_[_member].currentDate == 0){
+            membershipState_[_member].currentDate = now;
+        }
+        membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(requiredTokens);
+        // Emit event
         return true;
     }
 

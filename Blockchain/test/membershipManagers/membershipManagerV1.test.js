@@ -279,6 +279,13 @@ describe('V1 Membership Manager', () => {
             const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
             console.log(ethers.utils.formatUnits(requiredTokensBN,18))
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+            console.log(totalSupply)
             await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
 
         })
