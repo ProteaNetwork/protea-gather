@@ -224,6 +224,34 @@ describe('V1 Token Manager', () => {
                     "Users PDAI has not decreased"
                 );
 
+
+
+                // Check reward for burn
+                let currentBalance = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .balanceOf(
+                        userAccount.wallet.address
+                );
+                let rewardforBurnDAI = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .rewardForBurn(
+                        currentBalance
+                );
+
+                // Check volume for withdraw
+                let rewardforBurnToken = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .colateralToTokenSelling(
+                        rewardforBurnDAI
+                );
+
+                assert.equal(
+                    ethers.utils.formatUnits(currentBalance, 18),
+                    ethers.utils.formatUnits(rewardforBurnToken, 18),
+                    "Issue in burn calculation"
+                )
+                
+
                 await tokenManagerInstance
                     .from(userAccount.wallet.address)
                     .burn(userTokenBalanceAfterMint.div(2));
@@ -253,6 +281,74 @@ describe('V1 Token Manager', () => {
                     "Users has incorrect token balance"
                 );
             });
+
+
+            it("Returns burning values correctly", async () => {
+                let priceOfMint = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits(`1`, 18)
+                );
+                let userPDAIBalanceBeforeMint = await pseudoDaiInstance
+                    .from(userAccount.wallet.address)
+                    .balanceOf(
+                        userAccount.wallet.address
+                );
+
+                await pseudoDaiInstance.from(userAccount.wallet.address).mint();
+                await pseudoDaiInstance
+                    .from(userAccount.wallet.address)
+                    .approve(
+                        tokenManagerInstance.contract.address,
+                        priceOfMint
+                );
+                let approvedAmount = await pseudoDaiInstance
+                    .from(communityCreatorAccount.wallet.address)
+                    .allowance(
+                        userAccount.wallet.address,
+                        tokenManagerInstance.contract.address
+                );
+                assert.equal(
+                    ethers.utils.formatUnits(approvedAmount, 18),
+                    ethers.utils.formatUnits(priceOfMint, 18),
+                    "The contract has the incorrect PDAI allowance"
+                );
+
+                await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .mint(
+                        userAccount.wallet.address,
+                        ethers.utils.parseUnits(`1`, 18)
+                );
+                let userBalance = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .balanceOf(
+                        userAccount.wallet.address
+                );
+
+                let rewardforBurnDAI = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .rewardForBurn(
+                        userBalance
+                );
+
+                // Check volume for withdraw
+                let rewardforBurnToken = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .colateralToTokenSelling(
+                        rewardforBurnDAI
+                );
+
+                assert.equal(
+                    ethers.utils.formatUnits(userBalance, 18),
+                    ethers.utils.formatUnits(rewardforBurnToken, 18),
+                    "Issue in burn calculation"
+                )
+
+                let priceOfMint2 = await tokenManagerInstance
+                    .from(userAccount.wallet.address)
+                    .priceToMint(ethers.utils.parseUnits(`1`, 18)
+                );
+            })
 
             it('Curve gradient test', async () => {
                 let priceOfOneBefore = await tokenManagerInstance

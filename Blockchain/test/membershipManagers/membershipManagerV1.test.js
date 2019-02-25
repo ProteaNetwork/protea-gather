@@ -278,9 +278,7 @@ describe('V1 Membership Manager', () => {
         it("Adds tokens to membership", async () => {
             const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
-            console.log(ethers.utils.formatUnits(requiredTokensBN, 18))
-            console.log(ethers.utils.formatUnits(requiredTokensBN, 0))
-
+            console.log(ethers.utils.formatUnits(requiredTokensBN,18))
             await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
 
         })
