@@ -2,10 +2,10 @@ pragma solidity >=0.5.3 < 0.6.0;
 
 contract BaseFactory {
     address internal admin_;
-    address internal rootFactory_;
+    mapping(address => bool) internal rootFactories_;
 
     constructor(address _rootFactory) public {
-        rootFactory_ = _rootFactory;
+        rootFactories_[_rootFactory] = true;
         admin_ = msg.sender;
     }
 
@@ -15,11 +15,15 @@ contract BaseFactory {
     }
 
     modifier onlyRootFactory() {
-        require(msg.sender == rootFactory_, "Not authorised");
+        require(rootFactories_[msg.sender], "Not authorised");
         _;
     }
 
-    function updateRootFactory(address _newRoot) external onlyAdmin() {
-        rootFactory_ = _newRoot;
+    function addRootFactory(address _newRoot) external onlyAdmin() {
+        rootFactories_[_newRoot] = true;
+    }
+
+    function removeRootFactory(address _newRoot) external onlyAdmin() {
+        rootFactories_[_newRoot] = false;
     }
 }
