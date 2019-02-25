@@ -149,10 +149,8 @@ describe('Community factory', () => {
                 "The community owner is incorrect"
             );
         });
-
-        it('Initalizes factories correctly correctly')
-        it('Initalizes membership manager correctly')
     });
+    
     describe("Admin controls", () => {
         it("Sets the token manager factory");
         it("Sets the membership manager factory");

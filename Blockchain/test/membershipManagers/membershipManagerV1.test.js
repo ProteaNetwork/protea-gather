@@ -6,19 +6,34 @@ var ITokenManager = require('../../build/ITokenManager.json');
 var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 var MembershipManagerV1 = require('../../build/MembershipManagerV1.json');
 var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
+var BasicLinearTokenManager = require('../../build/BasicLinearTokenManager.json');
 var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory.json');
+var MembershipManagerV1 = require('../../build/MembershipManagerV1.json');
 var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
 
 
 const communitySettings = {
-    name: "community",
-    symbol: "com",
-    contributionRate: 10
+    name: "Community 1",
+    symbol: "COM1",
+    gradientDemoninator: 2000, // Unused but required for the interface
+    contributionRate: (ethers.utils.parseUnits("0.1", 18)).toHexString()
 }
+
 const daiSettings = {
     name: "PDAI",
     symbol: "PDAI",
     decimals: 18
+}
+
+const membershipSettings = {
+    utilityAddress: "",
+    registeredEvents: [
+        {
+            id: 0,
+            reward: 250,
+            title: "Attended"
+        }
+    ]
 }
 
 const defaultTokenVolume = 100;
@@ -29,6 +44,8 @@ describe('V1 Membership Manager', () => {
     let proteaAdmin = devnetAccounts[0];
     let userAccount = devnetAccounts[1];
     let communityCreatorAccount = devnetAccounts[2];
+    let utilityAccount = devnetAccounts[3];
+    membershipSettings.utilityAddress = utilityAccount.wallet.address;
     let membershipManagerInstance, tokenManagerInstance, pseudoDaiInstance, communityFactoryInstance;
   
     beforeEach('', async () => {
@@ -102,9 +119,85 @@ describe('V1 Membership Manager', () => {
     })
 
     describe("Utility management", () => {
-        it("Adds utility")
-        it("Removes utility")
-        it("Sets the reputation reward")
+        it("Adds utility", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+        })
+        it("Adding utility emits event");
+        it("Removes utility", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            let state = await membershipManagerInstance
+            .from(communityCreatorAccount)
+            .isRegistered(membershipSettings.utilityAddress);
+        
+            assert.equal(state, true, "Utility not registered");
+
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .removeUtility(membershipSettings.utilityAddress)
+            ).wait();
+            
+            state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            assert.equal(state, false, "Utility still registered");
+        })
+        it("Removing utility emits event");
+        it("Sets the reputation reward", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            let reward = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
+            assert.equal(
+                parseFloat(ethers.utils.formatUnits(reward, 0)),
+                0,
+                "Reward not initialized correctly"
+            )
+
+            let state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+        
+            assert.equal(state, true, "Utility not registered");
+
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .setReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id, membershipSettings.registeredEvents[0].reward)
+            ).wait();
+
+            reward = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
+          
+            assert.equal(
+                parseFloat(ethers.utils.formatUnits(reward, 0)),
+                membershipSettings.registeredEvents[0].reward,
+                "Reward not set correctly"
+            )
+        })
+
+        it("Setting reputation emits event");
     })
 
     describe("Membership management", () => {
@@ -129,13 +222,13 @@ describe('V1 Membership Manager', () => {
         it("Gets membership status")
         it("Gets reputation of member")
         it("Returns the token manager", async () => {
-            // const tokenManager = await membershipManagerInstance
-            //     .from(communityCreatorAccount.wallet.address)
-            //     .tokenManager();
-            // assert.equal(
-            //     tokenManager,
-            //     tokenManagerInstance.contract.address
-            // )
+            const tokenManager = await membershipManagerInstance
+                .from(communityCreatorAccount.wallet.address)
+                .tokenManager();
+            assert.equal(
+                tokenManager,
+                tokenManagerInstance.contract.address
+            )
         })
         it("Returns utility data")
         it("Returns utility item data")

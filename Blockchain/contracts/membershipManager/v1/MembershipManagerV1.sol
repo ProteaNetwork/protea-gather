@@ -105,10 +105,12 @@ contract MembershipManagerV1 {
 
     function setReputationRewardEvent(address _utility, uint8 _id, uint256 _rewardAmount) external onlySystemAdmin{
         reputationRewards_[_utility][_id] = _rewardAmount;
+        // EMIT
     }
 
     function issueReputationReward(address _member, uint8 _rewardId) external onlyUtility(msg.sender) returns (bool) {
-        
+        membershipState_[_member].reputation = membershipState_[_member].reputation.add(reputationRewards_[msg.sender][_rewardId]);
+        // Emit
     }
   
     function stakeMembership(uint256 _daiValue, address _member) external returns(bool) {
@@ -117,7 +119,7 @@ contract MembershipManagerV1 {
         if(membershipState_[_member].currentDate == 0){
             membershipState_[_member].currentDate = now;
         }
-        membershipState_[_member].availableStake = requiredTokens;
+        membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(requiredTokens);
         // Emit event
     }
 
@@ -181,6 +183,22 @@ contract MembershipManagerV1 {
             membershipState_[_member].reputation,
             membershipState_[_member].availableStake
         );
+    }
+
+    function isRegistered(address _utility) external view returns(bool) {
+        return registeredUtility_[_utility].active;
+    }
+
+    function getUtilityStake(address _utility, uint256 _index) external view returns(uint256) {
+        return registeredUtility_[_utility].lockedStakePool[_index];
+    }
+
+    function getMemberUtilityStake(address _utility, address _member, uint256 _index) external view returns(uint256) {
+        return registeredUtility_[_utility].contributions[_index][_member];
+    }
+
+    function getReputationRewardEvent(address _utility, uint8 _id) public view returns(uint256){
+        return reputationRewards_[_utility][_id];
     }
 
     function tokenManager() external view returns(address) {
