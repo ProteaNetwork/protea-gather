@@ -231,14 +231,18 @@ contract BasicLinearTokenManager {
     /// @param  _colateralTokenOffered  :uint256 Amount of reserve token offered for purchase
     function colateralToTokenBuying(uint256 _colateralTokenOffered) external view returns(uint256) {
         uint256 correctedForContribution = _colateralTokenOffered.sub(_colateralTokenOffered.div(101)); // Removing 1 percent
-        return inverseCurveIntegral(curveIntegral(totalSupply_) + correctedForContribution) - totalSupply_;
+        return inverseCurveIntegral(curveIntegral(totalSupply_).add(correctedForContribution)).sub(totalSupply_);
     }
 
     /// @dev                 This function returns the amount of tokens needed to be burnt to withdraw a specified amount of reserve token
     ///                                 Including Protea & Community contributions
     /// @param  _collateralTokenNeeded  :uint256 Amount of dai to be withdraw
     function colateralToTokenSelling(uint256 _collateralTokenNeeded) external view returns(uint256) {
-        return uint256(totalSupply_ - inverseCurveIntegral(curveIntegral(totalSupply_) - _collateralTokenNeeded));
+        return uint256(
+            totalSupply_.sub(
+                inverseCurveIntegral(curveIntegral(totalSupply_).sub(_collateralTokenNeeded))
+            )
+        );
     }
 
     /// @dev                Calculate the integral from 0 to x tokens supply

@@ -13,10 +13,10 @@ var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
 
 
 const communitySettings = {
-    name: "Community 1",
-    symbol: "COM1",
+    name: "community",
+    symbol: "com",
     gradientDemoninator: 2000, // Unused but required for the interface
-    contributionRate: (ethers.utils.parseUnits("0.1", 18)).toHexString()
+    contributionRate: 10
 }
 
 const daiSettings = {
@@ -33,10 +33,12 @@ const membershipSettings = {
             reward: 250,
             title: "Attended"
         }
-    ]
+    ],
+    testingStakeValue: ethers.utils.parseUnits("10", 18)
 }
 
 const defaultTokenVolume = 100;
+const defaultDaiPurchase = 500;
 
 
 describe('V1 Membership Manager', () => {
@@ -107,6 +109,78 @@ describe('V1 Membership Manager', () => {
             .getCommunity(0);
         tokenManagerInstance = await etherlime.ContractAtDevnet(BasicLinearTokenManager, communityDetails[3]);
         membershipManagerInstance = await etherlime.ContractAtDevnet(MembershipManagerV1, communityDetails[2]);
+
+        // Setting up a user 
+        let tokensForDai = await tokenManagerInstance
+            .from(userAccount.wallet.address)
+            .colateralToTokenBuying(ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18));
+        
+        let userPDAIBalance = await pseudoDaiInstance
+            .from(
+                userAccount.wallet.address
+            ).balanceOf(
+                userAccount.wallet.address
+            );
+        
+        await pseudoDaiInstance.from(userAccount.wallet.address).mint();
+        await pseudoDaiInstance.from(userAccount.wallet.address)
+            .approve(
+                tokenManagerInstance.contract.address,
+                ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18)
+            );
+        let approvedAmount = await pseudoDaiInstance
+            .from(userAccount.wallet.address)
+            .allowance(
+                userAccount.wallet.address,
+                tokenManagerInstance.contract.address
+            );
+
+        assert.equal(
+            approvedAmount.toString(), 
+            ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18).toString(),
+            "The contract has the incorrect PDAI allowance"
+        );
+
+        await tokenManagerInstance
+            .from(userAccount.wallet.address)
+            .mint(
+                userAccount.wallet.address, 
+                tokensForDai
+        );
+
+        let userTokenBalance = await tokenManagerInstance
+            .from(userAccount.wallet.address)
+            .balanceOf(
+                userAccount.wallet.address
+        );
+
+        let userPDAIBalanceAfter = await pseudoDaiInstance
+            .from(userAccount.wallet.address)
+            .balanceOf(
+                userAccount.wallet.address
+        )
+        
+        let proteaPDAIBalanceAfter = ethers.utils.formatUnits(
+            await pseudoDaiInstance
+                .from(proteaAdmin.wallet.address)
+                .balanceOf(
+                proteaAdmin.wallet.address
+            ), 
+            18
+        );
+
+        assert.notEqual(
+            userPDAIBalanceAfter.toString(),
+            userPDAIBalance.toString(),
+            "Users PDAI has not decreased"
+        );
+
+        const onePercentContribution = ethers.utils.formatUnits(ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18).div(101), 18);
+        assert.equal(
+            proteaPDAIBalanceAfter,
+            onePercentContribution,
+            "Contribution not sent correctly"
+        )
     });
 
     describe('Deployment checks', async () => {
@@ -201,7 +275,15 @@ describe('V1 Membership Manager', () => {
     })
 
     describe("Membership management", () => {
-        it("Adds tokens to membership")
+        it("Adds tokens to membership", async () => {
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            console.log(ethers.utils.formatUnits(requiredTokensBN, 18))
+            console.log(ethers.utils.formatUnits(requiredTokensBN, 0))
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+
+        })
         it("Withdraws tokens from membership")
 
     })

@@ -93,7 +93,7 @@ describe('V1 Token Manager', () => {
 
     describe('Token functionality', async () => {
         describe('Bonded creation curve functionality', async () => {
-            it('Minting tests', async () => {
+            it('Mints tokens', async () => {
                 let priceOfMint = await tokenManagerInstance
                     .from(userAccount.wallet.address)
                     .priceToMint(ethers.utils.parseUnits(`${defaultTokenVolume}`, 18));
