@@ -11,7 +11,6 @@ var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory
 var MembershipManagerV1 = require('../../build/MembershipManagerV1.json');
 var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
 
-
 const communitySettings = {
     name: "community",
     symbol: "com",
@@ -34,7 +33,7 @@ const membershipSettings = {
             title: "Attended"
         }
     ],
-    testingStakeValue: ethers.utils.parseUnits("10", 18)
+    testingStakeValue: ethers.utils.parseUnits("10", 18),
 }
 
 const defaultTokenVolume = 100;
@@ -191,16 +190,46 @@ describe('V1 Membership Manager', () => {
     });
 
     describe("Admin management", () => {
-        it("Adds an admin")
+        it("Adds an admin", async () => {
+            await (await membershipManagerInstance
+                    .from(communityCreatorAccount)
+                    .addAdmin(userAccount.wallet.address)
+            )
+        })
         it("Fails to add admin for non-admins")
 
-        it("Removes an admin")
+        it("Removes an admin", async () => {
+            await (await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addAdmin(userAccount.wallet.address)
+            )
+
+            await (await membershipManagerInstance
+                .from(userAccount)
+                .removeAdmin(communityCreatorAccount.wallet.address)
+            )
+        })
         it("Fails to remove an admin for non-admins")
 
-        it("Adds a system admin")
+        it("Adds a system admin", async () => {
+            await (await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addSystemAdmin(userAccount.wallet.address)
+            )
+        })
         it("Fails to add a system admin for non-system admins")
 
-        it("Removes a system admin")
+        it("Removes a system admin", async () => {
+            await (await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addSystemAdmin(userAccount.wallet.address)
+            )
+
+            await (await membershipManagerInstance
+                .from(userAccount)
+                .removeSystemAdmin(communityCreatorAccount.wallet.address)
+            )
+        })
         it("Fails to remove a system admin for non-system admins")
     })
 
@@ -218,14 +247,33 @@ describe('V1 Membership Manager', () => {
             
             assert.equal(state, true, "Utility not registered");
         })
-        it("Adding utility emits event");
-        it("Prevents adding utility for non-admin", async () => {
+        it("Adding utility emits event", async () => {
+            const receipt = await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            let event = await (receipt.events.filter(
+                event => event.eventSignature == membershipManagerInstance.interface.events.UtilityAdded.signature))[0];
+            
+            assert.ok(
+                event,
+                "Event not found"
+            )
+            assert.equal(
+                event.args.issuer,
+                membershipSettings.utilityAddress,
+                "Incorrect issuer emitted"
+            )
+        })
+        it("Prevents adding utility for non-admin"/*, async () => {
             assert.revert(
                 membershipManagerInstance
                     .from(userAccount)
                     .addUtility(membershipSettings.utilityAddress)
             );
-        });
+        }*/);
         it("Removes utility", async () => {
             await (
                 await membershipManagerInstance
@@ -250,7 +298,38 @@ describe('V1 Membership Manager', () => {
                 .isRegistered(membershipSettings.utilityAddress);
             assert.equal(state, false, "Utility still registered");
         })
-        it("Removing utility emits event");
+        it("Removing utility emits event", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            let state = await membershipManagerInstance
+            .from(communityCreatorAccount)
+            .isRegistered(membershipSettings.utilityAddress);
+        
+            assert.equal(state, true, "Utility not registered");
+
+            const receipt = await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .removeUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            let event = await (receipt.events.filter(
+                event => event.eventSignature == membershipManagerInstance.interface.events.UtilityRemoved.signature))[0];
+            
+            assert.ok(
+                event,
+                "Event not found"
+            )
+            assert.equal(
+                event.args.issuer,
+                membershipSettings.utilityAddress,
+                "Incorrect issuer emitted"
+            )
+        });
         it("Prevents removing utility for non-admin");
         it("Sets the reputation reward", async () => {
             await (
@@ -289,7 +368,58 @@ describe('V1 Membership Manager', () => {
                 "Reward not set correctly"
             )
         })
-        it("Setting reputation emits event");
+        it("Setting reputation emits event", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            let reward = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
+
+            assert.ok(
+                reward.eq(0),
+                "Reward not initialized correctly"
+            )
+
+            let state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+        
+            assert.equal(state, true, "Utility not registered");
+
+            const receipt = await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .setReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id, membershipSettings.registeredEvents[0].reward)
+            ).wait();
+
+            let event = await (receipt.events.filter(
+                event => event.eventSignature == membershipManagerInstance.interface.events.ReputationRewardSet.signature))[0];
+            
+            assert.ok(
+                event,
+                "Event not found"
+            )
+            assert.equal(
+                event.args.issuer,
+                membershipSettings.utilityAddress,
+                "Incorrect issuer emitted"
+            )
+
+            assert.equal(
+                event.args.id,
+                membershipSettings.registeredEvents[0].id,
+                "Incorrect id emitted"
+            )
+
+            assert.ok(
+                event.args.amount.eq(membershipSettings.registeredEvents[0].reward),
+                "Incorrect reward emitted"
+            )
+        });
         it("Prevents setting the reputation reward for non-system admin");
     })
 
@@ -323,6 +453,38 @@ describe('V1 Membership Manager', () => {
                 "Tokens were not transfered correctly"
             )
         })
+
+        it("Adding tokens to membership emits event", async () => {
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            const receipt = await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let event = await (receipt.events.filter(
+                event => event.eventSignature == membershipManagerInstance.interface.events.MembershipStaked.signature))[0];
+            
+            assert.ok(
+                event,
+                "Event not found"
+            )
+            assert.equal(
+                event.args.member,
+                userAccount.wallet.address,
+                "Incorrect member emitted"
+            )
+            assert.ok(
+                event.args.tokensStaked.eq(requiredTokensBN),
+                "Incorrect tokens staked emitted"
+            )
+        })
+
         it("Fails to add tokens to membership when funds insufficent")
 
         it("Withdraws tokens from membership", async () => {
@@ -370,6 +532,53 @@ describe('V1 Membership Manager', () => {
             assert.ok(
                 membershipState[2].eq(0),
                 "Tokens were not returned correctly"
+            )
+        })
+        it("Withdrawing tokens from membership emits event", async () => {
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            let membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            const receipt = await (await membershipManagerInstance.from(userAccount).withdrawMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            let event = await (receipt.events.filter(
+                event => event.eventSignature == membershipManagerInstance.interface.events.MembershipWithdrawn.signature))[0];
+            
+            assert.ok(
+                event,
+                "Event not found"
+            )
+            assert.equal(
+                event.args.member,
+                userAccount.wallet.address,
+                "Incorrect member emitted"
+            )
+            assert.ok(
+                event.args.tokensWithdrawn.eq(requiredTokensBN),
+                "Incorrect tokens staked emitted"
             )
         })
         it("Fails to withdraw tokens from membership when none available");
@@ -684,7 +893,11 @@ describe('V1 Membership Manager', () => {
     })
 
     describe("System checks", () => {
-        it("Disabling for migration works as expected")
+        it("Disabling for migration works as expected"/* , async () => {
+            // Lock commitment
+            // Stake#
+            // Issue
+        }*/ )
     })
 
     describe("Meta data view tests", async () => {

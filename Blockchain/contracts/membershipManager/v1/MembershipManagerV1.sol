@@ -46,6 +46,7 @@ contract MembershipManagerV1 {
     event StakeUnlocked(address indexed member, address indexed utility, uint256 tokenAmount);
 
     event MembershipStaked(address indexed member, uint256 tokensStaked);
+    event MembershipWithdrawn(address indexed member, uint256 tokensWithdrawn);
    
     constructor(address _communityManager) public {
         admins_.add(_communityManager);
@@ -143,6 +144,7 @@ contract MembershipManagerV1 {
         require(membershipState_[_member].availableStake >= withdrawAmount, "Not enough stake to fulfil request");
         membershipState_[_member].availableStake = membershipState_[_member].availableStake.sub(withdrawAmount);
         require(ITokenManager(tokenManager_).transfer(_member, withdrawAmount), "Transfer was not complete");
+        emit MembershipWithdrawn(_member, withdrawAmount);
     }
 
     function lockCommitment(address _member, uint256 _index, uint256 _daiValue) external notDisabled() onlyUtility(msg.sender) returns (bool) {
