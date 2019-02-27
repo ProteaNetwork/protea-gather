@@ -82,35 +82,33 @@ contract MembershipManagerV1 {
 
     function addUtility(address _utility) external onlyAdmin{
         registeredUtility_[_utility].active = true;
+        emit UtilityAdded(_utility);
     }
 
     function removeUtility(address _utility) external onlyAdmin {
         registeredUtility_[_utility].active = false;
+        emit UtilityRemoved(_utility);
     }
 
     function addAdmin(address _newAdmin) external onlyAdmin {
         admins_.add(_newAdmin);
-        // Emit
     }
 
     function addSystemAdmin(address _newAdmin) external onlySystemAdmin {
         systemAdmins_.add(_newAdmin);
-        // Emit
     }
 
     function removeAdmin(address _newAdmin) external onlyAdmin {
         admins_.remove(_newAdmin);
-        // Emit
     }
 
     function removeSystemAdmin(address _newAdmin) external onlySystemAdmin {
         systemAdmins_.remove(_newAdmin);
-        // Emit
     }
 
     function setReputationRewardEvent(address _utility, uint8 _id, uint256 _rewardAmount) external onlySystemAdmin{
         reputationRewards_[_utility][_id] = _rewardAmount;
-        // EMIT
+        emit ReputationRewardSet(_utility, _id, _rewardAmount);
     }
 
     function issueReputationReward(address _member, uint8 _rewardId) external notDisabled() onlyUtility(msg.sender) returns (bool) {
@@ -125,7 +123,8 @@ contract MembershipManagerV1 {
             membershipState_[_member].currentDate = now;
         }
         membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(requiredTokens);
-        // Emit event
+
+        emit MembershipStaked(_member, requiredTokens);
         return true;
     }
 
@@ -137,7 +136,6 @@ contract MembershipManagerV1 {
         registeredUtility_[msg.sender].lockedStakePool[_index] = registeredUtility_[msg.sender].lockedStakePool[_index].sub(_tokenAmount);
         membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(_tokenAmount);
         
-        // emit 
     }
 
     function withdrawMembership(uint256 _daiValue, address _member) external returns(bool) {
@@ -155,7 +153,8 @@ contract MembershipManagerV1 {
         
         registeredUtility_[msg.sender].contributions[_index][_member] = registeredUtility_[msg.sender].contributions[_index][_member].add(requiredTokens);
         registeredUtility_[msg.sender].lockedStakePool[_index] = registeredUtility_[msg.sender].lockedStakePool[_index].add(requiredTokens);
-        // Emit event
+
+        emit StakeLocked(_member, msg.sender, requiredTokens);
 
         return true;
     }
@@ -169,7 +168,7 @@ contract MembershipManagerV1 {
 
         membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(returnAmount);
 
-        // Emit event
+        emit StakeUnlocked(_member, msg.sender, returnAmount);
         return true;
     }
 

@@ -184,12 +184,24 @@ describe('V1 Membership Manager', () => {
     });
 
     describe('Deployment checks', async () => {
-
-        
+        it("Has the token manager set after initialization", async () => {
+            const tokenManager = await membershipManagerInstance.from(userAccount).tokenManager();
+            assert.equal(tokenManager, tokenManagerInstance.contractAddress, "Token manager not set")
+        })        
     });
 
     describe("Admin management", () => {
+        it("Adds an admin")
+        it("Fails to add admin for non-admins")
 
+        it("Removes an admin")
+        it("Fails to remove an admin for non-admins")
+
+        it("Adds a system admin")
+        it("Fails to add a system admin for non-system admins")
+
+        it("Removes a system admin")
+        it("Fails to remove a system admin for non-system admins")
     })
 
     describe("Utility management", () => {
@@ -207,7 +219,13 @@ describe('V1 Membership Manager', () => {
             assert.equal(state, true, "Utility not registered");
         })
         it("Adding utility emits event");
-        it("Prevents adding utility for non-admin");
+        it("Prevents adding utility for non-admin", async () => {
+            assert.revert(
+                membershipManagerInstance
+                    .from(userAccount)
+                    .addUtility(membershipSettings.utilityAddress)
+            );
+        });
         it("Removes utility", async () => {
             await (
                 await membershipManagerInstance
