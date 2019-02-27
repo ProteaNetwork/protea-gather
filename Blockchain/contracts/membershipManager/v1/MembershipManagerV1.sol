@@ -81,6 +81,11 @@ contract MembershipManagerV1 {
         return true;
     }
 
+    function disableForMigration() external onlySystemAdmin returns(bool) {
+        disabled = true;
+        return disabled;
+    }
+
     function addUtility(address _utility) external onlyAdmin{
         registeredUtility_[_utility].active = true;
         emit UtilityAdded(_utility);
@@ -114,7 +119,7 @@ contract MembershipManagerV1 {
 
     function issueReputationReward(address _member, uint8 _rewardId) external notDisabled() onlyUtility(msg.sender) returns (bool) {
         membershipState_[_member].reputation = membershipState_[_member].reputation.add(reputationRewards_[msg.sender][_rewardId]);
-        // Emit
+        // TODO: Consider event
     }
   
     function stakeMembership(uint256 _daiValue, address _member) external notDisabled() returns(bool) {
