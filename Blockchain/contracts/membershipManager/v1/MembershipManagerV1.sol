@@ -68,6 +68,11 @@ contract MembershipManagerV1 {
         _;
     }
 
+    modifier notDisabled() {
+        require(disabled == false, "Membership manager locked for migration");
+        _;
+    }
+
     function initialize(address _tokenManager) external onlySystemAdmin returns(bool) {
         require(tokenManager_ == address(0), "Contracts initalised");
         tokenManager_ = _tokenManager;
@@ -108,12 +113,12 @@ contract MembershipManagerV1 {
         // EMIT
     }
 
-    function issueReputationReward(address _member, uint8 _rewardId) external onlyUtility(msg.sender) returns (bool) {
+    function issueReputationReward(address _member, uint8 _rewardId) external notDisabled() onlyUtility(msg.sender) returns (bool) {
         membershipState_[_member].reputation = membershipState_[_member].reputation.add(reputationRewards_[msg.sender][_rewardId]);
         // Emit
     }
   
-    function stakeMembership(uint256 _daiValue, address _member) external returns(bool) {
+    function stakeMembership(uint256 _daiValue, address _member) external notDisabled() returns(bool) {
         uint256 requiredTokens = ITokenManager(tokenManager_).colateralToTokenSelling(_daiValue);
         require(ITokenManager(tokenManager_).transferFrom(_member, address(this), requiredTokens), "Transfer was not complete");
         if(membershipState_[_member].currentDate == 0){
@@ -127,9 +132,7 @@ contract MembershipManagerV1 {
     function manualTransfer(uint256 _tokenAmount, uint256 _index, address _member) external onlyUtility(msg.sender) returns (bool) {
         require(registeredUtility_[msg.sender].lockedStakePool[_index] >= _tokenAmount, "Insufficient tokens available");
 
-        // Consider removing this if underflow issues
         registeredUtility_[msg.sender].contributions[_index][_member] = registeredUtility_[msg.sender].contributions[_index][_member].sub(_tokenAmount);
-
 
         registeredUtility_[msg.sender].lockedStakePool[_index] = registeredUtility_[msg.sender].lockedStakePool[_index].sub(_tokenAmount);
         membershipState_[_member].availableStake = membershipState_[_member].availableStake.add(_tokenAmount);
@@ -144,7 +147,7 @@ contract MembershipManagerV1 {
         require(ITokenManager(tokenManager_).transfer(_member, withdrawAmount), "Transfer was not complete");
     }
 
-    function lockCommitment(address _member, uint256 _index, uint256 _daiValue) external onlyUtility(msg.sender) returns (bool) {
+    function lockCommitment(address _member, uint256 _index, uint256 _daiValue) external notDisabled() onlyUtility(msg.sender) returns (bool) {
         uint256 requiredTokens = ITokenManager(tokenManager_).colateralToTokenSelling(_daiValue);
         require(membershipState_[_member].availableStake >= requiredTokens, "Not enough available commitment");
 
@@ -168,10 +171,6 @@ contract MembershipManagerV1 {
 
         // Emit event
         return true;
-    }
-
-    function reputationOf(address _account) public view returns(uint256) {
-        return (membershipState_[_account].reputation);
     }
 
     function getMembershipStatus(address _member) 

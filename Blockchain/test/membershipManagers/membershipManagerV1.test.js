@@ -207,6 +207,7 @@ describe('V1 Membership Manager', () => {
             assert.equal(state, true, "Utility not registered");
         })
         it("Adding utility emits event");
+        it("Prevents adding utility for non-admin");
         it("Removes utility", async () => {
             await (
                 await membershipManagerInstance
@@ -232,6 +233,7 @@ describe('V1 Membership Manager', () => {
             assert.equal(state, false, "Utility still registered");
         })
         it("Removing utility emits event");
+        it("Prevents removing utility for non-admin");
         it("Sets the reputation reward", async () => {
             await (
                 await membershipManagerInstance
@@ -242,9 +244,9 @@ describe('V1 Membership Manager', () => {
             let reward = await membershipManagerInstance
                 .from(communityCreatorAccount)
                 .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
-            assert.equal(
-                parseFloat(ethers.utils.formatUnits(reward, 0)),
-                0,
+
+            assert.ok(
+                reward.eq(0),
                 "Reward not initialized correctly"
             )
 
@@ -264,41 +266,403 @@ describe('V1 Membership Manager', () => {
                 .from(communityCreatorAccount)
                 .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
           
-            assert.equal(
-                parseFloat(ethers.utils.formatUnits(reward, 0)),
-                membershipSettings.registeredEvents[0].reward,
+            assert.ok(
+                reward.eq(membershipSettings.registeredEvents[0].reward),
                 "Reward not set correctly"
             )
         })
-
         it("Setting reputation emits event");
+        it("Prevents setting the reputation reward for non-system admin");
     })
 
     describe("Membership management", () => {
         it("Adds tokens to membership", async () => {
             const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
-            console.log(ethers.utils.formatUnits(requiredTokensBN,18))
+            
             const totalSupply = ethers.utils.formatUnits(
                 await tokenManagerInstance.from(
                     userAccount.wallet.address
                     ).totalSupply(),
                 18
             );
-            console.log(totalSupply)
-            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
 
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            const membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            const membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
         })
-        it("Withdraws tokens from membership")
+        it("Fails to add tokens to membership when funds insufficent")
+
+        it("Withdraws tokens from membership", async () => {
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            let membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await (await membershipManagerInstance.from(userAccount).withdrawMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                membershipState[2].eq(0),
+                "Tokens were not returned"
+            )
+
+            assert.ok(
+                membershipState[2].eq(0),
+                "Tokens were not returned correctly"
+            )
+        })
+        it("Fails to withdraw tokens from membership when none available");
 
     })
 
     describe("Utility interactions", () => {
-        it("Issues the reputation reward")
-        it("Locks commitment")
-        it("Unlocks commitment")
-        it("Manually transfers tokens from pool to target member")
+        it("Issues the reputation reward", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
 
+            let reward = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
+
+            assert.ok(
+                reward.eq(0),
+                "Reward not initialized correctly"
+            )
+
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            assert.ok(membershipState[1].eq(0), "Reputation not 0")
+
+            let state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+        
+            assert.equal(state, true, "Utility not registered");
+
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .setReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id, membershipSettings.registeredEvents[0].reward)
+            ).wait();
+
+            reward = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .getReputationRewardEvent(membershipSettings.utilityAddress, membershipSettings.registeredEvents[0].id);
+          
+            assert.ok(
+                reward.eq(membershipSettings.registeredEvents[0].reward),
+                "Reward not set correctly"
+            )
+
+            await (await membershipManagerInstance
+                .from(utilityAccount)
+                .issueReputationReward(userAccount.wallet.address, membershipSettings.registeredEvents[0].id))
+                    .wait();
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            assert.ok(membershipState[1].eq(membershipSettings.registeredEvents[0].reward), "Reputation not increased")
+        })
+        it("Fails to issue reputation rewards from non-utility")
+        it("Locks commitment", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            const membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await membershipManagerInstance
+                .from(utilityAccount)
+                .lockCommitment(
+                    userAccount.wallet.address, 
+                    0, 
+                    ethers.utils.parseUnits("5", 18)
+                )
+
+            const previousAvailableMembership = membershipState[2];
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.gt(membershipState[2]),
+                "Available stake not updated correctly"
+            );
+
+            let utilityStake = await membershipManagerInstance.from(userAccount).getUtilityStake(utilityAccount.wallet.address, 0);
+            
+            assert.ok(
+                utilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Utility's tokens does not match up to tokens take from user"
+            )
+
+
+            let memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0);
+            
+            assert.ok(
+                memberUtilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Record of users contribution not recorded correctly"
+            )
+        })
+        it("Fails to lock commitment from non-utility")
+        it("Unlocks commitment", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            const membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await membershipManagerInstance
+                .from(utilityAccount)
+                .lockCommitment(
+                    userAccount.wallet.address, 
+                    0, 
+                    ethers.utils.parseUnits("5", 18)
+                )
+
+            const previousAvailableMembership = membershipState[2];
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.gt(membershipState[2]),
+                "Available stake not updated correctly"
+            );
+
+            let utilityStake = await membershipManagerInstance.from(userAccount).getUtilityStake(utilityAccount.wallet.address, 0);
+            
+            assert.ok(
+                utilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Utility's tokens does not match up to tokens take from user"
+            )
+
+
+            let memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0);
+            
+            assert.ok(
+                memberUtilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Record of users contribution not recorded correctly"
+            )
+        })
+        it("Fails to unlock commitment from non-utility")
+        it("Manually transfers tokens from pool to target member", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            let membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await membershipManagerInstance
+                .from(utilityAccount)
+                .lockCommitment(
+                    userAccount.wallet.address, 
+                    0, 
+                    ethers.utils.parseUnits("5", 18)
+                )
+
+            const previousAvailableMembership = membershipState[2];
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.gt(membershipState[2]),
+                "Available stake not updated correctly"
+            );
+
+            let utilityStake = await membershipManagerInstance.from(userAccount).getUtilityStake(utilityAccount.wallet.address, 0);
+            
+            assert.ok(
+                utilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Utility's tokens does not match up to tokens take from user"
+            )
+
+
+            let memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0);
+            
+            assert.ok(
+                memberUtilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Record of users contribution not recorded correctly"
+            )
+
+            // Focus of the test
+
+            await (await membershipManagerInstance
+                .from(utilityAccount)
+                .manualTransfer(memberUtilityStake, 0, userAccount.wallet.address)
+            )
+
+            memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0)
+
+            assert.ok(
+                memberUtilityStake.eq(0),
+                "Record of users contribution not updated correctly"
+            )
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.eq(membershipState[2]),
+                "Tokens not returned"
+            )
+        })
+        it("Fails to manually transfer from non-utility")
     })
 
     describe("System checks", () => {
@@ -306,8 +670,67 @@ describe('V1 Membership Manager', () => {
     })
 
     describe("Meta data view tests", async () => {
-        it("Gets membership status")
-        it("Gets reputation of member")
+        it("Gets membership status", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            const membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await membershipManagerInstance
+                .from(utilityAccount)
+                .lockCommitment(
+                    userAccount.wallet.address, 
+                    0, 
+                    ethers.utils.parseUnits("5", 18)
+                )
+
+            const previousAvailableMembership = membershipState[2];
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.gt(membershipState[2]),
+                "Available stake not updated correctly"
+            );
+            assert.ok(membershipState.length == 3, "Incorrect amount of fields");
+        })
         it("Returns the token manager", async () => {
             const tokenManager = await membershipManagerInstance
                 .from(communityCreatorAccount.wallet.address)
@@ -317,9 +740,170 @@ describe('V1 Membership Manager', () => {
                 tokenManagerInstance.contract.address
             )
         })
-        it("Returns utility data")
-        it("Returns utility item data")
-        it("Returns members contribution to utility item")
-        it("Checks the state of a utility")
+        it("Returns utility item total stake", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            const membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await membershipManagerInstance
+                .from(utilityAccount)
+                .lockCommitment(
+                    userAccount.wallet.address, 
+                    0, 
+                    ethers.utils.parseUnits("5", 18)
+                )
+
+            const previousAvailableMembership = membershipState[2];
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.gt(membershipState[2]),
+                "Available stake not updated correctly"
+            );
+            // Focus of the test: 
+
+            let utilityStake = await membershipManagerInstance.from(userAccount).getUtilityStake(utilityAccount.wallet.address, 0);
+            
+            assert.ok(
+                utilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Utility's tokens does not match up to tokens take from user"
+            )
+        })
+        it("Returns members contribution to utility item", async () => {
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
+            const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
+            
+            const totalSupply = ethers.utils.formatUnits(
+                await tokenManagerInstance.from(
+                    userAccount.wallet.address
+                    ).totalSupply(),
+                18
+            );
+
+            await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
+            
+            let membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+            
+            const membershipBalance = await tokenManagerInstance.from(userAccount).balanceOf(membershipManagerInstance.contractAddress);
+
+            assert.ok(
+                requiredTokensBN.eq(membershipState[2]),
+                "Tokens were not transfered"
+            )
+
+            assert.ok(
+                membershipBalance.eq(membershipState[2]),
+                "Tokens were not transfered correctly"
+            )
+
+            await membershipManagerInstance
+                .from(utilityAccount)
+                .lockCommitment(
+                    userAccount.wallet.address, 
+                    0, 
+                    ethers.utils.parseUnits("5", 18)
+                )
+
+            const previousAvailableMembership = membershipState[2];
+
+            membershipState = await membershipManagerInstance
+                .from(userAccount)
+                .getMembershipStatus(userAccount.wallet.address);
+
+            assert.ok(
+                previousAvailableMembership.gt(membershipState[2]),
+                "Available stake not updated correctly"
+            );
+
+            let utilityStake = await membershipManagerInstance.from(userAccount).getUtilityStake(utilityAccount.wallet.address, 0);
+            
+            assert.ok(
+                utilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Utility's tokens does not match up to tokens take from user"
+            )
+            // Focus of the test: 
+
+            let memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0);
+            
+            assert.ok(
+                memberUtilityStake.eq(previousAvailableMembership.sub(membershipState[2])),
+                "Record of users contribution not recorded correctly"
+            )
+        })
+        it("Checks the state of a utility", async () => {
+            const beforeRegistering = await membershipManagerInstance.from(userAccount).isRegistered(utilityAccount.wallet.address);
+
+            assert.ok(beforeRegistering == false, "Utility registered");
+
+            await (
+                await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .addUtility(membershipSettings.utilityAddress)
+            ).wait();
+
+            const state = await membershipManagerInstance
+                .from(communityCreatorAccount)
+                .isRegistered(membershipSettings.utilityAddress);
+            
+            assert.equal(state, true, "Utility not registered");
+
+
+            const afterRegistering = await membershipManagerInstance.from(userAccount).isRegistered(utilityAccount.wallet.address);
+            assert.ok(afterRegistering, "Utility registered");
+
+        })
     })
 })

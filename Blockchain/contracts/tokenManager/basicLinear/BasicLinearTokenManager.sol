@@ -154,10 +154,11 @@ contract BasicLinearTokenManager {
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
+
         if(msg.sender != membershipManager_){
             allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         }
-        totalSupply_ = totalSupply_.add(_value);
+        
         emit Transfer(_from, _to, _value);
         return true;
     } 
@@ -278,7 +279,7 @@ contract BasicLinearTokenManager {
 	    	Because we are essentially squaring the decimal scaling in the calculation,
 	    	we need to divide the result by the scaling factor before returning - this hurt my mind a bit, but mathematically holds true.
 	    */
-        return ((_x**2).div(2*gradientDenominator_) + c.mul(_x)).div(10**decimals_);
+        return ((_x**2).div(2*gradientDenominator_).add(c.mul(_x)).div(10**decimals_));
     }
     
     /// @dev                Inverse integral to convert the incoming colateral value to token volume
