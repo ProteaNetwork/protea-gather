@@ -1,12 +1,16 @@
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 
-var PseudoDaiToken = require('../build/PseudoDaiToken.json');
-var CommunityFactory = require('../build/CommunityFactory.json');
+var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
+var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
+var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
+var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory.json');
+var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
 
 const communitySettings = {
     name: "Community 1",
     symbol: "COM1",
+    gradientDemoninator: 2000, // Unused but required for the interface
     contributionRate: (ethers.utils.parseUnits("0.1", 18)).toHexString()
 }
 const daiSettings = {
@@ -25,7 +29,7 @@ describe('Community factory', () => {
     let communityFactoryInstance, pseudoDaiInstance;
 
     beforeEach('', async () => {
-        deployer = new etherlime.EtherlimeDevnetDeployer(proteaAdmin.secretKey);
+        deployer = new etherlime.EtherlimeDevnetDeployer(adminAccount.secretKey);
         pseudoDaiInstance = await deployer.deploy(
             PseudoDaiToken, 
             false, 
@@ -35,11 +39,39 @@ describe('Community factory', () => {
         );
 
         communityFactoryInstance = await deployer.deploy(
-            CommunityFactory, 
+            CommunityFactoryV1, 
             false, 
             pseudoDaiInstance.contract.address,
-            proteaAdmin.wallet.address
+            proteaAdmin.wallet.address,
         );
+
+        const tokenManagerFactoryInstance = await deployer.deploy(
+            BasicLinearTokenManagerFactory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const membershipManagerFactoryInstance = await deployer.deploy(
+            MembershipManagerV1Factory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const eventManagerFactoryInstance = await deployer.deploy(
+            EventManagerV1Factory,
+            false,
+            communityFactoryInstance.contract.address
+        );
+
+        const result = await (await communityFactoryInstance
+            .from(adminAccount.wallet.address)
+            .initialize(
+                [
+                    tokenManagerFactoryInstance.contract.address,
+                    membershipManagerFactoryInstance.contract.address,
+                    eventManagerFactoryInstance.contract.address
+                ]
+            )).wait();
     });
 
     describe('Deployment', async () => {
@@ -50,6 +82,7 @@ describe('Community factory', () => {
                     communitySettings.name,
                     communitySettings.symbol,
                     communityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
                     communitySettings.contributionRate
                 )).wait();
 
@@ -76,6 +109,7 @@ describe('Community factory', () => {
                     communitySettings.name,
                     communitySettings.symbol,
                     communityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
                     communitySettings.contributionRate
                 )).wait();
             let communityDetails = await communityFactoryInstance
@@ -97,6 +131,7 @@ describe('Community factory', () => {
                     `Not${communitySettings.name}`,
                     `Not${communitySettings.symbol}`,
                     anotherCommunityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
                     communitySettings.contributionRate
                 )).wait();
 
@@ -115,4 +150,10 @@ describe('Community factory', () => {
             );
         });
     });
+    
+    describe("Admin controls", () => {
+        it("Sets the token manager factory");
+        it("Sets the membership manager factory");
+        it("Sets the event manager factory");
+    })
 });

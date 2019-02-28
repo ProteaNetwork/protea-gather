@@ -1,12 +1,12 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
-import "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import { IERC20 } from "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import { SafeMath } from "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
 
 /// @author Ben, Veronica & Ryan of Linum Labs
 /// @author Ryan N.                 RyRy79261
 /// @title Basic Linear Token Manager
-contract TokenManager {
+contract BasicLinearTokenManager {
     using SafeMath for uint256;
 
     address internal membershipManager_;
@@ -58,7 +58,7 @@ contract TokenManager {
 
     /// @dev                Selling tokens back to the bonding curve for collateral
     /// @param _numTokens   The number of tokens that you want to burn
-    function burn(uint256 _numTokens) public returns(bool) {
+    function burn(uint256 _numTokens) external returns(bool) {
         require(balances[msg.sender] >= _numTokens, "Not enough tokens available");
 
         uint256 rewardForTokens = rewardForBurn(_numTokens);
@@ -79,7 +79,7 @@ contract TokenManager {
     /// @param _to          :address Address to mint tokens to
     /// @param _numTokens   :uint256 The number of tokens you want to mint
     /// @dev                We have modified the minting function to divert a portion of the purchase tokens
-    function mint(address _to, uint256 _numTokens) public returns(bool) {
+    function mint(address _to, uint256 _numTokens) external returns(bool) {
         uint256 priceForTokens = priceToMint(_numTokens);
         require(
             IERC20(reserveToken_).transferFrom(msg.sender, address(this), priceForTokens), 
@@ -111,7 +111,7 @@ contract TokenManager {
         address _spender, 
         uint256 _value
     ) 
-        public 
+        external 
         returns (bool) 
     {
         allowed[msg.sender][_spender] = _value;
@@ -154,8 +154,11 @@ contract TokenManager {
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
-        totalSupply_ = totalSupply_.add(_value);
+
+        if(msg.sender != membershipManager_){
+            allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+        }
+        
         emit Transfer(_from, _to, _value);
         return true;
     } 
@@ -165,7 +168,7 @@ contract TokenManager {
     /// @param _spender     :address The account that will receive the funds.
     /// @return             An uint256 representing the amount owned by the passed address.
     function allowance(address _owner, address _spender) 
-        public 
+        external 
         view 
         returns (uint256) 
     {
@@ -175,37 +178,37 @@ contract TokenManager {
     /// @dev                Gets the balance of the specified address.
     /// @param _owner       :address The address to query the the balance of.
     /// @return             An uint256 representing the amount owned by the passed address.
-    function balanceOf(address _owner) public view returns (uint256) {
+    function balanceOf(address _owner) external view returns (uint256) {
         return balances[_owner];
     }
 
     /// @dev                Total number of tokens in existence
     /// @return             A uint256 representing the total supply of tokens in this market
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external view returns (uint256) {
         return totalSupply_;
     }
 
     /// @dev                Returns the address where community revenue is sent
     /// @return             :address Address of the revenue storing account
-    function revenueTarget() public view returns(address) {
+    function revenueTarget() external view returns(address) {
         return revenueTarget_;
     }
 
     /// @dev                Returns the contribution rate for the community on Token purchase
     /// @return             :uint256 The percentage of incoming collateral collected as revenue
-    function contributionRate() public view returns(uint256) {
+    function contributionRate() external view returns(uint256) {
         return contributionRate_;
     }
 
     /// @dev                Returns the decimals set for the community
     /// @return             :uint256 The decimals set for the community
-    function decimals() public view returns(uint256) {
+    function decimals() external view returns(uint256) {
         return decimals_;
     }
 
     /// @dev                Returns the gradient for the communities curve
     /// @return             :uint256 The gradient for the communities curve
-    function gradientDenominator() public view returns(uint256) {
+    function gradientDenominator() external view returns(uint256) {
         return gradientDenominator_;
     }
 
@@ -229,16 +232,20 @@ contract TokenManager {
     /// @dev                This function returns the amount of tokens one can receive for a specified amount of collateral token
     ///                     Including Protea & Community contributions
     /// @param  _colateralTokenOffered  :uint256 Amount of reserve token offered for purchase
-    function colateralToTokenBuying(uint256 _colateralTokenOffered) public view returns(uint256) {
+    function colateralToTokenBuying(uint256 _colateralTokenOffered) external view returns(uint256) {
         uint256 correctedForContribution = _colateralTokenOffered.sub(_colateralTokenOffered.div(101)); // Removing 1 percent
-        return inverseCurveIntegral(curveIntegral(totalSupply_) + correctedForContribution) - totalSupply_;
+        return inverseCurveIntegral(curveIntegral(totalSupply_).add(correctedForContribution)).sub(totalSupply_);
     }
 
     /// @dev                 This function returns the amount of tokens needed to be burnt to withdraw a specified amount of reserve token
     ///                                 Including Protea & Community contributions
     /// @param  _collateralTokenNeeded  :uint256 Amount of dai to be withdraw
-    function colateralToTokenSelling(uint256 _collateralTokenNeeded) public view returns(uint256) {
-        return uint256(totalSupply_ - inverseCurveIntegral(curveIntegral(totalSupply_) - _collateralTokenNeeded));
+    function colateralToTokenSelling(uint256 _collateralTokenNeeded) external view returns(uint256) {
+        return uint256(
+            totalSupply_.sub(
+                inverseCurveIntegral(curveIntegral(totalSupply_).sub(_collateralTokenNeeded))
+            )
+        );
     }
 
     /// @dev                Calculate the integral from 0 to x tokens supply
@@ -272,7 +279,7 @@ contract TokenManager {
 	    	Because we are essentially squaring the decimal scaling in the calculation,
 	    	we need to divide the result by the scaling factor before returning - this hurt my mind a bit, but mathematically holds true.
 	    */
-        return ((_x**2).div(2*gradientDenominator_) + c.mul(_x)).div(10**decimals_);
+        return ((_x**2).div(2*gradientDenominator_).add(c.mul(_x)).div(10**decimals_));
     }
     
     /// @dev                Inverse integral to convert the incoming colateral value to token volume

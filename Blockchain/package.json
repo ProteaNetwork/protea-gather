@@ -9,11 +9,11 @@
   "scripts": {
     "start": "etherlime ganache",
     "start:devnet": "docker image pull yodascholtz/parity-ubuntu:latest && docker run -p 8545:8545 yodascholtz/parity-ubuntu:latest",
-    "build": "etherlime compile",
-    "test": "etherlime test",
+    "build": "etherlime compile --runs=999",
+    "test": "etherlime compile --runs=999 && etherlime test --skip-compilation=true",
     "test:debug": "node --inspect-brk ./node_modules/etherlime/cli.js --timeout 30000 test",
-    "deploy:local": "etherlime deploy --network=devnet --runs=500",
-    "deploy:rinkeby": "etherlime deploy --network=rinkeby --runs=500",
+    "deploy:local": "etherlime deploy --network=devnet --runs=999",
+    "deploy:rinkeby": "etherlime deploy --network=rinkeby --runs=999",
     "deploy:rinkeby:debug": "node --inspect-brk ./node_modules/etherlime/cli.js --timeout 30000 deploy --network=rinkeby --runs=50"
   },
   "author": "",

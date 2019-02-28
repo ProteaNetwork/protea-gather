@@ -1,11 +1,11 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import "../../../_resources/openzeppelin-solidity/math/SafeMath.sol";
-import "../../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import { SafeMath } from "../../../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import { IERC20 } from "../../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 
 /// @author Ryan @ Protea
 /// @title Basic staked event manager
-contract EventManager {
+contract EventManagerV1 {
     using SafeMath for uint256;
 
     address internal tokenManager_;
