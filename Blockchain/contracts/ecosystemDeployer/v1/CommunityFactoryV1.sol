@@ -86,7 +86,8 @@ contract CommunityFactoryV1 is BaseCommunityFactory{
 
         address eventManagerAddress = IEventManagerFactory(eventManagerFactory_).deployEventManager(
             tokenManagerAddress,
-            membershipManagerAddress
+            membershipManagerAddress,
+            _communityManager
         );
 
         uint256 index = numberOfCommunities_;

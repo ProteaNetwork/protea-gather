@@ -50,11 +50,17 @@ interface IMembershipManager {
 
     function lockCommitment(address _member, uint256 _index, uint256 _daiValue) external returns (bool);
 
-    function unlockCommitment(address _member, uint256 _index) external returns (bool);
+    function unlockCommitment(address _member, uint256 _index, uint8 _reputationEvent) external returns (bool);
 
     function reputationOf(address _account) external view returns(uint256);
 
     function getMembershipStatus(address _member) external view returns(uint256, uint256, uint256);
+
+    function getUtilityStake(address _utility, uint256 _index) external view returns(uint256);
+    
+    function getMemberUtilityStake(address _utility, address _member, uint256 _index) external view returns(uint256);
+
+    function getReputationRewardEvent(address _utility, uint8 _id) external view returns(uint256);
 
     function tokenManager() external view returns(address);
 }
