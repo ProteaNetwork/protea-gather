@@ -1,0 +1,46 @@
+{
+  "name": "protea-v2",
+  "version": "0.1.0",
+  "description": "Protea V2",
+  "scripts": {
+    "build": "yarn wsrun build --stages",
+    "build:frontend": "yarn wsrun -p Frontend build",
+    "build:apiserver": "yarn wsrun -p ApiServer build",
+    "start:dev": "yarn wsrun start:dev --parallel",
+    "clean": "rm -rf ./node_modules && rm -rf ./*/node_modules"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/linumlabs/proteav2.git"
+  },
+  "private": true,
+  "workspaces": [
+    "ApiServer",
+    "WebApp"
+  ],
+  "devDependencies": {
+    "chalk": "^2.0.1",
+    "pre-commit": "1.2.2",
+    "wsrun": "^2.2.1"
+  },
+  "resolutions": {
+    "**/hoist-non-react-statics": "^3.0.1"
+  },
+  "keywords": [
+    "NodeJS",
+    "NestJS",
+    "React",
+    "Redux",
+    "Mongoose",
+    "Monorepo",
+    "Ethers",
+    "Etherlime"
+  ],
+  "author": "Linum Labs",
+  "license": "MIT",
+  "homepage": "https://gitlab.com/linumlabs/proteav2#readme",
+  "engines": {
+    "node": ">=8.0",
+    "yarn": ">=1.9.4"
+  }
+}

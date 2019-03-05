@@ -3,19 +3,24 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { UsersService } from 'src/users/users.service';
+import { UsersModule } from '../user/user.module';
+import { UsersService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
+import { ConfigService } from 'src/config/config.service';
 
-// TODO Use async and pull from config
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secretOrPrivateKey: 'secretKey',
-      signOptions: {
-        expiresIn: 600,
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => {
+        const jwtConfig = configService.get('jwt');
+        return ({
+          secretOrPrivateKey: jwtConfig.secret,
+          expiresIn: jwtConfig.expiresIn,
+          signOptions: { },
+        });
       },
+      inject: [ConfigService],
     }),
     UsersModule,
   ],

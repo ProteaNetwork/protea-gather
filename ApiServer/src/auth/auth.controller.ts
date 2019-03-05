@@ -8,6 +8,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   async signIn(@Body() signInDto: SignInDto): Promise<LoginResponse> {
+    // TODO Update the sign-in message to work with a signed message instead
     return this.authService.signIn(signInDto);
   }
 }
