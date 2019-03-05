@@ -2,7 +2,6 @@ const etherlime = require('etherlime');
 const ethers = require('ethers');
 
 var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
-var ITokenManager = require('../../build/ITokenManager.json');
 var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 var MembershipManagerV1 = require('../../build/MembershipManagerV1.json');
 var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
@@ -532,15 +531,7 @@ describe('V1 Membership Manager', () => {
 
     describe("Membership management", () => {
         it("Adds tokens to membership", async () => {
-            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
-            
-            const totalSupply = ethers.utils.formatUnits(
-                await tokenManagerInstance.from(
-                    userAccount.wallet.address
-                    ).totalSupply(),
-                18
-            );
 
             await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
             
@@ -562,16 +553,8 @@ describe('V1 Membership Manager', () => {
         })
 
         it("Adding tokens to membership emits event", async () => {
-            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
             
-            const totalSupply = ethers.utils.formatUnits(
-                await tokenManagerInstance.from(
-                    userAccount.wallet.address
-                    ).totalSupply(),
-                18
-            );
-
             const receipt = await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
             
             let event = await (receipt.events.filter(
@@ -604,16 +587,8 @@ describe('V1 Membership Manager', () => {
         })
 
         it("Withdraws tokens from membership", async () => {
-            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
             
-            const totalSupply = ethers.utils.formatUnits(
-                await tokenManagerInstance.from(
-                    userAccount.wallet.address
-                    ).totalSupply(),
-                18
-            );
-
             await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
             
             let membershipState = await membershipManagerInstance
@@ -651,15 +626,7 @@ describe('V1 Membership Manager', () => {
             )
         })
         it("Withdrawing tokens from membership emits event", async () => {
-            const balanceBN = await tokenManagerInstance.from(userAccount).balanceOf(userAccount.wallet.address);
             const requiredTokensBN = await tokenManagerInstance.from(userAccount).colateralToTokenSelling(membershipSettings.testingStakeValue);
-            
-            const totalSupply = ethers.utils.formatUnits(
-                await tokenManagerInstance.from(
-                    userAccount.wallet.address
-                    ).totalSupply(),
-                18
-            );
 
             await (await membershipManagerInstance.from(userAccount).stakeMembership(membershipSettings.testingStakeValue, userAccount.wallet.address)).wait();
             
@@ -1024,7 +991,7 @@ describe('V1 Membership Manager', () => {
             await (
                 await membershipManagerInstance
                     .from(utilityAccount)
-                    .unlockCommitment(userAccount.wallet.address, 0)
+                    .unlockCommitment(userAccount.wallet.address, 0, 0)
             ).wait()
 
             memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0);
@@ -1209,17 +1176,11 @@ describe('V1 Membership Manager', () => {
 
             // Focus of the test
 
-            await (await membershipManagerInstance
-                .from(utilityAccount)
-                .manualTransfer(memberUtilityStake, 0, userAccount.wallet.address)
-            )
-
-            memberUtilityStake = await membershipManagerInstance.from(userAccount).getMemberUtilityStake(utilityAccount.wallet.address, userAccount.wallet.address, 0)
-
-            assert.ok(
-                memberUtilityStake.eq(0),
-                "Record of users contribution not updated correctly"
-            )
+            await (
+                await membershipManagerInstance
+                    .from(utilityAccount)
+                    .manualTransfer(memberUtilityStake, 0, userAccount.wallet.address)
+            ).wait()
 
             membershipState = await membershipManagerInstance
                 .from(userAccount)

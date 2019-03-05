@@ -40,7 +40,7 @@ describe('Pseudo DAI', () => {
                 "User owns tokens before minting"
             );
 
-            await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint();
+            await (await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint()).wait();
             let balanceAfterMint = await pseudoDaiInstance
                 .from(tokenOwnerAccount.wallet.address)
                 .balanceOf(tokenOwnerAccount.wallet.address);
@@ -50,10 +50,12 @@ describe('Pseudo DAI', () => {
                 "User received incorrect amount of PDAI"
             );
 
-            await assert.revert(
-                pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint(),
-                "User can withdraw more PDAI than allowed"
-            );
+            try {
+                await (await pseudoDaiInstance.from(tokenOwnerAccount.wallet.address).mint()).wait()
+                assert.fail("User can withdraw more PDAI than allowed")
+            } catch (error) {
+                
+            }
         });
 
         it('Transfer functionality', async () => {
