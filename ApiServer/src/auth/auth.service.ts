@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { Injectable, UnauthorizedException, NotImplementedException } from '@nestjs/common';
+import { UsersService } from '../user/user.service';
 
 export interface JwtPayload {
   userId: string;
@@ -29,19 +29,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
+  // TODO Update the sign-in message to work with a signed message instead
   async signIn({ email, password }: SignInDto): Promise<LoginResponse> {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) { throw new UnauthorizedException('Invalid Username or Password'); }
-
-    if (await user.comparePassword(password)) {
-      const tokenPayload: JwtPayload = { userId: user.id };
-      const token = this.jwtService.sign(tokenPayload);
-
-      return ({ token, userId: user.id, status: LoginStatus.success });
-    } else { throw new UnauthorizedException('Invalid Username or Password'); }
+    throw new NotImplementedException();
   }
 
   async validateUser(payload: JwtPayload): Promise<any> {
-    return await this.usersService.findById(payload.userId);
+    throw new NotImplementedException();
   }
 }

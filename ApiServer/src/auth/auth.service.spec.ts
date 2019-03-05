@@ -1,14 +1,17 @@
+import 'jest';
 import { Test } from '@nestjs/testing';
-import { JwtService } from '@nestjs/jwt';
-
-import { UsersService } from '../users/users.service';
-import { AuthService, LoginStatus } from './auth.service';
 import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
+import { JwtService } from '@nestjs/jwt';
+
+import { UsersService } from '../user/users.service';
+import { AuthService, LoginStatus } from './auth.service';
 
 describe('auth.service', () => {
-  const usersService = {
-    findByEmail(email) {
+  let authService: AuthService;
+
+  const mockUsersService = {
+    findByEmail(email: string) {
       if (email === 'correct@test.com') {
         return {
           id: 'test',
@@ -28,16 +31,14 @@ describe('auth.service', () => {
       }
     },
   };
-  
-  const jwtService = {
-    sign(tokenPayload) {
+
+  const mockJwtService = {
+    sign(tokenPayload: string) {
       return 'TOKEN';
     },
   };
 
-  let authService: AuthService;
-
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [
         WinstonModule.forRoot({
@@ -52,10 +53,10 @@ describe('auth.service', () => {
       ],
       providers: [AuthService, {
         provide: JwtService,
-        useValue: jwtService,
+        useValue: mockJwtService,
       }, {
         provide: UsersService,
-        useValue: usersService,
+        useValue: mockUsersService,
       }],
     }).compile();
     authService = module.get<AuthService>(AuthService);
@@ -76,6 +77,7 @@ describe('auth.service', () => {
       expect(response.userId).toBe(expected.userId);
       expect(response.status).toBe(expected.status);
     });
+
     it('Should not sign in an invalid email', async () => {
       let result;
       try {
@@ -91,6 +93,7 @@ describe('auth.service', () => {
       expect(result).toHaveProperty('message');
       expect(result.message.message).toBe('Invalid Username or Password');
     });
+
     it('Should not sign in an invalid password', async () => {
       let result;
       try {

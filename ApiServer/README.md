@@ -1,36 +1,42 @@
-# Protea API Server
+# Protea V2 API
 
-This project is built off of [NestJS](https://github.com/nestjs/nest). 
+This API is based on the following core:
 
-## Quick start
+[NestJS](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Mongoose](https://mongoosejs.com/) object document mapping framework
+[MongoDB](https://www.mongodb.com/) NoSQL database
 
-1.  Make sure that you have Node.js v8.10 and npm v5 or above installed.
+## ❯ Getting Started
 
-2.  Ensure you have installed or have access to a MongoDb database (see below)
+### Step 1: Set up the Development Environment
 
-3.  Run `yarn` or `npm i`
+You need to set up your development environment before you can do anything.
 
-4.  Configure the environmental variables. Create a copy of the `.env.example` file and save it as `.env`. Complete required fields as per example
+Install [Node.js and NPM](https://nodejs.org/en/download/)
 
-5.  At this point you can run `yarn start:dev` to start the API Server at `http://localhost:3001`.
+Install [Yarn](https://yarnpkg.com/en/docs/install)
 
-## Documentation, Support
+### Step 2: Install a Mongo database
 
-NestJS provides very comprehensive documentation [here](https://docs.nestjs.com/).
-[Stackoverflow](https://stackoverflow.com/questions/tagged/nestjs)
-[Gitter](https://gitter.im/nestjs/nestjs)
+You will need access to a Mongo database to run this server.
 
-## Installation
+- You can install Mongo locally: [Download](https://www.mongodb.com/download-center/community)
+- Run a Mongo docker image: `docker run --name apidb -d -p 27017:27017 mongo:latest`
+- Use a 'Mongo as a Service' provider (Microsoft, Google, Amazon, MongoDB Atlas)
 
-```bash
-$ npm install
-```
+### Step 3: Configure environmental variables
 
-## Running the app
+Create a copy of the `.env.example` file and rename it to  `.env`
+
+Update the database connection and any other fields required as per the comments and example
+
+### Step 4: Running the app
 
 ```bash
 # development
-$ npm run start
+$ docker start apidb
+
+$ yarn start
 
 # watch mode
 $ npm run start:dev
@@ -55,3 +61,7 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## License
+
+MIT

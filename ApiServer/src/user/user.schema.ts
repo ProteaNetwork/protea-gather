@@ -1,12 +1,11 @@
 import {Schema, Document} from 'mongoose';
-import * as bcrypt from 'bcrypt';
 
 export interface User {
   firstName: string;
   lastName: string;
-  fullName: string;
-  ensName: string;
-  ethAddress: string;
+  fullName(): string;
+  email: string;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 export interface UserDocument extends User, Document { }
@@ -14,8 +13,8 @@ export interface UserDocument extends User, Document { }
 export const UserSchema = new Schema({
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
-    ensName: {type: String, required: true},
-    ethAddress: {type: String, required: true},
+    email: {type: String, required: true, unique: true},
+    password: {type: String, required: true, select: false},
 }, {
     timestamps: true,
     toJSON: {
