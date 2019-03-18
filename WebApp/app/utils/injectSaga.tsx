@@ -1,9 +1,9 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
 
-import getInjectors from './sagaInjectors';
 import { InjectSagaParams } from 'types';
+import getInjectors from './sagaInjectors';
 
 /**
  * Dynamically injects a saga, passes component's props as saga arguments

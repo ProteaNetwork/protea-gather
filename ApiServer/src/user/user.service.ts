@@ -10,14 +10,24 @@ import { ethers } from 'ethers';
 import { ConfigService } from '../config/config.service';
 
 @Injectable()
-export class UsersService {
+export class UserService {
+
 
   constructor(@InjectModel(Schemas.User) private readonly userRepository: Model<UserDocument>,
               @Inject(Modules.EthersProvider) private readonly ethersProvider: ethers.providers.Provider,
               @Inject(Modules.Logger) private readonly logger: Logger,
               private readonly config: ConfigService) { }
 
-  async create(createUserDto: CreateUserDTO): Promise<User> {
-    throw new NotImplementedException();
+  async create(ethAddress: string): Promise<UserDocument> {
+    const newUser = await new this.userRepository({ethAddress});
+    return newUser.save();
+  }
+
+  async getUserByEthAddress(ethAddress: string): Promise<UserDocument> {
+    return this.userRepository.findOne({ethAddress});
+  }
+
+  async findById(userId: string): Promise<UserDocument> {
+    return await this.userRepository.findById(userId);
   }
 }

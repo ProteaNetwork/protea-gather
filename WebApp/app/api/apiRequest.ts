@@ -1,7 +1,7 @@
 const apiRequest = async (method, url, body?, contentType?, authenticate = false, token?) => {
   const options = {
     method: method,
-    body,
+    body: body,
     headers: {},
   };
 
@@ -30,11 +30,11 @@ const apiRequest = async (method, url, body?, contentType?, authenticate = false
 
   const result = {
     success: true,
-    response,
+    response: response,
     data: isJson ? await response.json() : await response.arrayBuffer(),
-  }
+  };
 
   return result;
-}
+};
 
 export default apiRequest;

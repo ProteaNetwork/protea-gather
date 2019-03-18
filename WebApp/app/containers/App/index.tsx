@@ -12,21 +12,24 @@
  */
 
 import * as React from 'react';
-import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import injectSaga from 'utils/injectSaga';
+import { Switch, withRouter } from 'react-router';
+import { Redirect, Route } from 'react-router-dom';
 import { compose } from 'redux';
-import { withRouter, Switch } from 'react-router';
+import { createStructuredSelector } from 'reselect';
+import injectSaga from 'utils/injectSaga';
 
-import saga from './saga';
-import { logout } from './actions';
-
-import AppWrapper from '../../components/AppWrapper/index';
-import Dashboard from '../../components/Dashboard';
 import { DAEMON } from 'utils/constants';
-import LandingPage from 'components/LandingPage';
 
-function PrivateRoute({ component: Component, isLoggedIn, ...rest }) {
+import { forwardTo } from 'utils/history';
+import AppWrapper from '../../components/AppWrapper/index';
+import { logOut } from '../../domain/authentication/actions';
+import routes from './routes';
+import saga from './saga';
+import { makeSelectIsLoggedIn } from './selectors';
+import { RootState } from './types';
+
+const PrivateRoute: React.SFC<any> = ({ component: Component, isLoggedIn, ...rest }) => {
   return (
     <Route
       {...rest}
@@ -36,18 +39,18 @@ function PrivateRoute({ component: Component, isLoggedIn, ...rest }) {
         ) : (
             <Redirect
               to={{
-                pathname: "/login",
-                state: { from: props.location }
+                pathname: '/',
+                state: { from: props.location },
               }}
             />
-          )
+          );
       }
       }
     />
   );
-}
+};
 
-function PublicRoute({ component: Component, isLoggedIn, ...rest }) {
+const PublicRoute: React.SFC<any> = ({ component: Component, isLoggedIn, ...rest }) => {
   return (
     <Route
       {...rest}
@@ -57,23 +60,22 @@ function PublicRoute({ component: Component, isLoggedIn, ...rest }) {
         ) : (
             <Redirect
               to={{
-                pathname: "/dashboard",
-                state: { from: props.location }
+                pathname: '/dashboard',
+                state: { from: props.location },
               }}
             />
-          )
+          );
       }
       }
     />
   );
-}
-
+};
 
 interface OwnProps { }
 
 interface StateProps {
   isLoggedIn: boolean;
-  currentlySending: boolean;
+  // currentlySending: boolean;
 }
 
 interface DispatchProps {
@@ -81,28 +83,38 @@ interface DispatchProps {
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
-function App(props: Props) {
-  const { isLoggedIn, onLogout, currentlySending } = props;
-
-  // The PublicRoute and PrivateRoute components below should only be used for top level components
-  // that will be connected to the store, as no props can be passed down to the child components from here.
+const App: React.SFC<Props> = (props: Props) => {
+  const { isLoggedIn, onLogout } = props;
   return (
-    <AppWrapper isLoggedIn={isLoggedIn} onLogout={onLogout} name='' ensName='' tokenBalance={1} image=''>
+    <AppWrapper
+      isLoggedIn={isLoggedIn}
+      onLogout={onLogout}
+      name=""
+      ensName=""
+      tokenBalance={1}
+      image=""
+      navLinks={routes.filter(r => r.isNavRequired)}>
       <Switch>
-        <Route path="/" component={LandingPage} />
+        {routes.map(r => {
+          const route = (r.isProtected) ?
+            (<PrivateRoute path={r.path} exact component={r.component} isLoggedIn={isLoggedIn} key={r.path} />) :
+            (<PublicRoute path={r.path} exact component={r.component} isLoggedIn={isLoggedIn} key={r.path} />);
+          return route;
+        })}
       </Switch>
     </AppWrapper>
   );
-}
+};
 
-const mapStateToProps = (state) => ({
-  isLoggedIn: state.global.loggedIn,
-  currentlySending: state.global.currentlySending,
+const mapStateToProps = createStructuredSelector<RootState, StateProps>({
+  isLoggedIn: makeSelectIsLoggedIn(),
+  // currentlySending: state.global.currentlySending,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onLogout: () => {
-    dispatch(logout());
+    dispatch(logOut());
+    forwardTo('/');
   },
 });
 

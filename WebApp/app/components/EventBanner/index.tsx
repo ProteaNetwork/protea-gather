@@ -4,9 +4,9 @@
  *
  */
 
+import { Button, Card, CardHeader, CardMedia, Theme, Typography } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import React, { Fragment } from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Card, CardHeader, CardMedia, Button } from '@material-ui/core';
 
 const styles = ({ spacing }: Theme) => createStyles({
   container: {
@@ -28,15 +28,15 @@ const styles = ({ spacing }: Theme) => createStyles({
   buttonTop: {
     margin: spacing.unit,
     alignSelf: 'right',
-    float: "left",
+    float: 'left',
   },
   button: {
     margin: spacing.unit,
     alignSelf: 'right',
-    float: "right",
+    float: 'right',
   },
   descriptionStyle: {
-    fontSize: 'medium'
+    fontSize: 'medium',
   },
 });
 
@@ -73,7 +73,7 @@ function EventBanner(props: OwnProps) {
               <span>{tokens} {tokenName} - {ticketsLeft} Tickets left</span>
               <br />
               <span>{date}</span>
-              <Typography variant='body1' className={classes.descriptionStyle}>
+              <Typography variant="body1" className={classes.descriptionStyle}>
                 {description}
               </Typography>
               <Button variant="contained" color="primary" className={classes.button}>
@@ -85,6 +85,6 @@ function EventBanner(props: OwnProps) {
       </Card>
     </Fragment>
   );
-};
+}
 
 export default withStyles(styles)(EventBanner);

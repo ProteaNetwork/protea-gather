@@ -4,10 +4,10 @@
  *
  */
 
-import React, { Fragment } from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
+import { FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { FormControl, InputLabel, Select, OutlinedInput, MenuItem, Paper } from '@material-ui/core';
+import React, { Fragment } from 'react';
 
 const styles = theme => createStyles({
   container: {
@@ -50,10 +50,10 @@ function EventSearchSortBar(props: OwnProps) {
   return (
     <Fragment>
       <Paper className={classes.paper}>
-        <FormControl variant='outlined' className={classes.formControl}>
+        <FormControl variant="outlined" className={classes.formControl}>
           <TextField
             id="search-parameter"
-            name='searchParameter'
+            name="searchParameter"
             label="Search"
             className={classes.textField}
             variant="outlined"
@@ -67,7 +67,7 @@ function EventSearchSortBar(props: OwnProps) {
           <Select
             value={sortParameter}
             onChange={onChange}
-            name='sortParameter'
+            name="sortParameter"
             input={
               <OutlinedInput
                 labelWidth={20}

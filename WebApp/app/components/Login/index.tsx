@@ -1,17 +1,17 @@
-import React, { Fragment } from 'react';
+import { TextField } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import LockIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import createStyles from '@material-ui/core/styles/createStyles';
-import { TextField } from '@material-ui/core';
-import {Form, Field} from 'formik';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography';
+import LockIcon from '@material-ui/icons/LockOutlined';
+import {Field, Form} from 'formik';
+import React, { Fragment } from 'react';
 
-import { LinearProgress, FormControl } from '@material-ui/core';
+import { FormControl, LinearProgress } from '@material-ui/core';
 
 const styles = ({ palette, spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -46,14 +46,14 @@ const styles = ({ palette, spacing, breakpoints }: Theme) => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  error: any,
-  isSubmitting: any,
+  error: any;
+  isSubmitting: any;
   submitForm: any;
-  innerRef: any,
+  innerRef: any;
 }
 
 class LoginForm extends React.Component<Props> {
-  render() {
+  public render() {
     const { classes, isSubmitting, submitForm, error } = this.props;
 
     return (
@@ -68,21 +68,21 @@ class LoginForm extends React.Component<Props> {
               Sign in
             </Typography>
             <Form className={classes.form}>
-              <FormControl margin='normal' required fullWidth>
+              <FormControl margin="normal" required fullWidth>
                 <Field
                   name="email"
                   type="email"
                   label="E-mail"
                   component={TextField} />
               </FormControl>
-              <FormControl margin='normal' required fullWidth>
+              <FormControl margin="normal" required fullWidth>
                 <Field
                   name="password"
                   type="password"
                   label="Password"
                   component={TextField} />
               </FormControl>
-              {error && <Typography variant='body1'>{error}</Typography>}
+              {error && <Typography variant="body1">{error}</Typography>}
               {isSubmitting && <LinearProgress />}
               <br />
               <Button

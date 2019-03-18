@@ -1,8 +1,8 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import getInjectors from './reducerInjectors';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
 import { InjectReducerParams } from 'types';
+import getInjectors from './reducerInjectors';
 
 /**
  * Dynamically injects a reducer

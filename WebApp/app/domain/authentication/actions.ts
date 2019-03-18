@@ -1,10 +1,20 @@
-import { createAsyncAction } from 'typesafe-actions';
+import { createAsyncAction, createStandardAction } from 'typesafe-actions';
 import ActionTypes from './constants';
 
-//TODO Get proper interfaces defined for each of these actions and their payloads
+export const authenticate = createAsyncAction(
+  ActionTypes.AUTH_REQUEST,
+  ActionTypes.AUTH_SUCCESS,
+  ActionTypes.AUTH_FAILURE)
+  <void, void, string>();
 
-// export const auth = createAsyncAction(
-//   ActionTypes.,
-//   ActionTypes.,
-//   ActionTypes.)
-//   <void, string, string>();
+export const saveAccessPermit = createStandardAction(ActionTypes.SAVE_ACCESS_PERMIT)<string>();
+
+export const saveAccessToken = createStandardAction(ActionTypes.SAVE_ACCESS_TOKEN)<{accessToken: string}>();
+
+export const connectWallet = createAsyncAction(
+  ActionTypes.CONNECT_WALLET_REQUEST,
+  ActionTypes.CONNECT_WALLET_SUCCESS,
+  ActionTypes.CONNECT_WALLET_FAILURE)
+  <void, void, string>();
+
+export const logOut = createStandardAction(ActionTypes.LOG_OUT)();

@@ -4,9 +4,9 @@
  *
  */
 
+import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Typography, Theme, CardMedia, CardActionArea } from '@material-ui/core';
 import {Link} from 'react-router-dom';
 
 const styles = ({ palette }: Theme) => createStyles({
@@ -29,7 +29,7 @@ const styles = ({ palette }: Theme) => createStyles({
   },
   link: {
     textDecoration: 'none',
-  }
+  },
 });
 
 export interface OwnProps {
@@ -50,7 +50,7 @@ function CommunityCard(props: Props) {
   const { classes, tokens, logo, name, id } = props;
   return (
     <Card className={classes.card}>
-      <Link to='/community' className={classes.link} >
+      <Link to="/community" className={classes.link} >
         <CardActionArea onClick={() => props.onClick(id)} >
           <CardMedia
             className={classes.media}

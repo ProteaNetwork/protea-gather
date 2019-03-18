@@ -6,26 +6,27 @@
     "object-literal-shorthand": [true, "never"],
     "indent": [true, "spaces"],
     "quotemark": [true, "single", "jsx-double"],
-    "no-var-requires": false,
-    "ordered-imports": false,
+    "no-var-requires": true,
+    "ordered-imports": true,
     "no-unused-variable": [false, "react"],
     "member-ordering": [false],
     "object-literal-sort-keys": false,
     "no-shadowed-variable": false,
     "no-console": [false],
-    "max-line-length": [true, 180],
-    "no-consecutive-blank-lines": [false],
-    "no-string-literal": false,
+    "max-line-length": [true, 120],
+    "no-consecutive-blank-lines": [true],
+    "no-string-literal": true,
     "jsx-no-multiline-js": false,
     "jsx-boolean-value": false,
     "arrow-parens": [false],
     "no-implicit-dependencies": false,
     "no-submodule-imports": false,
     "no-empty": false,
-    "jsx-alignment": false,
-    "jsx-no-lambda": false,
+    "jsx-alignment": true,
+    "jsx-no-lambda": false
   },
   "linterOptions": {
-    "exclude": ["**/*.js"]
+    "exclude": ["**/*.js", "internals/scripts", "/node_modules"],
+    "include": ["./app"]
   }
 }
