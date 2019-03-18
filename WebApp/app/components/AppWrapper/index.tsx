@@ -25,6 +25,11 @@ const styles = theme => createStyles({
     maxHeight: '100%',
     height: '100vh',
     maxWidth: '100%',
+    background:
+    'linear-gradient(135deg, hsla(36.8, 90.36%, 51.18%, 1) 0%, hsla(36.8, 90.36%, 51.18%, 0) 70%),' +
+    'linear-gradient(25deg, hsla(48.05, 88.98%, 50.2%, 1) 10%, hsla(48.05, 88.98%, 50.2%, 0) 80%),' +
+    'linear-gradient(315deg, hsla(30, 100%, 60%, 1) 15%, hsla(30, 100%, 60%, 0) 80%),' +
+    'linear-gradient(245deg, hsla(23.89, 100%, 41.37%, 1) 100%, hsla(23.89, 100%, 41.37%, 0) 70%)'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,

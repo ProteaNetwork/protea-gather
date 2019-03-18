@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { compose, Dispatch } from 'redux';
+import ReactSVG from 'react-svg';
 
 
 const styles = () => createStyles({
@@ -14,21 +15,27 @@ const styles = () => createStyles({
     justifyContent: 'center',
     flexDirection: 'column',
     alignItems: 'center',
-    background: 'linear-gradient(135deg, #f39c12 0%, rgba(243, 156, 18, 0) 70%), ' +
-      'linear-gradient(25deg, #f1c40f 10%, rgba(241, 196, 15, 0) 80%), ' +
-      'linear-gradient(315deg, #ff9933 15%, rgba(255, 153, 51, 0) 80%), ' +
-      'linear-gradient(245deg, #d35400 100%, rgba(211, 84, 0, 0) 70%);',
   },
   appName: {
     color: 'white',
   },
-  connectButton: {
-    backgroundColor: 'white',
-    color: 'black',
-  },
   link: {
     textDecoration: 'none',
   },
+  button:{
+    margin: '10px 0'
+  },
+  logo:{
+    maxWidth: '150px',
+    "& path":{
+      stroke: "#FFFFFF",
+      strokeWidth: '10px'
+    }
+  },
+  proteaTitle: {
+    maxWidth: '300px',
+    margin: "30px 0"
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -41,9 +48,10 @@ const LandingPage: React.SFC<Props> = ({ onConnectClick, isWalletUnlocked, error
   return (
     <Fragment>
       <main className={classes.layout}>
-        <img src="protea_logo_large.png" alt="" />
-        <Typography variant="h3" className={classes.appName}>Protea</Typography>
-        <Button variant="outlined" className={classes.connectButton} onClick={onConnectClick} disabled={!isWalletUnlocked}>Connect</Button>
+        <ReactSVG className={classes.logo} src="protea_logo_outline.svg" />
+        <ReactSVG className={classes.proteaTitle} src="protea_white_text.svg" />
+        <Button className={classes.button} onClick={onConnectClick} disabled={!isWalletUnlocked}>Connect</Button>
+        <Button className={classes.button}>Discover</Button>
         <Typography variant="subtitle1">{errorMessage}</Typography>
       </main>
     </Fragment>

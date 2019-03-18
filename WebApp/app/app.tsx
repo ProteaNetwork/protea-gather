@@ -28,30 +28,9 @@ import {loadState, saveState} from './utils/localStorage';
 
 // Import CSS reset and Global Styles
 
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { Router } from 'react-router';
-
-const theme = createMuiTheme({
-  palette: {
-    type: 'light',
-    background: {
-      paper: '#fff',
-      default: '#fafafa',
-    },
-    primary: {
-      main: '#f57c00',
-    },
-    secondary: {
-      main: '#ffa000',
-    },
-
-  },
-  typography: {
-    useNextVariants: true,
-    fontFamily: '\'Roboto\', sans-serif',
-  },
-});
+import theme from 'theme';
 
 const persistedState = loadState();
 const store = configureStore(persistedState);
