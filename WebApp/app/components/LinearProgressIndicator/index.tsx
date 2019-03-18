@@ -4,9 +4,9 @@
  *
  */
 
-import React from 'react';
-import { Theme, createStyles, withStyles, WithStyles } from '@material-ui/core';
+import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import React from 'react';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   indicator: {
@@ -15,11 +15,11 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
 });
 
 interface OwnProps extends WithStyles<typeof styles> {
-  active: boolean,
+  active: boolean;
 }
 
 const LinearProgressIndicator: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { classes, active, } = props;
+  const { classes, active } = props;
   return (
     <React.Fragment>
       {active &&

@@ -40,6 +40,10 @@ export const env = {
     network: getOsEnv('ETHERS_NETWORK') || 'homestead',
     rpcUrl: getOsEnv('ETHERS_RPC_PROVIDER_URL') || 'http://localhost:8545',
   },
+  serverWallet: {
+    privateKey: getOsEnv('APPLICATION_WALLET_PRIVATE_KEY'),
+    mnemonic: getOsEnv('APPLICATION_WALLET_MNEMONIC'),
+  },
   contracts: {
 
   },

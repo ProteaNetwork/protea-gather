@@ -4,11 +4,7 @@ import { ApplicationRootState } from 'types';
 
 /* --- STATE --- */
 interface AppState {
-  readonly loggedIn: boolean;
-  readonly error: string;
-  readonly currentlySending: boolean;
-  readonly apiToken: string;
-  readonly userId: string;
+
 }
 
 

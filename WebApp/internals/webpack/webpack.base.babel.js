@@ -5,6 +5,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // Remove this line once the following warning goes away (it was meant for webpack loader authors not users):
 // 'DeprecationWarning: loaderUtils.parseQuery() received a non-string value which can be problematic,
@@ -39,6 +40,10 @@ module.exports = options => ({
           loader: 'babel-loader',
           options: options.babelQuery,
         },
+      },
+      {
+        test: /\.node$/,
+        use: 'node-loader',
       },
       {
         // Preprocess our own .css files
@@ -136,6 +141,7 @@ module.exports = options => ({
     new Dotenv({
       systemvars: true,
     }),
+    new CopyWebpackPlugin([{ from: 'static' }]),
   ]),
   resolve: {
     modules: ['node_modules', 'app'],

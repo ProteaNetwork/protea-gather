@@ -4,9 +4,9 @@
  *
  */
 
+import { Card, CardContent, CardMedia, Theme, Typography } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import React, { Fragment } from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Typography, Theme, CardMedia } from '@material-ui/core';
 
 const styles = ({ palette, spacing }: Theme) => createStyles({
   card: {
@@ -28,7 +28,7 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
   header: {
     width: 400,
     height: 20,
-  }
+  },
 });
 
 interface OwnProps {
@@ -57,6 +57,6 @@ function AttendeeCard(props: OwnProps) {
 
     </Fragment>
   );
-};
+}
 
 export default withStyles(styles)(AttendeeCard);

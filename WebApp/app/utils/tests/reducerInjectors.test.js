@@ -73,10 +73,10 @@ describe('reducer injectors', () => {
     it('given a store, it should provide a function to inject a reducer', () => {
       injectReducer('test', reducer);
 
-      const actual = store.getState().get('test');
+      const actual = store.getState().test;
       const expected = initialState;
 
-      expect(actual.toJS()).toEqual(expected.toJS());
+      expect(actual).toEqual(expected);
     });
 
     it('should not assign reducer if already existing', () => {

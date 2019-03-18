@@ -10,13 +10,13 @@ export const loadState = () => {
     console.log('Error loading state from local storage');
     return undefined;
   }
-}
+};
 
 export const saveState = (state) => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('state', serializedState);
-  } catch(err) {
+  } catch (err) {
     console.log('Error saving state to local storage');
   }
-}
+};

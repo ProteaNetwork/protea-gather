@@ -1,14 +1,14 @@
-import React, { Fragment } from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
-import { Typography, Theme, Paper, WithStyles, withWidth, Fab } from '@material-ui/core';
-import Slider, { Settings as SliderSettings } from "react-slick";
-import '../../css/slick.css'
-import '../../css/slick-theme.css';
-import { compose } from 'redux';
+import { Fab, Paper, Theme, Typography, WithStyles, withWidth } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
 import CommunityCard from 'components/CommunityCard';
 import EventCard from 'components/EventCard';
+import React, { Fragment } from 'react';
+import Slider, { Settings as SliderSettings } from 'react-slick';
+import { compose } from 'redux';
+import '../../css/slick-theme.css';
+import '../../css/slick.css';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -34,7 +34,7 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     alignItems: 'center',
     padding: `${spacing.unit * 2}px ${spacing.unit * 3}px ${spacing.unit * 3}px`,
     marginTop: `${spacing.unit * 2}px`,
-    marginBottom: `${spacing.unit * 2}px`
+    marginBottom: `${spacing.unit * 2}px`,
   },
   bigAvatar: {
     margin: 10,
@@ -48,55 +48,55 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     backgroundColor: 'orange',
   },
   innerCarousel: {
-    marginTop: 20,
-    "& .slick-slide > * > * > *":{
+    'marginTop': 20,
+    '& .slick-slide > * > * > *': {
       width: 'calc(100% - 20px)',
-      margin: '0 auto'
-    }
+      margin: '0 auto',
+    },
   },
   carouselDots: {
-    width: '100%',
-    position: 'absolute',
-    margin: 0,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    bottom: -15,
-    padding: 0,
+    'width': '100%',
+    'position': 'absolute',
+    'margin': 0,
+    'display': 'flex',
+    'flexDirection': 'row',
+    'justifyContent': 'center',
+    'alignItems': 'center',
+    'bottom': -15,
+    'padding': 0,
     '& > li': {
-      display: 'block',
-      width: 10,
-      height: 10,
-      borderRadius: 20,
-      overflow: 'hidden',
-      backgroundColor: 'black',
-      margin: '0 5px',
-      opacity: 0.5,
-      transitionDuration: '200ms',
+      'display': 'block',
+      'width': 10,
+      'height': 10,
+      'borderRadius': 20,
+      'overflow': 'hidden',
+      'backgroundColor': 'black',
+      'margin': '0 5px',
+      'opacity': 0.5,
+      'transitionDuration': '200ms',
       '& > *': {
         cursor: 'pointer',
         margin: 0,
         display: 'block',
         height: '100%',
         width: '100%',
-        padding: 0
+        padding: 0,
       },
       '&:hover': {
-        opacity: 1
-      }
+        opacity: 1,
+      },
     },
   },
   headers: {
-    marginBottom: `${spacing.unit * 2}px`
+    marginBottom: `${spacing.unit * 2}px`,
   },
 });
 
 interface Props extends WithStyles<typeof styles> {
   classes: any;
   width: Breakpoint;
-  communities: Array<any>;
-  events: Array<any>;
+  communities: any[];
+  events: any[];
 }
 
 function FabNext(props) {
@@ -105,12 +105,12 @@ function FabNext(props) {
     <Fab
       className={className}
       style={{...style,
-        display: 'block',
-        position: 'absolute',
-        top: '50%',
-        transform: 'translate(-50%,-50%)',
-        right: '10px',
-        backgroundColor: 'orange'}}
+              display: 'block',
+              position: 'absolute',
+              top: '50%',
+              transform: 'translate(-50%,-50%)',
+              right: '10px',
+              backgroundColor: 'orange'}}
       onClick={onClick} />
   );
 }
@@ -121,13 +121,13 @@ function FabPrevious(props) {
     <Fab
       className={className}
       style={{...style,
-        display: 'block',
-        position: 'absolute',
-        top: '50%',
-        transform: 'translate(-50%,-50%)',
-        left: '60px',
-        zIndex: '1',
-        backgroundColor: 'orange'}}
+              display: 'block',
+              position: 'absolute',
+              top: '50%',
+              transform: 'translate(-50%,-50%)',
+              left: '60px',
+              zIndex: '1',
+              backgroundColor: 'orange'}}
       onClick={onClick} />
   );
 }
@@ -149,11 +149,11 @@ function Dashboard(props: Props) {
     }
 
     return 1;
-  }
+  };
 
   const sliderSettings: SliderSettings = {
     className: classes.innerCarousel,
-    centerPadding: "60px",
+    centerPadding: '60px',
     arrows: true,
     dots: true,
     dotsClass: classes.carouselDots,
@@ -174,7 +174,7 @@ function Dashboard(props: Props) {
         Dashboard
       </Paper>
     </Fragment>
-  )
+  );
 }
 
 export default compose(

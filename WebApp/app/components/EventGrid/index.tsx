@@ -4,13 +4,13 @@
  *
  */
 
-import React, { Fragment } from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
-import { GridListTile, GridList, ListSubheader } from '@material-ui/core';
+import { GridList, GridListTile, ListSubheader } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
+import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import EventCard, {OwnProps as EventCardProps} from 'components/EventCard';
+import React, { Fragment } from 'react';
 import { compose } from 'redux';
-import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 
 const styles = () => createStyles({
   root: {
@@ -21,11 +21,11 @@ const styles = () => createStyles({
   },
   gridListTile: {
     height: 400,
-  }
+  },
 });
 
 interface OwnProps {
-  events: Array<EventCardProps>;
+  events: EventCardProps[];
 }
 
 interface StyleProps {
@@ -52,12 +52,12 @@ function EventGrid(props: Props) {
     }
 
     return 1;
-  }
+  };
 
   return (
     <Fragment>
       <main className={classes.root}>
-        <GridList cellHeight='auto' spacing={10} cols={getGridListCols()}>
+        <GridList cellHeight="auto" spacing={10} cols={getGridListCols()}>
           <GridListTile key="Subheader" cols={getGridListCols()} style={{ height: 'auto'}}>
             <ListSubheader component="div">Events</ListSubheader>
           </GridListTile>

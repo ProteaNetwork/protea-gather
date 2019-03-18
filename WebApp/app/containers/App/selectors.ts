@@ -1,14 +1,22 @@
+import jwtDecode from 'jwt-decode';
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 import { initialState } from './reducer';
 
 
 /**
- * Direct selector to the patent state domain
+ * Direct selector to the user state domain
  */
 
-const selectAppDomain = (state: ApplicationRootState) => {
-  return state ? state.global : initialState;
+const selectIsLoggedIn = (state: ApplicationRootState) => {
+  const accessToken = state.authentication.accessToken;
+  try {
+    const decodedToken = jwtDecode(accessToken);
+    const isLoggedIn = (Date.now() / 1000 < decodedToken.exp);
+    return isLoggedIn;
+  } catch (error) {
+    return false;
+  }
 };
 
 /**
@@ -16,13 +24,13 @@ const selectAppDomain = (state: ApplicationRootState) => {
  */
 
 /**
- * Default selector used by Patent
+ * Default selector used by App
  */
 
-const selectApp = () =>
-  createSelector(selectAppDomain, substate => {
+const makeSelectIsLoggedIn = () =>
+  createSelector(selectIsLoggedIn, substate => {
     return substate;
   });
 
-export default selectApp;
-export { selectAppDomain };
+// export default selectApp;
+export { makeSelectIsLoggedIn };

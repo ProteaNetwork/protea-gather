@@ -1,7 +1,7 @@
-import React, { Fragment } from 'react';
-import { withStyles, createStyles } from '@material-ui/core/styles';
+import { FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select } from '@material-ui/core';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { FormControl, InputLabel, Select, OutlinedInput, MenuItem, Paper } from '@material-ui/core';
+import React, { Fragment } from 'react';
 
 const styles = theme => createStyles({
   container: {
@@ -47,12 +47,12 @@ function CommunitySearchSortBar(props: OwnProps) {
         <FormControl className={classes.formControl}> {/*variant='outlined'*/}
           <TextField
             id="search-parameter"
-            name='searchParameter'
+            name="searchParameter"
             label="Search"
             className={classes.textField}
             value={searchParameter}
             onChange={onChange}
-            variant='outlined' />
+            variant="outlined" />
         </FormControl>
         <FormControl className={classes.formControl}> {/*variant='outlined'*/}
           <InputLabel htmlFor="outlined-age-simple">
@@ -61,7 +61,7 @@ function CommunitySearchSortBar(props: OwnProps) {
           <Select
             value={sortParameter}
             onChange={onChange}
-            name='sortParameter'
+            name="sortParameter"
             input={
               <OutlinedInput
                 labelWidth={20}

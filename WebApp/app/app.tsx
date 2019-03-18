@@ -21,10 +21,10 @@ import App from 'containers/App';
 import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import 'file-loader?name=[name].[ext]!./.htaccess'; // eslint-disable-line import/extensions
 
-import configureStore from './configureStore';
-import {loadState, saveState} from './utils/localStorage';
 import throttle from 'lodash/throttle';
+import configureStore from './configureStore';
 import history from './utils/history';
+import {loadState, saveState} from './utils/localStorage';
 
 // Import CSS reset and Global Styles
 
@@ -35,10 +35,21 @@ import { Router } from 'react-router';
 const theme = createMuiTheme({
   palette: {
     type: 'light',
+    background: {
+      paper: '#fff',
+      default: '#fafafa',
+    },
+    primary: {
+      main: '#f57c00',
+    },
+    secondary: {
+      main: '#ffa000',
+    },
+
   },
   typography: {
     useNextVariants: true,
-    fontFamily: "'Montserrat', sans-serif"
+    fontFamily: '\'Roboto\', sans-serif',
   },
 });
 

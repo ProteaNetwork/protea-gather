@@ -4,9 +4,11 @@
   "description": "Protea V2",
   "scripts": {
     "build": "yarn wsrun build --stages",
-    "build:frontend": "yarn wsrun -p Frontend build",
+    "build:webapp": "yarn wsrun -p WebApp build",
     "build:apiserver": "yarn wsrun -p ApiServer build",
+    "build:blockchain": "cd Blockchain && yarn build && cd ..",
     "start:dev": "yarn wsrun start:dev --parallel",
+    "test:webapp": "cd Webapp && yarn test:watch",
     "clean": "rm -rf ./node_modules && rm -rf ./*/node_modules"
   },
   "repository": {
@@ -14,10 +16,13 @@
     "url": "git+https://gitlab.com/linumlabs/proteav2.git"
   },
   "private": true,
-  "workspaces": [
-    "ApiServer",
-    "WebApp"
-  ],
+  "workspaces": {
+    "packages": [
+      "ApiServer",
+      "WebApp"
+    ],
+    "nohoist": ["**/*"]
+  },
   "devDependencies": {
     "chalk": "^2.0.1",
     "pre-commit": "1.2.2",
