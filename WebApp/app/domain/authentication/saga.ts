@@ -94,8 +94,12 @@ export function* connectWallet() {
   if (ethereum) {
     // web3 = new Web3(ethereum);
     try {
-      const result = yield call(ethereum.enable);
-      yield put(authenticationActions.setEthAddress({ethAddress : ''}));
+      const accountArray = yield call(ethereum.send('eth_requestAccounts'));
+      if(accountArray.code && accountArray.code == 4001){
+        throw("Connection rejected");
+      }
+
+      yield put(authenticationActions.setEthAddress({ethAddress : accountArray[0]}));
       yield put(authenticationActions.connectWallet.success());
     } catch (error) {
       yield put(authenticationActions.connectWallet.failure(error.message));
