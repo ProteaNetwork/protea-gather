@@ -77,6 +77,7 @@ interface StateProps {
   isLoggedIn: boolean;
   ethAddress: string;
   profileImage: string;
+  displayName: string;
 }
 
 interface DispatchProps {
@@ -85,13 +86,15 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 const App: React.SFC<Props> = (props: Props) => {
-  const { isLoggedIn, ethAddress, profileImage, onLogout } = props;
+  const { isLoggedIn, ethAddress, displayName, profileImage, onLogout } = props;
   return (
     <AppWrapper
       onLogout={onLogout}
-      name=""
+      isLoggedIn={isLoggedIn}
+      displayName={displayName}
       daiBalance={1}
-      image=""
+      ethAddress={ethAddress}
+      profileImage={profileImage}
       navLinks={routes.filter(r => r.isNavRequired)}>
       <Switch>
         {routes.map(r => {

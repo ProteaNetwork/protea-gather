@@ -59,10 +59,10 @@ const styles = theme => createStyles({
   content: {
     flexGrow: 1,
     minHeight: '100vh',
-    overflowX: 'hidden',
+    boxSizing: 'border-box',
   },
   contentLoggedIn: {
-    padding: theme.spacing.unit * 3,
+    padding: `${56 + theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`
   },
   link: {
     textDecoration: 'none',
@@ -91,9 +91,11 @@ const styles = theme => createStyles({
 
 interface Props extends WithStyles<typeof styles> {
   onLogout(): void;
-  name: string;
+  isLoggedIn: boolean;
+  displayName: string;
   daiBalance: number;
-  image: string;
+  profileImage: string;
+  ethAddress: string;
   navLinks: appRoute[];
 }
 
@@ -111,11 +113,45 @@ class AppWrapper extends React.Component<Props> {
   };
 
   public render() {
-    const { classes, children, name, daiBalance, image, onLogout, navLinks } = this.props;
+    const { classes, isLoggedIn, children, displayName, daiBalance, profileImage, onLogout, navLinks, ethAddress } = this.props;
 
     return (
       <div className={classes.root}>
+      {isLoggedIn && (
+        // <ClickAwayListener onClickAway={this.close}>
+          <AppBar
+            position="fixed"
+            className={classes.appBar} >
+            <Toolbar
+              disableGutters={true}
+            >
+              {
+                this.state.open ?
+                  <IconButton
+                    color="inherit"
+                    aria-label="Close drawer"
+                    onClick={this.handleDrawerToggle}
+                    className={classes.menuButton} >
+                    <ChevronLeftIcon />
+                  </IconButton>
+                  :
+                  <IconButton
+                    color="inherit"
+                    aria-label="Open drawer"
+                    onClick={this.handleDrawerToggle}
+                    className={classes.menuButton} >
+                    <MenuIcon />
+                  </IconButton>
+              }
+              <img src="protea_logo_60.png" className={classes.logo} />
+            </Toolbar>
+          </AppBar>
+        // </ClickAwayListener>
+        )}
 
+        <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
+          {children}
+        </main>
       </div>
     );
   }
@@ -123,39 +159,6 @@ class AppWrapper extends React.Component<Props> {
 
 export default withStyles(styles, { withTheme: true })(AppWrapper);
 
-
-// <CssBaseline />
-// {/* {isLoggedIn && ( */}
-//   <ClickAwayListener onClickAway={this.close}>
-//     <AppBar
-//       position="fixed"
-//       className={classes.appBar} >
-//       <Toolbar
-//         disableGutters={true}
-//       >
-//         {
-//           this.state.open ?
-//             <IconButton
-//               color="inherit"
-//               aria-label="Close drawer"
-//               onClick={this.handleDrawerToggle}
-//               className={classes.menuButton} >
-//               <ChevronLeftIcon />
-//             </IconButton>
-//             :
-//             <IconButton
-//               color="inherit"
-//               aria-label="Open drawer"
-//               onClick={this.handleDrawerToggle}
-//               className={classes.menuButton} >
-//               <MenuIcon />
-//             </IconButton>
-//         }
-//         <img src="protea_logo_60.png" className={classes.logo} />
-//       </Toolbar>
-//     </AppBar>
-//   </ClickAwayListener>
-// {/* )} */}
 // <ClickAwayListener onClickAway={this.close}>
 //   <Drawer
 //     variant="persistent"

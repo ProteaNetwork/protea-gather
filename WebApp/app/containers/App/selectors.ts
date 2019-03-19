@@ -25,6 +25,7 @@ const selectEthAddress = (state: ApplicationRootState) => state.authentication.e
 
 const selectProfileImage = (state: ApplicationRootState) => state.userProfile.profileImage;
 
+const selectDisplayName = (state: ApplicationRootState) => state.userProfile.displayName;
 
 /**
  * Default selector used by App
@@ -42,11 +43,12 @@ const makeSelectEthAddress = () => {
 
 // Root
 
-const selectApp = createSelector(selectEthAddress, selectIsLoggedIn, selectProfileImage,
-  (ethAddress, isLoggedIn, profileImage) => ({
+const selectApp = createSelector(selectEthAddress, selectIsLoggedIn, selectProfileImage, selectDisplayName,
+  (ethAddress, isLoggedIn, profileImage, displayName) => ({
     ethAddress: ethAddress,
     isLoggedIn: isLoggedIn,
-    profileImage: profileImage
+    profileImage: profileImage,
+    displayName: displayName
   }
 ))
 
