@@ -5,6 +5,7 @@ import * as userProfileActions from './actions';
 export const initialState = {
   displayName: '',
   profileImage: '',
+  daiBalance: 0,
 };
 
 function userProfileReducer(state = initialState, action) {

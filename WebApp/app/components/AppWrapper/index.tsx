@@ -11,7 +11,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import { Dashboard } from '@material-ui/icons';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import classNames from 'classnames';
@@ -36,6 +35,9 @@ const styles = theme => createStyles({
   },
   menuButton: {
     marginLeft: 12,
+    '& svg': {
+      fill: '#FFFFFF'
+    }
   },
   profileButton: {
     marginLeft: 36,
@@ -88,11 +90,9 @@ const styles = theme => createStyles({
 });
 
 interface Props extends WithStyles<typeof styles> {
-  isLoggedIn: boolean;
   onLogout(): void;
   name: string;
-  ensName: string;
-  tokenBalance: number;
+  daiBalance: number;
   image: string;
   navLinks: appRoute[];
 }
@@ -111,78 +111,81 @@ class AppWrapper extends React.Component<Props> {
   };
 
   public render() {
-    const { classes, children, isLoggedIn, name, ensName, tokenBalance, image, onLogout, navLinks } = this.props;
+    const { classes, children, name, daiBalance, image, onLogout, navLinks } = this.props;
 
     return (
       <div className={classes.root}>
-        <CssBaseline />
-        {isLoggedIn && (
-          <ClickAwayListener onClickAway={this.close}>
-            <AppBar
-              position="fixed"
-              className={classes.appBar} >
-              <Toolbar
-                disableGutters={true}
-              >
-                {
-                  this.state.open ?
-                    <IconButton
-                      color="inherit"
-                      aria-label="Close drawer"
-                      onClick={this.handleDrawerToggle}
-                      className={classes.menuButton} >
-                      <ChevronLeftIcon />
-                    </IconButton>
-                    :
-                    <IconButton
-                      color="inherit"
-                      aria-label="Open drawer"
-                      onClick={this.handleDrawerToggle}
-                      className={classes.menuButton} >
-                      <MenuIcon />
-                    </IconButton>
-                }
-                <img src="protea_logo_60.png" className={classes.logo} />
-              </Toolbar>
-            </AppBar>
-          </ClickAwayListener>
-        )}
-        <ClickAwayListener onClickAway={this.close}>
-          <Drawer
-            variant="persistent"
-            open={this.state.open} >
-            <div className={classes.spacer} />
-            <div className={classes.userInformation}>
-              <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
-              <Typography variant="h3">{name}</Typography>
-              <Typography variant="body1">{ensName}</Typography>
-              <Typography variant="body1">{tokenBalance} DAI</Typography>
-              <Button onClick={onLogout}>Logout</Button>
-            </div>
-            <Divider />
-            <List>
-              {
-                navLinks.map(({ name, path, routeNavLinkIcon }) => (
-                  <NavLink to={path} className={classes.link} key={name}>
-                    <ListItem button>
-                      <ListItemIcon>
-                        {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
-                      </ListItemIcon>
-                      <ListItemText primary={name} />
-                    </ListItem>
-                  </NavLink>
-                ))
-              }
-            </List>
-          </Drawer>
-        </ClickAwayListener>
-        <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
-          {isLoggedIn && <div className={classes.toolbar} />}
-          {children}
-        </main>
+
       </div>
     );
   }
 }
 
 export default withStyles(styles, { withTheme: true })(AppWrapper);
+
+
+// <CssBaseline />
+// {/* {isLoggedIn && ( */}
+//   <ClickAwayListener onClickAway={this.close}>
+//     <AppBar
+//       position="fixed"
+//       className={classes.appBar} >
+//       <Toolbar
+//         disableGutters={true}
+//       >
+//         {
+//           this.state.open ?
+//             <IconButton
+//               color="inherit"
+//               aria-label="Close drawer"
+//               onClick={this.handleDrawerToggle}
+//               className={classes.menuButton} >
+//               <ChevronLeftIcon />
+//             </IconButton>
+//             :
+//             <IconButton
+//               color="inherit"
+//               aria-label="Open drawer"
+//               onClick={this.handleDrawerToggle}
+//               className={classes.menuButton} >
+//               <MenuIcon />
+//             </IconButton>
+//         }
+//         <img src="protea_logo_60.png" className={classes.logo} />
+//       </Toolbar>
+//     </AppBar>
+//   </ClickAwayListener>
+// {/* )} */}
+// <ClickAwayListener onClickAway={this.close}>
+//   <Drawer
+//     variant="persistent"
+//     open={this.state.open} >
+//     <div className={classes.spacer} />
+//     <div className={classes.userInformation}>
+//       <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
+//       <Typography variant="h3">{name}</Typography>
+//       {/* <Typography variant="body1">{ensName}</Typography> */}
+//       <Typography variant="body1">{tokenBalance} DAI</Typography>
+//       <Button onClick={onLogout}>Logout</Button>
+//     </div>
+//     <Divider />
+//     <List>
+//       {
+//         navLinks.map(({ name, path, routeNavLinkIcon }) => (
+//           <NavLink to={path} className={classes.link} key={name}>
+//             <ListItem button>
+//               <ListItemIcon>
+//                 {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
+//               </ListItemIcon>
+//               <ListItemText primary={name} />
+//             </ListItem>
+//           </NavLink>
+//         ))
+//       }
+//     </List>
+//   </Drawer>
+// </ClickAwayListener>
+// <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
+//   {isLoggedIn && <div className={classes.toolbar} />}
+//   {children}
+// </main>

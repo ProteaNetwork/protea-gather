@@ -5,6 +5,7 @@ import { ApplicationRootState } from 'types';
 /* --- STATE --- */
 interface AuthenticationState {
   accessToken: string,
+  ethAddress: string,
   signedPermit: string,
   walletUnlocked: boolean,
   errorMessage: string,

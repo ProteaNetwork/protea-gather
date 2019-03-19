@@ -95,6 +95,7 @@ export function* connectWallet() {
     // web3 = new Web3(ethereum);
     try {
       const result = yield call(ethereum.enable);
+      yield put(authenticationActions.setEthAddress({ethAddress : ''}));
       yield put(authenticationActions.connectWallet.success());
     } catch (error) {
       yield put(authenticationActions.connectWallet.failure(error.message));
@@ -118,7 +119,8 @@ export const addressChangeEventChannel = eventChannel(emit => {
 
 export function* addressChangeListener() {
   while (true) {
-    yield take(addressChangeEventChannel);
+    const newAddress = yield take(addressChangeEventChannel);
+    yield put(authenticationActions.setEthAddress({ethAddress : newAddress}));
     yield put(authenticationActions.logOut());
   }
 }

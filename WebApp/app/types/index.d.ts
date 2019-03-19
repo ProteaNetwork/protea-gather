@@ -3,6 +3,7 @@ import { ContainerState as GlobalState } from '../containers/App/types';
 import { ContainerState as DashboardState } from '../containers/DashboardContainer/types';
 import { DomainState as AuthenticationState } from '../domain/authentication/types';
 import { DomainState as UserProfileState } from '../domain/userProfile/types';
+import { DomainState as EventsState} from '../domain/events/types';
 
 export interface LifeStore extends Store<{}> {
   injectedReducers?: any;
@@ -27,4 +28,5 @@ export interface ApplicationRootState {
   readonly authentication: AuthenticationState;
   readonly userProfile: UserProfileState;
   readonly dashboard: DashboardState;
+  readonly events: EventsState;
 }

@@ -1,4 +1,4 @@
-import { Dashboard, WifiLock } from '@material-ui/icons';
+import { Dashboard } from '@material-ui/icons';
 import DashboardContainer from 'containers/DashboardContainer';
 import LandingPageContainer from 'containers/LandingPageContainer';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';

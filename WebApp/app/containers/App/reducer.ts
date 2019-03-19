@@ -7,7 +7,6 @@ import ActionTypes  from './constants';
  */
 
 export const initialState = {
-
 };
 
 function appReducer(state = initialState, action) {
