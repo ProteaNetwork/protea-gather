@@ -48,6 +48,12 @@ contract EventManagerV1 is BaseUtility {
     {
     }
 
+    modifier onlyActiveMember(address _account){
+        (,,uint256 availableStake) = IMembershipManager(membershipManager_).getMembershipStatus(_account);
+        require(availableStake > 0, "Membership invalid");
+        _;
+    }
+
     modifier onlyMember(address _member, uint256 _index){
         require(memberState_[_index][_member] >= 1, "User not registered");
         _;
@@ -85,6 +91,7 @@ contract EventManagerV1 is BaseUtility {
         uint256 _requiredDai
     ) 
         external
+        onlyActiveMember(msg.sender)
         returns(bool) 
     {
         uint256 index = index_;
