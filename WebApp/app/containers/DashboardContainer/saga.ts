@@ -1,24 +1,11 @@
-// This file is just a stub showing a sample Api request saga.
-// For more information on Saga see: https://redux-saga.js.org/
+import { put, take, fork, cancel } from "@redux-saga/core/effects";
+import { getAllCommunities } from "domain/communities/actions";
+import { connectWallet as  connectWalletSaga} from "domain/authentication/saga";
+import { connectWallet } from "domain/authentication/actions";
 
-// import { take, call, put, select } from 'redux-saga/effects';
-
-// Individual exports for testing
-export function* getData() {
-  //  const username = yield
-  //  const requestURL = `http://api/getData`;
-  //
-  //  try {
-  //    // Call our request helper (see 'utils/request')
-  //    const data = yield call(request, requestURL);
-  //    //Dispatch the dataLoaded action
-  //    yield put(dataLoaded(data));
-  //  } catch (err) {
-  //    //Dispatch the dataLoadingError action
-  //    yield put(dataLoadingError(err));
-  //  }
-}
-
-export default function* dashboardContainerWatcherSaga() {
-  // yield takeLatest(ActionType, getData);
+export default function* root() {
+  const connectWalletTask = yield fork(connectWalletSaga);
+  yield take(connectWallet.success)
+  yield cancel(connectWalletTask);
+  yield put(getAllCommunities());
 }

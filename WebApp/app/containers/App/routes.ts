@@ -25,6 +25,7 @@ const routes: appRoute[] = [{
   isProtected: true,
   isNavRequired: true,
   routeNavLinkIcon: Dashboard,
-}];
+},
+];
 
 export default routes;

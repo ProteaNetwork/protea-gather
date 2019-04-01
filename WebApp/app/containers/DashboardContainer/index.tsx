@@ -13,7 +13,8 @@ import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
 import reducer from './reducer';
 import saga from './saga';
-import makeSelectDashboardContainer from './selectors';
+import selectDashboardContainer from './selectors';
+import { selectMyCommunties } from 'domain/communities/selectors';
 
 interface OwnProps {}
 
@@ -27,11 +28,9 @@ const DashboardContainer: React.SFC<Props> = (props: Props) => {
   return <Fragment>Dashboard Container</Fragment>;
 };
 
-const mapStateToProps = createStructuredSelector({
-  dashboardContainer: makeSelectDashboardContainer(),
-});
+const mapStateToProps = () => selectDashboardContainer;
 
-function mapDispatchToProps(dispatch: Dispatch) {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     dispatch: dispatch,
   };

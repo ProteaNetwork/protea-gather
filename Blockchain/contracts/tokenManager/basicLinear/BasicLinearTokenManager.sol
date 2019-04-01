@@ -48,14 +48,14 @@ contract BasicLinearTokenManager is BaseTokenManager {
     /// @dev                We have modified the minting function to divert a portion of the purchase tokens
     function mint(address _to, uint256 _numTokens) external returns(bool) {
         uint256 priceForTokens = priceToMint(_numTokens);
-        // require(
-        //     IERC20(reserveToken_).transferFrom(msg.sender, address(this), priceForTokens), 
-        //     "Require transferFrom to succeed"
-        // );
-        // require(
-        //     IERC20(reserveToken_).transfer(proteaAccount_, priceForTokens.div(101)), // This takes the 1 percent out of the total price
-        //     "Protea contribution must succeed"
-        // );
+        require(
+            IERC20(reserveToken_).transferFrom(msg.sender, address(this), priceForTokens), 
+            "Require transferFrom to succeed"
+        );
+        require(
+            IERC20(reserveToken_).transfer(proteaAccount_, priceForTokens.div(101)), // This takes the 1 percent out of the total price
+            "Protea contribution must succeed"
+        );
 
         uint256 comContribution = _numTokens.div(100).mul(contributionRate_);
         totalSupply_ = totalSupply_.add(_numTokens);
@@ -160,7 +160,7 @@ contract BasicLinearTokenManager is BaseTokenManager {
     }
 
     /// @dev                Calculate the integral from 0 to x tokens supply
-    /// @param x            The number of tokens supply to integrate to
+    /// @param _x            The number of tokens supply to integrate to
     /// @return             The total supply in tokens, not wei
     function curveIntegral(uint256 _x) internal view returns (uint256) {
         /** This is the formula for the curve

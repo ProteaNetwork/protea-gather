@@ -10,6 +10,8 @@ import Redux from 'redux';
 // tslint:disable-next-line:no-implicit-dependencies
 import authenticationReducer from './domain/authentication/reducer';
 import userProfileReducer from './domain/userProfile/reducer';
+import communitiesReducer from 'domain/communities/reducer';
+import eventsReducer from 'domain/events/reducer';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -18,6 +20,8 @@ export default function createReducer(injectedReducers: Redux.ReducersMapObject 
   return combineReducers({
     authentication: authenticationReducer,
     userProfile: userProfileReducer,
+    communities: communitiesReducer,
+    events: eventsReducer,
     ...injectedReducers,
   });
 }

@@ -101,8 +101,8 @@ contract EventManagerV1 is BaseUtility {
         events_[index].organiser = _organiser;
         events_[index].requiredDai = _requiredDai;
         events_[index].state = 1;
-
         memberState_[index][_organiser] = 99;
+        events_[index].currentAttendees.push(_organiser);
 
         index_++;
         emit EventCreated(index, _organiser);
@@ -241,9 +241,11 @@ contract EventManagerV1 is BaseUtility {
         if(events_[_index].state == 3){
             require(memberState_[_index][_member] == 99, "Deposits returned");
             require(IMembershipManager(membershipManager_).manualTransfer(events_[_index].gift, _index, _member), "Return amount invalid");
+            memberState_[_index][msg.sender] = 98;
         }else{
-            memberState_[_index][msg.sender] = 99;
+            require(memberState_[_index][msg.sender] == 1, "Request invalid");
             require(IMembershipManager(membershipManager_).unlockCommitment(msg.sender, _index, 50), "Unlocking has failed");
+            memberState_[_index][msg.sender] = 98;
         }
 
         return true;

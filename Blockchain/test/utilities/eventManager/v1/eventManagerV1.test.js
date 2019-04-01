@@ -1710,7 +1710,7 @@ describe('Event Manager', () => {
             ).wait()
 
             userState = await eventManagerInstance.from(userAccount).getUserState(userAccount.wallet.address, 0);
-            assert.equal(userState, 99, "User state not updated");
+            assert.equal(userState, 98, "User state not updated");
 
             let finalMemberState = await membershipManagerInstance.from(userAccount).getMembershipStatus(userAccount.wallet.address);            
             

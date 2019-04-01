@@ -45,7 +45,7 @@ function authenticationReducer(state: DomainState = initialState, action: Domain
     case getType(authenticationActions.setEthAddress):
       return {
         ...state,
-        ...{ethAddress: action.payload }
+        ...{ethAddress: action.payload.ethAddress }
       }
     default:
       return state;
