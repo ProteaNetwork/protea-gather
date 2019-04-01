@@ -1,7 +1,6 @@
 import jwtDecode from 'jwt-decode';
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
-import { initialState } from './reducer';
 
 
 /**
@@ -22,15 +21,36 @@ const selectIsLoggedIn = (state: ApplicationRootState) => {
 /**
  * Other specific selectors
  */
+const selectEthAddress = (state: ApplicationRootState) => state.authentication.ethAddress;
+
+const selectProfileImage = (state: ApplicationRootState) => state.userProfile.profileImage;
+
+const selectDisplayName = (state: ApplicationRootState) => state.userProfile.displayName;
 
 /**
  * Default selector used by App
  */
-
 const makeSelectIsLoggedIn = () =>
   createSelector(selectIsLoggedIn, substate => {
     return substate;
   });
 
-// export default selectApp;
-export { makeSelectIsLoggedIn };
+const makeSelectEthAddress = () => {
+  createSelector(selectEthAddress, substate => {
+    return substate;
+  })
+}
+
+// Root
+
+const selectApp = createSelector(selectEthAddress, selectIsLoggedIn, selectProfileImage, selectDisplayName,
+  (ethAddress, isLoggedIn, profileImage, displayName) => ({
+    ethAddress: ethAddress,
+    isLoggedIn: isLoggedIn,
+    profileImage: profileImage,
+    displayName: displayName
+  }
+))
+
+export { makeSelectIsLoggedIn, makeSelectEthAddress };
+export default selectApp;

@@ -160,7 +160,7 @@ contract BasicLinearTokenManager is BaseTokenManager {
     }
 
     /// @dev                Calculate the integral from 0 to x tokens supply
-    /// @param x            The number of tokens supply to integrate to
+    /// @param _x            The number of tokens supply to integrate to
     /// @return             The total supply in tokens, not wei
     function curveIntegral(uint256 _x) internal view returns (uint256) {
         /** This is the formula for the curve

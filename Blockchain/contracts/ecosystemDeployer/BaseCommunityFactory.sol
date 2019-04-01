@@ -14,6 +14,7 @@ contract BaseCommunityFactory {
     mapping(uint256 => Community) internal communities_;
     uint256 internal numberOfCommunities_ = 0;
 
+    uint256 internal publishedBlocknumber_;
     address internal daiAddress_;
     address internal proteaAccount_;
     address internal admin_;
@@ -39,6 +40,7 @@ contract BaseCommunityFactory {
         admin_ = msg.sender;
         daiAddress_ = _daiTokenAddress;
         proteaAccount_ = _proteaAccount;
+        publishedBlocknumber_ = block.number;
     }
     
     modifier onlyAdmin() {
@@ -91,4 +93,8 @@ contract BaseCommunityFactory {
         );
 
     function getFactories() external view returns (address[] memory);
+
+    function publishedBlocknumber() external view returns(uint256) {
+        return publishedBlocknumber_;
+    }
 }

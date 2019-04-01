@@ -14,6 +14,7 @@ enum ActionTypes {
   CONNECT_WALLET_SUCCESS = 'protea/authentication/CONNECT_WALLET_SUCCESS',
   CONNECT_WALLET_FAILURE = 'protea/authentication/CONNECT_WALLET_FAILURE',
   LOG_OUT = 'protea/authentication/LOG_OUT',
+  SET_ETH_ADDRESS = 'protea/authentication/SET_ETH_ADDRESS'
 }
 
 export default ActionTypes;

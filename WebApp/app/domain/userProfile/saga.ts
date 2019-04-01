@@ -24,7 +24,7 @@ export function* getProfileData() {
 
 export function* getUserProfileFlow() {
   while (true) {
-    const request = yield take(ActionTypes.GET_PROFILE_REQUEST);
+    yield take(ActionTypes.GET_PROFILE_REQUEST);
     yield call(getProfileData);
 
   }

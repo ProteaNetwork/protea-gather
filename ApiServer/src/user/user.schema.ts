@@ -10,6 +10,7 @@ export interface User {
   fullName: string;
   email: string;
   profileImage: AttachmentDocument | ObjectId;
+  // 1. friendlist arrayIDs
 }
 
 export interface UserDocument extends User, Document { }
@@ -20,6 +21,7 @@ export const UserSchema = new Schema({
   lastName: { type: String, required: false },
   email: { type: String, required: false },
   profileImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
+  // 2. friends: [{type: Schema.Types.ObjectId, ref: Schema.User}]
 }, {
     timestamps: true,
     toJSON: {

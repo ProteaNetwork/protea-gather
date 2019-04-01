@@ -26,7 +26,7 @@ import AppWrapper from '../../components/AppWrapper/index';
 import { logOut } from '../../domain/authentication/actions';
 import routes from './routes';
 import saga from './saga';
-import { makeSelectIsLoggedIn } from './selectors';
+import selectApp from './selectors';
 import { RootState } from './types';
 
 const PrivateRoute: React.SFC<any> = ({ component: Component, isLoggedIn, ...rest }) => {
@@ -75,7 +75,9 @@ interface OwnProps { }
 
 interface StateProps {
   isLoggedIn: boolean;
-  // currentlySending: boolean;
+  ethAddress: string;
+  profileImage: string;
+  displayName: string;
 }
 
 interface DispatchProps {
@@ -84,15 +86,15 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 const App: React.SFC<Props> = (props: Props) => {
-  const { isLoggedIn, onLogout } = props;
+  const { isLoggedIn, ethAddress, displayName, profileImage, onLogout } = props;
   return (
     <AppWrapper
-      isLoggedIn={isLoggedIn}
       onLogout={onLogout}
-      name=""
-      ensName=""
-      tokenBalance={1}
-      image=""
+      isLoggedIn={isLoggedIn}
+      displayName={displayName}
+      daiBalance={1}
+      ethAddress={ethAddress}
+      profileImage={profileImage}
       navLinks={routes.filter(r => r.isNavRequired)}>
       <Switch>
         {routes.map(r => {
@@ -106,10 +108,7 @@ const App: React.SFC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = createStructuredSelector<RootState, StateProps>({
-  isLoggedIn: makeSelectIsLoggedIn(),
-  // currentlySending: state.global.currentlySending,
-});
+const mapStateToProps = state => selectApp(state);
 
 const mapDispatchToProps = (dispatch) => ({
   onLogout: () => {

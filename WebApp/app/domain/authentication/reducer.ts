@@ -5,6 +5,7 @@ import { DomainActions, DomainState } from './types';
 
 export const initialState: DomainState = {
   walletUnlocked: false,
+  ethAddress: '',
   signedPermit: '',
   accessToken: '',
   errorMessage: '',
@@ -41,6 +42,11 @@ function authenticationReducer(state: DomainState = initialState, action: Domain
         ...state,
         ...{ errorMessage: action.payload },
       };
+    case getType(authenticationActions.setEthAddress):
+      return {
+        ...state,
+        ...{ethAddress: action.payload.ethAddress }
+      }
     default:
       return state;
   }

@@ -13,11 +13,16 @@ import ActionTypes from './constants';
 export function* getPermit() {
   const { web3, ethereum } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+
   const signer = yield provider.getSigner();
-  const ethAddress = ethereum.selectedAddress;
+  const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
+      if(accountArray.code && accountArray.code == 4001){
+        throw("Connection rejected");
+  }
+
   try {
     console.log('getting new permit');
-    const permitResponse = yield call(getPermitApi, ethAddress);
+    const permitResponse = yield call(getPermitApi, accountArray[0]);
     const signedPermit = yield signer.signMessage(permitResponse.data.permit);
     yield put(authenticationActions.saveAccessPermit(signedPermit));
     return signedPermit;
@@ -92,9 +97,13 @@ export function* loginFlow() {
 export function* connectWallet() {
   let { ethereum, web3 } = window as any;
   if (ethereum) {
-    // web3 = new Web3(ethereum);
     try {
-      const result = yield call(ethereum.enable);
+      const accountArray = yield call(ethereum.send,'eth_requestAccounts');
+      if(accountArray.code && accountArray.code == 4001){
+        throw("Connection rejected");
+      }
+
+      yield put(authenticationActions.setEthAddress({ethAddress : accountArray[0]}));
       yield put(authenticationActions.connectWallet.success());
     } catch (error) {
       yield put(authenticationActions.connectWallet.failure(error.message));
@@ -118,7 +127,8 @@ export const addressChangeEventChannel = eventChannel(emit => {
 
 export function* addressChangeListener() {
   while (true) {
-    yield take(addressChangeEventChannel);
+    const newAddress = yield take(addressChangeEventChannel);
+    yield put(authenticationActions.setEthAddress({ethAddress : newAddress}));
     yield put(authenticationActions.logOut());
   }
 }
