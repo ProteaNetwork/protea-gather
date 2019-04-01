@@ -13,11 +13,16 @@ import ActionTypes from './constants';
 export function* getPermit() {
   const { web3, ethereum } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+
   const signer = yield provider.getSigner();
-  const ethAddress = ethereum.selectedAddress;
+  const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
+      if(accountArray.code && accountArray.code == 4001){
+        throw("Connection rejected");
+  }
+
   try {
     console.log('getting new permit');
-    const permitResponse = yield call(getPermitApi, ethAddress);
+    const permitResponse = yield call(getPermitApi, accountArray[0]);
     const signedPermit = yield signer.signMessage(permitResponse.data.permit);
     yield put(authenticationActions.saveAccessPermit(signedPermit));
     return signedPermit;
@@ -93,7 +98,7 @@ export function* connectWallet() {
   let { ethereum, web3 } = window as any;
   if (ethereum) {
     try {
-      const accountArray = yield call(ethereum.send('eth_requestAccounts'));
+      const accountArray = yield call(ethereum.send,'eth_requestAccounts');
       if(accountArray.code && accountArray.code == 4001){
         throw("Connection rejected");
       }

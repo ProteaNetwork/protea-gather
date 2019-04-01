@@ -5,7 +5,6 @@ const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY;
 const DEPLOYER_MNEMONIC = process.env.DEPLOYER_MNEMONIC;
 const PROTEA_ADMIN_PVK = process.env.PROTEA_ADMIN_PVK;
 
-
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 

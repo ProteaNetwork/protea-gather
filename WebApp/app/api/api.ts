@@ -15,3 +15,11 @@ export function getPermit(ethAddress: string): Promise<any>  {
 export function getUserProfile(apiToken: string): Promise<any>  {
   return apiRequest('GET', apiUrlBuilder.getUserProfile, null, 'application/json', true, apiToken);
 }
+
+export function getCommunityMeta(tbcAddress: string): Promise<any> {
+  return apiRequest('GET', apiUrlBuilder.getCommunityMeta(tbcAddress), null, 'application/json');
+}
+
+export function getEventMeta(eventId: string): Promise<any> {
+  return apiRequest('GET', apiUrlBuilder.getEventMeta(eventId), null, 'application/json');
+}

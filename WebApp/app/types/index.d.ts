@@ -4,6 +4,7 @@ import { ContainerState as DashboardState } from '../containers/DashboardContain
 import { DomainState as AuthenticationState } from '../domain/authentication/types';
 import { DomainState as UserProfileState } from '../domain/userProfile/types';
 import { DomainState as EventsState} from '../domain/events/types';
+import { DomainState as CommunitiesState} from '../domain/communities/types';
 
 export interface LifeStore extends Store<{}> {
   injectedReducers?: any;
@@ -29,4 +30,5 @@ export interface ApplicationRootState {
   readonly userProfile: UserProfileState;
   readonly dashboard: DashboardState;
   readonly events: EventsState;
+  readonly communities: CommunitiesState;
 }
