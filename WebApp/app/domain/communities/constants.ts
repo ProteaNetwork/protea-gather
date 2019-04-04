@@ -12,6 +12,9 @@ enum ActionTypes {
   SAVE_COMMUNITY = 'protea/communities/SAVE_COMMUNITY',
   CHECK_STATUS = 'protea/communities/CHECK_STATUS',
   STATUS_UPDATED = 'protea/communities/STATUS_UPDATED',
+  CREATE_TX_REQUEST = 'protea/communities/CREATE_TX_REQUEST',
+  CREATE_TX_SUCCESS = 'protea/communities/CREATE_TX_SUCCESS',
+  CREATE_TX_FAILURE = 'protea/communities/CREATE_TX_FAILURE',
 }
 
 export default ActionTypes;

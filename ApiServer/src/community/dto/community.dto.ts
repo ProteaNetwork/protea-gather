@@ -1,18 +1,20 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsString, IsEmail, MinLength, IsNumber } from 'class-validator';
 
 export class CommunityDTO {
   @IsString()
   tbcAddress: string;
   @IsString()
-  membershipManager: string;
+  membershipManagerAddress: string;
   @IsString()
-  eventsManager: string;
+  eventManagerAddress: string;
   @IsString()
   name: string;
   @IsString()
   tokenSymbol: string;
   @IsString()
-  Description: string;
-  @IsString()
-  tags: string;
+  description: string;
+  // @IsNumber()
+  // gradientDenominator: number;
+  // @IsNumber()
+  // contributionRate: number;
 }

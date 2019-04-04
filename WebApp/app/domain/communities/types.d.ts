@@ -6,11 +6,12 @@ interface ICommunity{
   tbcAddress: string;
   eventManagerAddress: string;
   membershipManagerAddress: string;
-  banner: string;
+  bannerImage: string;
   name: string;
   tokenSymbol: string;
+  gradientDenominator: number;
+  contributionRate: number;
   description: string;
-  tags: any;
   isMember: boolean;
 }
 

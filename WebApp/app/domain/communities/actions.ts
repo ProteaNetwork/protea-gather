@@ -22,3 +22,9 @@ export const getCommunityMetaAction = createAsyncAction(
   ActionTypes.GET_META_SUCCESS,
   ActionTypes.GET_META_FAILURE)
   <string, ICommunity, string>();
+
+export const createCommunityAction = createAsyncAction(
+  ActionTypes.CREATE_TX_REQUEST,
+  ActionTypes.CREATE_TX_SUCCESS,
+  ActionTypes.CREATE_TX_FAILURE,
+)<ICommunity, void, string>();

@@ -9,7 +9,7 @@ import { combineReducers } from 'redux';
 import ActionTypes from './constants';
 import { DomainState, DomainActions, ICommunity } from './types';
 import { getType } from 'typesafe-actions';
-import { getCommunityMetaAction, saveCommunity, statusUpdated } from './actions';
+import { getCommunityMetaAction, saveCommunity, statusUpdated, createCommunityAction } from './actions';
 
 export const initialState: DomainState = {
 

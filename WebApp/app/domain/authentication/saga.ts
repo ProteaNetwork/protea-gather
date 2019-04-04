@@ -21,7 +21,7 @@ export function* getPermit() {
   }
 
   try {
-    console.log('getting new permit');
+    // console.log('getting new permit');
     const permitResponse = yield call(getPermitApi, accountArray[0]);
     const signedPermit = yield signer.signMessage(permitResponse.data.permit);
     yield put(authenticationActions.saveAccessPermit(signedPermit));
@@ -59,7 +59,7 @@ export function* refreshTokenPoller() {
     try {
       decodedToken = yield call(jwtDecode, apiToken);
     } catch (error) {
-      console.log(`Unable to decode token. Refreshing...`);
+      // console.log(`Unable to decode token. Refreshing...`);
       const newToken = yield call(getAccessToken, signedMessage, ethAddress);
       decodedToken = yield call(jwtDecode, newToken);
     }
@@ -67,11 +67,11 @@ export function* refreshTokenPoller() {
     delayDuration = (decodedToken.exp - Date.now() / 1000) * 0.9;
     // Only refresh the token when it is nearing expiry.
     if ((Date.now() / 1000) + (delayDuration + 1) > decodedToken.exp) {
-      console.log(`Token is expiring soon. Refreshing...`);
+      // console.log(`Token is expiring soon. Refreshing...`);
       yield getAccessToken(signedMessage, ethAddress);
-      console.log(`access token updated`);
+      // console.log(`access token updated`);
     } else {
-      console.log(`token not refreshed, going to sleep for ${delayDuration}`);
+      // console.log(`token not refreshed, going to sleep for ${delayDuration}`);
       yield delay(delayDuration * 1000);
     }
   }

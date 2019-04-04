@@ -9,7 +9,18 @@ export const colors = {
     black: '#333333'
   },
   white: '#FFFFFF',
-  black: '#FFFFFF',
+  black: '#000000',
+  controls:{
+    underline:{
+      inactive: {
+        color: "rgba(0,0,0,0.12)"
+      },
+      active:{
+        color: "#FF8F00"
+      }
+    },
+    labelColor: "rgba(255,255,255,0.38)"
+  }
 }
 
 const theme = createMuiTheme({
@@ -47,8 +58,68 @@ const theme = createMuiTheme({
       text: {
         padding: '7px 15px'
       }
+    },
+    MuiTypography:{
+      h1:	{
+        fontSize: 29,
+      },
+      h4: {
+        fontSize: 21
+      }
+    },
+    MuiInput:{
+      formControl:{
+        color: colors.white,
+        fontSize: 21
+      },
+      underline:{
+        "&:before": {
+          borderBottomColor: "rgba(0,0,0,0.12)",
+        },
+        "&:after":{
+          borderBottomColor: "rgba(0,0,0,0.12)",
+        },
+        '&:hover:not($disabled):not($focused):not($error):before': {
+          borderBottom: `2px solid ${colors.controls.underline.active.color} !important`,
+        },
+        '&$focused:after':{
+          borderBottom: `2px solid ${colors.controls.underline.active.color} !important`,
+        },
+        '&$disabled':{
+          color: colors.white,
+
+        }
+      }
+    },
+    MuiInputLabel:{
+      root:{
+        color: colors.controls.labelColor,
+        fontSize: 21
+      }
+    },
+    MuiFormLabel:{
+      root:{
+        color: colors.controls.labelColor,
+        "&$focused": {
+          color: colors.controls.labelColor
+        },
+        '&$disabled':{
+          color: colors.white,
+        }
+      }
+    },
+    MuiFormHelperText:{
+      root:{
+        textAlign: "right"
+      }
+    },
+    MuiFormControl:{
+      root:{
+        margin: "5px 0"
+      }
     }
   }
+
 });
 
 export default theme;

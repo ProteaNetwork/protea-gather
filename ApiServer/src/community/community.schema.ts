@@ -7,11 +7,12 @@ export interface Community {
   tbcAddress: string;
   eventManagerAddress: string;
   membershipManagerAddress: string;
-  banner: AttachmentDocument | ObjectId;
+  bannerImage: AttachmentDocument | ObjectId;
   name: string;
   tokenSymbol: string;
   description: string;
-  tags: any;
+  gradientDenominator: number;
+  contributionRate: number;
 }
 
 export interface CommunityDocument extends Community, Document { }
@@ -20,11 +21,12 @@ export const CommunitySchema = new Schema({
   tbcAddress: { type: String, required: true, indexed: true },
   eventManagerAddress: { type: String, required: false },
   membershipManagerAddress: { type: String, required: false },
-  banner: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
+  bannerImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
   name: { type: String, required: false },
   tokenSymbol: { type: String, required: false },
   description: { type: String, required: false },
-  tags: { type: String, required: false },// TODO: convert to object referenced taxon table
+  gradientDenominator: { type: Number, required: false},
+  contributionRate: { type: Number, required: false},
 }, {
     timestamps: true,
     toJSON: {
