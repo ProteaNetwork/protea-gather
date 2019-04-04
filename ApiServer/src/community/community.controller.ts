@@ -1,7 +1,8 @@
-import { Controller, Get, Req, Param, UseGuards, Put, Body, NotFoundException, Post } from '@nestjs/common';
+import { Controller, Get, Req, Param, UseGuards, Put, Body, NotFoundException, Post, UseInterceptors, UploadedFile, UploadedFiles, FilesInterceptor } from '@nestjs/common';
 import { CommunityService } from './community.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CommunityDTO } from './dto/community.dto';
+import {FileOptions, FileInterceptorHelper } from 'src/helper/fileInterceptorHelper';
 
 @Controller('community')
 export class CommunityController {
@@ -18,8 +19,15 @@ export class CommunityController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createCommunity(@Body() bodyData: CommunityDTO){
-    return await this.communityService.createCommunity(bodyData);
+  @UseInterceptors(FileInterceptorHelper(
+    {
+      name: 'bannerImage',
+      maxCount: 1,
+      type: FileOptions.PICTURE
+    }
+  ))
+  async createCommunity(@Body() bodyData: CommunityDTO, @UploadedFile() bannerImage){
+    return await this.communityService.createCommunity(bodyData, bannerImage);
   }
 
   @Put()

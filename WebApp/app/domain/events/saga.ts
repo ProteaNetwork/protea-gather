@@ -61,24 +61,18 @@ async function checkMemberStateOnChain(eventId: string){
   return (await eventManagerContract.getUserState(signer.getAddress(), eventIndex));
 }
 
-export function* checkMemberState(){
-  while(true){
-    const eventId = (yield take(checkStatus)).payload;
-    const memberState = yield call(checkMemberStateOnChain, eventId);
-    yield put(statusUpdated({eventId: eventId, memberState: memberState}));
-  }
+export function* checkMemberState(eventId){
+  const memberState = yield call(checkMemberStateOnChain, eventId);
+  yield put(statusUpdated({eventId: eventId, memberState: memberState}));
 }
 
-export function* getEventMeta(){
-  while(true){
-    const request = yield take(getEventMetaAction.request);
-    try{
-      const eventMeta = yield call(getEventMetaApi, request.payload);
-      yield put(getEventMetaAction.success(eventMeta.data));
-    }
-    catch(error){
-      console.log
-    }
+export function* getEventMeta(requestData){
+  try{
+    const eventMeta = yield call(getEventMetaApi, requestData);
+    yield put(getEventMetaAction.success(eventMeta.data));
+  }
+  catch(error){
+    console.log
   }
 }
 
@@ -92,8 +86,24 @@ export function* populateCommunityEvents() {
   }
 }
 
+// Listeners
+export function* getEventMetaListener(){
+  while(true){
+    const requestData = (yield take(getEventMetaAction.request)).payload;
+    yield fork(getEventMeta, requestData);
+  }
+}
+
+export function* checkMemberStateListener(){
+  while(true){
+    const eventId = (yield take(checkStatus)).payload;
+    yield fork(checkMemberState, eventId);
+  }
+}
+
 export default function* root() {
   yield fork(populateCommunityEvents);
-  yield fork(checkMemberState);
-  yield fork(getEventMeta);
+  yield fork(checkMemberStateListener);
+  yield fork(getEventMetaListener);
 }
+

@@ -27,6 +27,9 @@ const styles = () => createStyles({
   },
   logo:{
     maxWidth: '150px',
+    "& svg":{
+      width: "100%"
+    },
     "& path":{
       stroke: "#FFFFFF",
       strokeWidth: '10px'
@@ -34,7 +37,10 @@ const styles = () => createStyles({
   },
   proteaTitle: {
     maxWidth: '300px',
-    margin: "30px 0"
+    margin: "30px 0",
+    "& svg":{
+      width: "100%"
+    },
   }
 });
 

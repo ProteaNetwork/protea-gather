@@ -24,10 +24,10 @@ export class AttachmentService {
     this.attachmentRepository = this.attachmentGridFsRepository.model;
   }
 
-  async create(options: { filename: string, contentType: string }, file: { buffer: Buffer }): Promise<Attachment> {
+  async create(options: { filename: string, contentType: string }, file: { buffer: Buffer }): Promise<AttachmentDocument> {
     const fileStream = streamifier.createReadStream(file.buffer);
-    const result = new Promise<Attachment>((resolve, reject) => {
-      this.attachmentGridFsRepository.write(options, fileStream, (error, fileDocument: Attachment) => {
+    const result = new Promise<AttachmentDocument>((resolve, reject) => {
+      this.attachmentGridFsRepository.write(options, fileStream, (error, fileDocument: AttachmentDocument) => {
         resolve(fileDocument);
         reject(error);
       });

@@ -12,6 +12,7 @@ import authenticationReducer from './domain/authentication/reducer';
 import userProfileReducer from './domain/userProfile/reducer';
 import communitiesReducer from 'domain/communities/reducer';
 import eventsReducer from 'domain/events/reducer';
+import transactionManagementReducer from 'domain/transactionManagement/reducer';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -22,6 +23,7 @@ export default function createReducer(injectedReducers: Redux.ReducersMapObject 
     userProfile: userProfileReducer,
     communities: communitiesReducer,
     events: eventsReducer,
+    transactionManagement: transactionManagementReducer,
     ...injectedReducers,
   });
 }

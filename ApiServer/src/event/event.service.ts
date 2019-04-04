@@ -27,7 +27,7 @@ export class EventService {
     //   eventDoc.save();
     //   return eventDoc.toObject();
     // }
-    return doc.toObject();
+    return doc ? doc.toObject() : false;
   }
 
   async createEvent(eventData: EventDTO): Promise<EventDocument>{

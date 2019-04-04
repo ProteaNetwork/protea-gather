@@ -17,18 +17,29 @@ import classNames from 'classnames';
 import { appRoute } from 'containers/App/routes';
 import React, { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
+import ReactSVG from 'react-svg';
+import { colors } from 'theme';
 
 const styles = theme => createStyles({
   root: {
     display: 'flex',
     maxHeight: '100%',
-    height: '100vh',
+    height: '100%',
     maxWidth: '100%',
     background:
     'linear-gradient(135deg, hsla(36.8, 90.36%, 51.18%, 1) 0%, hsla(36.8, 90.36%, 51.18%, 0) 70%),' +
     'linear-gradient(25deg, hsla(48.05, 88.98%, 50.2%, 1) 10%, hsla(48.05, 88.98%, 50.2%, 0) 80%),' +
     'linear-gradient(315deg, hsla(30, 100%, 60%, 1) 15%, hsla(30, 100%, 60%, 0) 80%),' +
     'linear-gradient(245deg, hsla(23.89, 100%, 41.37%, 1) 100%, hsla(23.89, 100%, 41.37%, 0) 70%)'
+  },
+  appBarLogo:{
+    '& svg':{
+      width: "65px",
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)"
+    }
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -62,7 +73,8 @@ const styles = theme => createStyles({
     boxSizing: 'border-box',
   },
   contentLoggedIn: {
-    padding: `${56 + theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`
+    // padding: `${56 + theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`
+    paddingTop:"64px"
   },
   link: {
     textDecoration: 'none',
@@ -143,7 +155,7 @@ class AppWrapper extends React.Component<Props> {
                     <MenuIcon />
                   </IconButton>
               }
-              <img src="protea_logo_60.png" className={classes.logo} />
+              <ReactSVG className={classes.appBarLogo} src="/protea_logo_outline.svg" />
             </Toolbar>
           </AppBar>
         // </ClickAwayListener>
