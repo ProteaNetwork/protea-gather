@@ -10,7 +10,6 @@ import { Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import UploadImageField from 'components/UploadImageField';
 import { colors } from 'theme';
-import classNames from 'classnames';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -44,58 +43,17 @@ const styles = (theme: Theme) =>
       margin: "0 auto",
       display: 'block'
     },
-    tempBlocker:{
-      display: "block",
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      visibility: "hidden",
-      zIndex: 99999,
-      opacity: 0,
-      transitionDuration: "400ms",
-      "&::before": {
-        content: '""',
-        display: "block",
-        position: "absolute",
-        top: 0,
-        left: 0,
-        height: "100%",
-        width: "100%",
-        backgroundColor: colors.proteaBranding.orange,
-        zIndex: -1,
-        opacity: 0.5
-      },
-      "&.active":{
-        opacity: 1,
-        visibility: "visible"
-      }
-    },
-    tempSpinner:{
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%,-50%)",
-      color: colors.proteaBranding.pink,
-      zIndex: 99999999
-    }
+
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
   submitForm(data): void;
-  pendingTx: boolean;
 }
 
 const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { submitForm, classes, pendingTx} = props;
+  const { submitForm, classes } = props;
   return (
     <div className={classes.background}>
-    <div className={classNames(classes.tempBlocker, pendingTx ? "active" : "")}>
-      <div className={classes.tempSpinner}>
-        <CircularProgress color={"inherit"} size={80}></CircularProgress>
-      </div>
-    </div>
       <Paper square={true} className={classes.paperRoot} elevation={0}>
         <Form className={classes.formRoot}>
           <Typography className={classes.heading} component="h1" variant="h1">

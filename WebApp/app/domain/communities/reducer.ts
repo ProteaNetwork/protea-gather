@@ -38,7 +38,7 @@ function communitiesReducer(state: DomainState = initialState, action: DomainAct
         ...state,
         [action.payload.tbcAddress]: {
           ...state[action.payload.tbcAddress],
-          isMember: action.payload.isMember,
+          ...action.payload,
         }
       }
     default:

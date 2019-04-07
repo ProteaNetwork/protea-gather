@@ -62,7 +62,7 @@ const CreateCommunityContainer: React.SFC<Props> = (props: Props) => {
 
       render={({submitForm}) =>
         <CreateCommunityForm
-          submitForm={submitForm} pendingTx={pendingTx} />
+          submitForm={submitForm} />
       }
     />
   );

@@ -24,7 +24,7 @@ interface StateProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 const TransactionManagement: React.SFC<Props> = (props: Props) => {
-  return <Fragment>TransactionManagement</Fragment>;
+  return <Fragment>TransactionManagement</Fragment>
 };
 
 const mapStateToProps = createStructuredSelector({

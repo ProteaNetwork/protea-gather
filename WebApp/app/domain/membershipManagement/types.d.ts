@@ -13,11 +13,6 @@ interface ICommunity{
   contributionRate: number;
   description: string;
   isMember: boolean;
-  transfersUnlocked: boolean;
-  availableStake: number;
-  memberSince: Date;
-  liquidTokens: number;
-  isAdmin: boolean;
 }
 
 /* --- STATE --- */
