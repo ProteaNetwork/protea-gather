@@ -4,6 +4,7 @@ import AuthSaga from '../../domain/authentication/saga';
 import UserProfileSaga from '../../domain/userProfile/saga';
 import CommunitiesSaga from '../../domain/communities/saga';
 import TransactionManagementSaga from '../../domain/transactionManagement/saga';
+import MembershipManagementSaga from '../../domain/membershipManagement/saga';
 import EventsSaga from '../../domain/events/saga';
 import { ethers } from 'ethers';
 import * as CommunityFactoryABI from "../../../../Blockchain/build/CommunityFactoryV1.json";
@@ -37,5 +38,6 @@ export default function * root() {
   yield fork(UserProfileSaga);
 
   yield fork(CommunitiesSaga);
+  yield fork(MembershipManagementSaga);
   yield fork(EventsSaga);
 }

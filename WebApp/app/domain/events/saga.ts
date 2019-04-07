@@ -57,8 +57,9 @@ async function checkMemberStateOnChain(eventId: string){
   const eventManagerAddress = eventId.split('-')[0];
   const eventIndex = eventId.split('-')[1];
   const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+  const signerAddress = await signer.getAddress();
 
-  return (await eventManagerContract.getUserState(signer.getAddress(), eventIndex));
+  return (await eventManagerContract.getUserState(signerAddress, eventIndex));
 }
 
 export function* checkMemberState(eventId){

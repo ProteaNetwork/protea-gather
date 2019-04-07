@@ -86,7 +86,7 @@ export function* loginFlow() {
       yield call(getAccessToken, response, ethereum.selectedAddress);
       yield put(userProfileActions.getUserProfile.request());
       yield fork(refreshTokenPoller);
-      yield call(forwardTo, '/dashboard');
+      yield call(forwardTo, '/dashboard'); // TODO: have this only redirect when on log in
     } catch (error) {
       yield put(authenticationActions.authenticate.failure(error.message));
       console.log(error);

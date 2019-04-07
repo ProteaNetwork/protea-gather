@@ -28,6 +28,7 @@ import routes from './routes';
 import saga from './saga';
 import selectApp from './selectors';
 import { RootState } from './types';
+import TxLoadingModal from 'components/TxLoadingModal';
 
 const PrivateRoute: React.SFC<any> = ({ component: Component, isLoggedIn, ...rest }) => {
   return (
@@ -78,6 +79,9 @@ interface StateProps {
   ethAddress: string;
   profileImage: string;
   displayName: string;
+  txPending: boolean;
+  txRemaining: number;
+  txContext: string;
 }
 
 interface DispatchProps {
@@ -86,7 +90,7 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 const App: React.SFC<Props> = (props: Props) => {
-  const { isLoggedIn, ethAddress, displayName, profileImage, onLogout } = props;
+  const { isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext } = props;
   return (
     <AppWrapper
       onLogout={onLogout}
@@ -96,6 +100,7 @@ const App: React.SFC<Props> = (props: Props) => {
       ethAddress={ethAddress}
       profileImage={profileImage}
       navLinks={routes.filter(r => r.isNavRequired)}>
+      <TxLoadingModal pendingTx={txPending} txRemaining={txRemaining} txContext={txContext}></TxLoadingModal>
       <Switch>
         {routes.map(r => {
           const route = (r.isProtected) ?

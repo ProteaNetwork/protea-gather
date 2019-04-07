@@ -5,6 +5,10 @@ import { ApplicationRootState } from 'types';
 /* --- STATE --- */
 interface TransactionManagementState {
   txPending: boolean;
+  daiBalance: number;
+  ethBalance: number;
+  txRemaining: number;
+  txContext: string;
 }
 
 /* --- ACTIONS --- */

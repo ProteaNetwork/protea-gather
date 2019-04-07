@@ -1,18 +1,18 @@
-import { fork, take, call, put, select, all } from "redux-saga/effects";
-import { getAllCommunities, saveCommunity, getCommunityMetaAction, checkStatus, statusUpdated, createCommunityAction } from "./actions";
-
-import * as CommunityFactoryABI from "../../../../Blockchain/build/CommunityFactoryV1.json";
-import * as MembershipManagerAbi from "../../../../Blockchain/build/MembershipManagerV1.json";
+import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
+import { getAllCommunitiesAction, saveCommunity, getCommunityMetaAction, createCommunityAction, getCommunityAction, joinCommunityAction } from "./actions";
 import { ethers } from "ethers";
 import { getCommunityMeta as getCommunityMetaApi } from "api/api";
 import { createCommunity as createCommunityApi } from "api/api";
 
 // Ethers standard event filter type is missing the blocktags
 import { BlockTag } from 'ethers/providers/abstract-provider';
-import { blockchainResources } from "blockchainResources";
 import { ICommunity } from "./types";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
+import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval } from "./chainInteractions";
+import { checkStatus } from "domain/membershipManagement/actions";
+import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
+import { increaseMembership } from "domain/membershipManagement/saga";
 
 export declare type EventFilter = {
   address?: string;
@@ -21,71 +21,7 @@ export declare type EventFilter = {
   toBlock?: BlockTag
 };
 
-// Blockchain interactions
-
-// View/Read
-async function checkUserStateOnChain(membershipManagerAddress: string) {
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
-
-  const memberstate = await membershipManager.getMembershipStatus(signer.getAddress());
-  // var date = new Date(parseInt(ethers.utils.formatUnits(memberstate[0],0))*1000);
-
-  return parseInt(ethers.utils.formatUnits(memberstate[0],0))> 0 ? true : false;
-  // TODO: To increase the validity of this, if the balance is zero, read the staking logs to see if user is just active;
-
-}
-
-async function getCommunities(publishedBlock: number) {
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
-
-  const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, null);
-  filterCommunitiesCreated.fromBlock = publishedBlock;
-  const communities = (await provider.getLogs(filterCommunitiesCreated)).map(e => {
-    const parsedLog = (communityFactory.interface.parseLog(e));
-    return {
-      tbcAddress: parsedLog.values.tokenManager,
-      eventManagerAddress: parsedLog.values.utilities[0],
-      membershipManagerAddress: parsedLog.values.membershipManager
-    }
-  });
-  return communities
-}
-
-// Write/Publish
-async function publishCommunityToChain(name: string, tokenSymbol: string, gradientDenominator: number, contributionRate: number) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
-  const transactionReceipt = await(await communityFactory.createCommunity(name, tokenSymbol, signer.getAddress(), gradientDenominator, contributionRate)).wait();
-  // TODO: Error handling
-  const communityCreatedEvent = communityFactory.interface.parseLog(await(transactionReceipt.events.filter(
-    event => event.eventSignature == communityFactory.interface.events.CommunityCreated.signature
-  ))[0]);
-
-  return {
-    tbcAddress: communityCreatedEvent.values.tokenManager,
-    membershipManagerAddress: communityCreatedEvent.values.membershipManager,
-    eventManagerAddress: communityCreatedEvent.values.utilities[0]
-  }
-}
-
-
-// Generators
 // Meta
-export function* checkIfUserIsMember(community){
-  const isMember = yield call(checkUserStateOnChain, community.membershipManagerAddress);
-  yield put(statusUpdated({tbcAddress: community.tbcAddress, isMember: isMember}));
-}
-
-
-// Executors
 export function* getCommunityMeta(requestData) {
   try{
     const communityMeta = yield call(getCommunityMetaApi, requestData);
@@ -96,18 +32,23 @@ export function* getCommunityMeta(requestData) {
   }
 }
 
-
-export function* fetchAllCommunities() {
-  while(true){
-    yield take(getAllCommunities);
-    yield
-    const communities = yield call(getCommunities, blockchainResources.publishedBlock);
-    yield all(communities.map(com => (put(saveCommunity(com)))))
-
-    yield all(communities.map((com: ICommunity) => (put(checkStatus({tbcAddress: com.tbcAddress, membershipManagerAddress: com.membershipManagerAddress})))))
-
-    yield all(communities.map(com => (put(getCommunityMetaAction.request(com.tbcAddress)))))
+// Executors
+export function* fetchCommunity(tbcAddress){
+  const fetchedAddresses = yield call(getCommunityFromChain, tbcAddress);
+  if(fetchedAddresses){
+    yield put(getCommunityAction.success());
+    yield fork(resolveCommunity,  {
+      ...fetchedAddresses
+    });
+  }else{
+    yield put(getCommunityAction.failure("Community not found"))
   }
+
+}
+export function* resolveCommunity(community){
+  yield put(saveCommunity(community));
+  yield put(checkStatus({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
+  yield put(getCommunityMetaAction.request(community.tbcAddress));
 }
 
 // CRUD
@@ -125,6 +66,8 @@ export function* createCommunityInDB(community: ICommunity){
 export function* createCommunity() {
   while(true){
     let newCommunity: ICommunity = (yield take(createCommunityAction.request)).payload;
+    yield put(setTxContextAction(`Publishing your community to the chain` ));
+    yield put(setRemainingTxCountAction(1));
 
     try{
       newCommunity = {
@@ -132,6 +75,8 @@ export function* createCommunity() {
         ...(yield call(publishCommunityToChain, newCommunity.name, newCommunity.tokenSymbol, newCommunity.gradientDenominator, newCommunity.contributionRate))
       }
       yield call(createCommunityInDB, newCommunity);
+      yield put(setTxContextAction(`Storing images & meta data` ));
+      yield put(setRemainingTxCountAction(0));
       yield put(createCommunityAction.success());
       yield call(forwardTo, `/communities/${newCommunity.tbcAddress}`);
     }
@@ -141,7 +86,54 @@ export function* createCommunity() {
   }
 }
 
+export function* joinCommunity(){
+  while(true){
+    const communityData = (yield take(joinCommunityAction.request)).payload;
+    try{
+      yield put(setRemainingTxCountAction(3));
+      yield put(setTxContextAction("Unlocking Dai transfers to the community"));
+      const success = yield call(updateTransferApproval, true, communityData.tbcAddress);
+      if(success){
+        const result = yield call(increaseMembership, communityData);
+
+        // stake
+        if(result == true){
+          yield put(joinCommunityAction.success());
+          yield delay(1000);
+          yield put(getCommunityAction.request(communityData.tbcAddress));
+        }else{
+          yield put(setRemainingTxCountAction(0));
+          yield put(joinCommunityAction.failure(result));
+        }
+      }else{
+        yield put(setRemainingTxCountAction(0));
+        yield put(joinCommunityAction.failure("Unlocking error"));
+      }
+    }
+    catch(e){
+      yield put(setRemainingTxCountAction(0));
+      yield put(joinCommunityAction.failure(e));
+    }
+  }
+}
+
 // Listeners
+export function* getAllCommunitiesListener() {
+  while(true){
+    yield take(getAllCommunitiesAction);
+
+    const communities = yield call(getCommunitiesFromChain);
+    yield all(communities.map(com => (fork(resolveCommunity, com))))
+  }
+}
+
+export function* getCommunityListener(){
+  while(true){
+    const tbcAddress = (yield take(getCommunityAction.request)).payload;
+    yield fork(fetchCommunity, tbcAddress);
+  }
+}
+
 export function* getCommunityMetaListener() {
   while(true){
     const requestData = (yield take(getCommunityMetaAction.request)).payload;
@@ -149,16 +141,11 @@ export function* getCommunityMetaListener() {
   }
 }
 
-export function* checkIfUserIsMemberListener(){
-  while(true){
-    const community: ICommunity = (yield take(checkStatus)).payload;
-    yield fork(checkIfUserIsMember, community);
-  }
-}
-
 export default function* root() {
-  yield fork(fetchAllCommunities);
+  yield fork(getAllCommunitiesListener);
   yield fork(getCommunityMetaListener);
-  yield fork(checkIfUserIsMemberListener);
   yield fork(createCommunity);
+  yield fork(getCommunityListener);
+
+  yield fork(joinCommunity);
 }

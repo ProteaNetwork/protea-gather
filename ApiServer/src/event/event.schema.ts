@@ -7,7 +7,6 @@ export interface Event {
   eventId: string;
   eventManagerAddress: string;
   organizer: string;
-  // attendees: string[];
   maxAttendees: number
   requiredDai: number
   state: number;

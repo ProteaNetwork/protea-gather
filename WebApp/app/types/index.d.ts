@@ -4,6 +4,7 @@ import { DomainState as AuthenticationState } from '../domain/authentication/typ
 import { DomainState as UserProfileState } from '../domain/userProfile/types';
 import { DomainState as EventsState} from '../domain/events/types';
 import { DomainState as CommunitiesState} from '../domain/communities/types';
+import { DomainState as MembershipManagementState} from '../domain/membershipManagement/types';
 import { DomainState as TransactionManagementState} from '../domain/transactionManagement/types';
 import { ContainerState as DashboardState } from '../containers/DashboardContainer/types';
 import { ContainerState as ViewCommunityState } from '../containers/ViewCommunityContainer/types';
@@ -33,7 +34,9 @@ export interface ApplicationRootState {
   readonly userProfile: UserProfileState;
   readonly events: EventsState;
   readonly communities: CommunitiesState;
+  readonly membershipManagement: MembershipManagementState;
   readonly transactionManagement: TransactionManagementState
+
   // Pages
   readonly dashboard: DashboardState;
   readonly viewCommunity: ViewCommunityState;

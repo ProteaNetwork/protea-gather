@@ -185,7 +185,8 @@ Test Community 1
         await (await pseudoDaiInstance
             .approve(
                 tokenManagerInstance.contractAddress,
-                ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18)// Might be this
+				ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18)// Might be this
+				// Set to 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             )).wait();
         
         await (await tokenManagerInstance

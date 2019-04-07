@@ -6,44 +6,141 @@
 
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
 import { compose, Dispatch } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import makeSelectViewCommunityContainer from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { RouteComponentProps } from 'react-router';
-
+import selectViewCommunityContainer from './selectors';
+import { ICommunity } from 'domain/communities/types';
+import { Button } from '@material-ui/core';
+import { IEvent } from 'domain/events/types';
+import { getCommunityAction, joinCommunityAction } from 'domain/communities/actions';
+import { RouteComponentProps } from 'react-router-dom';
+import { withdrawMembershipAction, increaseMembershipAction } from 'domain/membershipManagement/actions';
 
 interface RouteParams {
-  tbcAddress?: string; // must be type string since route params
+  tbcAddress: string; // must be type string since route params
 }
 
-interface OwnProps extends RouteComponentProps<RouteParams>,
-React.Props<RouteParams> { }
+interface OwnProps extends RouteComponentProps<RouteParams>, React.Props<RouteParams> {
+  community: ICommunity; // must be type string since route params
+  events: IEvent[];
+  balances: any;
+}
 
-
-interface DispatchProps {}
+interface DispatchProps {
+  getCommunity(tbcAddress: string):void;
+  onJoinCommunity(daiValue: number, tbcAddress: string): void;
+  onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
+  onWithdrawMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
+  onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
+}
 
 interface StateProps {}
 
 type Props = StateProps & DispatchProps & OwnProps;
 
-const ViewCommunityContainer: React.SFC<Props> = (props: Props) => {
-  const { match: { params: { tbcAddress } } } = props;
-  console.log(tbcAddress)
-  return <Fragment>ViewCommunityContainer</Fragment>;
+class ViewCommunityContainer extends React.Component<Props>  {
+  componentDidMount(){
+    this.props.getCommunity(this.props.match.params.tbcAddress);
+  }
+  render() {
+    const { community, events, balances , onIncreaseMembership, onWithdrawMembership, onJoinCommunity} = this.props;
+    return <Fragment>
+      <h2>
+        Balances
+      </h2>
+      <div>
+        Eth Balance: {`${balances.ethBalance}`},
+        Dai Balance: {`${balances.daiBalance}`}
+      </div>
+      <h2>
+        Community details
+      </h2>
+      <div>
+        {
+          community && Object.keys(community).map(key => {
+            return (<span key={key}>
+              {
+                `${key}: ${community[key]} ||  `
+              }
+            </span>)
+          })
+        }
+      </div>
+      <br/>
+      {community && <Fragment>
+        <Button disabled={community.transfersUnlocked} onClick={() => onJoinCommunity(2, community.tbcAddress, community.membershipManagerAddress)}>
+          Join for 2 Dai
+        </Button>
+        <Button onClick={() => onIncreaseMembership(2, community.tbcAddress, community.membershipManagerAddress)}>
+          Increase by 2 Dai
+        </Button>
+        <Button onClick={() => onWithdrawMembership(2, community.tbcAddress, community.membershipManagerAddress)}>
+          Withdraw by 2 Dai
+        </Button>
+        <Button disabled={!community.isAdmin} onClick={() => this.props.history.push('/events/create')}>
+          Create Event
+        </Button>
+      </Fragment>
+      }
+      <h2>
+        Event details
+      </h2>
+      <div>
+        {
+          events && events.map(event => {
+
+            return(
+              <div key={event.eventId}>
+                {
+                  Object.keys(event).map(key => {
+                    return `${key}: ${event[key]} ||  `
+                  })
+                }
+                <br />
+                <Button onClick={() => this.props.history.push(`/events/${event.eventId}`)}>
+                  Open {`${event.name}`}
+                </Button>
+              </div>
+            )
+          })
+        }
+      </div>
+    </Fragment>
+  }
 };
 
-const mapStateToProps = createStructuredSelector({
-  viewCommunityContainer: makeSelectViewCommunityContainer(),
-});
+const mapStateToProps = selectViewCommunityContainer;
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
-    dispatch: dispatch,
+    getCommunity: (tbcAddress: string) => {
+      dispatch(getCommunityAction.request(tbcAddress))
+    },
+    onJoinCommunity: (daiValue: number, tbcAddress: string, membershipManagerAddress: string) => {
+      dispatch(joinCommunityAction.request({
+        daiValue: daiValue,
+        tbcAddress: tbcAddress,
+        membershipManagerAddress: membershipManagerAddress
+      }))
+    },
+    onIncreaseMembership: (daiValue: number, tbcAddress: string, membershipManagerAddress: string) =>{
+      dispatch(increaseMembershipAction.request({
+        daiValue: daiValue,
+        tbcAddress: tbcAddress,
+        membershipManagerAddress: membershipManagerAddress
+      }))
+    },
+    onWithdrawMembership: (daiValue: number, tbcAddress: string, membershipManagerAddress: string) =>{
+      dispatch(withdrawMembershipAction.request({
+        daiValue: daiValue,
+        tbcAddress: tbcAddress,
+        membershipManagerAddress: membershipManagerAddress
+      }))
+    },
   };
 }
 
