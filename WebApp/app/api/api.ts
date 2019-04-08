@@ -1,11 +1,12 @@
 import apiRequest from './apiRequest';
 import apiUrlBuilder from './apiUrlBuilder';
 import { ICommunity } from 'domain/communities/types';
+import { IEvent } from 'domain/events/types';
 
 // Helpers
-const formDataHelper = (data: any) => {
+const formDataHelper = async (data: any) => {
   const requestData = new FormData();
-  Object.keys(data).map(key => {
+  await Object.keys(data).map(key => {
     requestData.append(`${key}`, data[key]);
   })
   return requestData;
@@ -34,6 +35,11 @@ export function getEventMeta(eventId: string): Promise<any> {
 }
 
 // Creation
-export function createCommunity(community: ICommunity, apiToken: string): Promise<any> {
-  return apiRequest('POST', apiUrlBuilder.createCommunity, formDataHelper(community), undefined, true, apiToken)
+export async function createCommunity(community: ICommunity, apiToken: string): Promise<any> {
+  return apiRequest('POST', apiUrlBuilder.createCommunity, (await formDataHelper(community)), undefined, true, apiToken)
+}
+
+export async function createEvent(event: IEvent, apiToken: string): Promise<any> {
+  const formData =  await formDataHelper(event);
+  return apiRequest('POST', apiUrlBuilder.createEvent, formData, undefined, true, apiToken)
 }

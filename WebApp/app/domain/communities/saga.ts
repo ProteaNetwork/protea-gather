@@ -9,10 +9,11 @@ import { BlockTag } from 'ethers/providers/abstract-provider';
 import { ICommunity } from "./types";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
-import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval } from "./chainInteractions";
+import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "./chainInteractions";
 import { checkStatus } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { increaseMembership } from "domain/membershipManagement/saga";
+import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
 
 export declare type EventFilter = {
   address?: string;
@@ -28,7 +29,7 @@ export function* getCommunityMeta(requestData) {
     yield put(getCommunityMetaAction.success(communityMeta.data))
   }
   catch(error) {
-    console.log("No meta found");
+    yield put(getCommunityMetaAction.failure(error))
   }
 }
 
@@ -66,17 +67,34 @@ export function* createCommunityInDB(community: ICommunity){
 export function* createCommunity() {
   while(true){
     let newCommunity: ICommunity = (yield take(createCommunityAction.request)).payload;
-    yield put(setTxContextAction(`Publishing your community to the chain` ));
-    yield put(setRemainingTxCountAction(1));
-
     try{
+      yield put(setRemainingTxCountAction(3));
+      yield put(setTxContextAction(`Publishing your community to the chain` ));
       newCommunity = {
         ...newCommunity,
         ...(yield call(publishCommunityToChain, newCommunity.name, newCommunity.tokenSymbol, newCommunity.gradientDenominator, newCommunity.contributionRate))
       }
-      yield call(createCommunityInDB, newCommunity);
-      yield put(setTxContextAction(`Storing images & meta data` ));
+
+      yield put(setRemainingTxCountAction(2));
+      yield put(setTxContextAction(`Registering the events management module` ));
+      yield delay(500);
+      yield call(registerUtility, newCommunity.eventManagerAddress, newCommunity.membershipManagerAddress)
+
+      yield put(setRemainingTxCountAction(1));
+      yield put(setTxContextAction(`Setting reputation tracking on the events module` ));
+      yield delay(500);
+      yield call(setReputationReward,
+        newCommunity.eventManagerAddress,
+        newCommunity.membershipManagerAddress,
+        ethers.utils.parseUnits('0', 0),
+        ethers.utils.parseUnits(`${newCommunity['reputationForAttendance']}`, 0),
+      )
+
       yield put(setRemainingTxCountAction(0));
+      yield put(setTxContextAction(`Storing images & meta data`));
+      yield call(createCommunityInDB, newCommunity);
+
+      yield delay(500);
       yield put(createCommunityAction.success());
       yield call(forwardTo, `/communities/${newCommunity.tbcAddress}`);
     }
@@ -92,23 +110,29 @@ export function* joinCommunity(){
     try{
       yield put(setRemainingTxCountAction(3));
       yield put(setTxContextAction("Unlocking Dai transfers to the community"));
-      const success = yield call(updateTransferApproval, true, communityData.tbcAddress);
-      if(success){
-        const result = yield call(increaseMembership, communityData);
+      yield call(updateTransferApproval, true, communityData.tbcAddress);
 
-        // stake
-        if(result == true){
-          yield put(joinCommunityAction.success());
-          yield delay(1000);
-          yield put(getCommunityAction.request(communityData.tbcAddress));
-        }else{
-          yield put(setRemainingTxCountAction(0));
-          yield put(joinCommunityAction.failure(result));
-        }
-      }else{
-        yield put(setRemainingTxCountAction(0));
-        yield put(joinCommunityAction.failure("Unlocking error"));
-      }
+      yield delay(500);
+
+      // mint
+      yield put(setRemainingTxCountAction(2));
+      yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
+      const tokenVolume = yield call(getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
+      const mintedVolume = yield call(mintTokens, tokenVolume, communityData.tbcAddress);
+
+      yield delay(500);
+
+      // stake
+      yield put(setRemainingTxCountAction(1));
+      yield put(setTxContextAction(`Reserving community tokens for membership.`));
+      const mintedDaiValue = yield call(getDaiValueBurn, communityData.tbcAddress, mintedVolume);
+      yield call(increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
+
+      yield put(setRemainingTxCountAction(0));
+      yield put(joinCommunityAction.success());
+      yield delay(1000);
+      yield put(getCommunityAction.request(communityData.tbcAddress));
+
     }
     catch(e){
       yield put(setRemainingTxCountAction(0));

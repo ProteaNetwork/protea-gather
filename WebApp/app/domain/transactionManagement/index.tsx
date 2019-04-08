@@ -28,7 +28,7 @@ const TransactionManagement: React.SFC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = createStructuredSelector({
-  transactionManagement: makeSelectTransactionManagement(),
+  transactionManagement: makeSelectTransactionManagement,
 });
 
 function mapDispatchToProps(dispatch: Dispatch) {

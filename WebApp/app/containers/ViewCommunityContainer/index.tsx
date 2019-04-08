@@ -81,7 +81,7 @@ class ViewCommunityContainer extends React.Component<Props>  {
         <Button onClick={() => onWithdrawMembership(2, community.tbcAddress, community.membershipManagerAddress)}>
           Withdraw by 2 Dai
         </Button>
-        <Button disabled={!community.isAdmin} onClick={() => this.props.history.push('/events/create')}>
+        <Button disabled={!community.isAdmin} onClick={() => this.props.history.push(`/events/${community.eventManagerAddress}/create`)}>
           Create Event
         </Button>
       </Fragment>

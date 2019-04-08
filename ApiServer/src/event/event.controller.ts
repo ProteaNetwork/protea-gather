@@ -1,7 +1,8 @@
-import { Controller, Post, UseGuards, Body, Put, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Put, Get, NotFoundException, Param, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { EventService } from './event.service';
 import { EventDTO } from './dto/event.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptorHelper, FileOptions } from 'src/helper/fileInterceptorHelper';
 
 @Controller('event')
 export class EventController {
@@ -19,8 +20,15 @@ export class EventController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createEvent(@Body() bodyData: EventDTO){
-
+  @UseInterceptors(FileInterceptorHelper(
+    {
+      name: 'bannerImage',
+      maxCount: 1,
+      type: FileOptions.PICTURE
+    }
+  ))
+  async createEvent(@Body() bodyData: EventDTO, @UploadedFile() bannerImage){
+    return await this.eventService.createEvent(bodyData, bannerImage);
   }
 
   @Put()

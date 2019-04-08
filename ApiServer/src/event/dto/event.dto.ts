@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength, IsNumber, IsDate, IsArray } from 'class-validator';
+import { IsString, IsDate } from 'class-validator';
 
 export class EventDTO {
   @IsString()
@@ -7,21 +7,16 @@ export class EventDTO {
   eventManagerAddress: string;
   @IsString()
   organizer: string;
-
-  @IsArray()
-  attendees: string[];
-
-  @IsNumber()
+  @IsString() // TODO: fix FormData casting issue
   maxAttendees: number;
-  @IsNumber()
+  @IsString() // TODO: fix FormData casting issue
   requiredDai: number
-  @IsNumber()
+  @IsString() // TODO: fix FormData casting issue
   state: number;
-
   @IsString()
   name: string;
   @IsString()
   description: string;
-  @IsDate()
-  date: Date;
+  @IsString() // TODO: fix FormData casting issue
+  eventDate: Date;
 }

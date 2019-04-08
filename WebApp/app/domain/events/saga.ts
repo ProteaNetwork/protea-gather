@@ -1,66 +1,18 @@
 import { saveCommunity } from "domain/communities/actions";
-import { take, fork, call, put, all } from "@redux-saga/core/effects";
+import { take, fork, call, put, all, select, delay } from "@redux-saga/core/effects";
 
-import * as EventManagerABI from "../../../../Blockchain/build/EventManagerV1.json";
-
-
-// Ethers standard event filter type is missing the blocktags
-import { BlockTag } from 'ethers/providers/abstract-provider';
-import { ethers } from "ethers";
 import { ICommunity } from "domain/communities/types";
-import { saveEvent, getEventMetaAction, checkStatus, statusUpdated } from "./actions";
+import { saveEvent, getEventMetaAction, checkStatus, statusUpdated, createEventAction } from "./actions";
 import { IEvent } from "./types";
-import eventSchema from "./schema";
 import { getEventMeta as getEventMetaApi } from "api/api";
-import { blockchainResources } from "blockchainResources";
+import { getEvents, checkMemberStateOnChain, publishEventToChain } from "./chainInteractions";
+import { setTxContextAction, setRemainingTxCountAction } from "domain/transactionManagement/actions";
+import { ApplicationRootState } from "types";
+import { forwardTo } from "utils/history";
 
-export declare type EventFilter = {
-  address?: string;
-  topics?: Array<string>;
-  fromBlock?: BlockTag;
-  toBlock?: BlockTag
-};
+import { createEvent as createEventApi } from "api/api";
+import { ethers } from "ethers";
 
-
-async function getEvents(publishedBlock: number, eventManagerAddress: string){
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const eventManager = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
-
-  const eventCreatedFilter: EventFilter = eventManager.filters.EventCreated(null);
-  eventCreatedFilter.fromBlock = publishedBlock;
-  let events = await Promise.all((await provider.getLogs(eventCreatedFilter)).map(async event => {
-    const parsedLog = (eventManager.interface.parseLog(event));
-    const eventData = await eventManager.getEvent(parsedLog.values.index);
-    const attendees = await eventManager.getRSVPdAttendees(parsedLog.values.index);
-
-    return {
-      name: eventData[0],
-      maxAttendees: eventData[1],
-      requiredDai: parseInt(ethers.utils.formatUnits(eventData[2], 18)),
-      state: eventData[3],
-      attendees: attendees,
-      eventId: `${eventManagerAddress}-${parsedLog.values.index}`,
-      eventManagerAddress: eventManagerAddress,
-      organizer: parsedLog.values.publisher,
-    }
-  }))
-  return events;
-}
-
-async function checkMemberStateOnChain(eventId: string){
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
-  const eventManagerAddress = eventId.split('-')[0];
-  const eventIndex = eventId.split('-')[1];
-  const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
-  const signerAddress = await signer.getAddress();
-
-  return (await eventManagerContract.getUserState(signerAddress, eventIndex));
-}
 
 export function* checkMemberState(eventId){
   const memberState = yield call(checkMemberStateOnChain, eventId);
@@ -73,17 +25,67 @@ export function* getEventMeta(requestData){
     yield put(getEventMetaAction.success(eventMeta.data));
   }
   catch(error){
-    console.log
+    yield put(getEventMetaAction.failure(error));
   }
 }
 
 export function* populateCommunityEvents() {
   while(true){
     const community: ICommunity = (yield take(saveCommunity)).payload;
-    const events: IEvent[] = yield call(getEvents, blockchainResources.publishedBlock, community.eventManagerAddress)
+    const events: IEvent[] = yield call(getEvents, community.eventManagerAddress)
     yield all(events.map(event => (put(saveEvent(event)))));
     yield all(events.map((event: IEvent) => (put(checkStatus(event.eventId)))));
     yield all(events.map(event => (put(getEventMetaAction.request(event.eventId)))));
+  }
+}
+
+// CRUD
+export function* createEventInDb(event: IEvent){
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  try{
+    return (yield call(createEventApi, event, apiKey));
+  }
+  catch(error){
+    yield put(createEventAction.failure(error.message));
+    return false;
+  }
+}
+
+export function* createEvent(){
+  while(true){
+    let newEvent: IEvent = (yield take(createEventAction.request)).payload;
+
+    yield put(setTxContextAction(`Publishing your event to the chain` ));
+    yield put(setRemainingTxCountAction(1));
+    try{
+      newEvent = {
+        ...newEvent,
+        ...(yield call(
+          publishEventToChain,
+          newEvent.eventManagerAddress,
+          newEvent.name,
+          ethers.utils.bigNumberify(newEvent.maxAttendees),
+          ethers.utils.parseUnits(`${newEvent.requiredDai}`, 18)))
+      }
+      // newEvent = {
+      //   ...newEvent,
+      //   eventId: "0x-0",
+      //   organizer: "0x",
+      //   name: "test",
+      //   state: 1,
+
+      // }
+      yield put(setRemainingTxCountAction(0));
+      yield put(setTxContextAction(`Storing images & meta data` ));
+      yield call(createEventInDb, newEvent);
+      yield delay(500);
+
+      yield put(createEventAction.success());
+      yield call(forwardTo, `/events/${newEvent.eventId}`);
+    }
+    catch(error){
+      yield put(createEventAction.failure(error.message))
+    }
   }
 }
 
@@ -106,5 +108,6 @@ export default function* root() {
   yield fork(populateCommunityEvents);
   yield fork(checkMemberStateListener);
   yield fork(getEventMetaListener);
+  yield fork(createEvent);
 }
 

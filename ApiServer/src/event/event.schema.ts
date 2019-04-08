@@ -12,7 +12,7 @@ export interface Event {
   state: number;
 
   name: string;
-  banner: AttachmentDocument | ObjectId;
+  bannerImage: AttachmentDocument | ObjectId;
   description: string;
   date: Date;
 }
@@ -27,9 +27,9 @@ export const EventSchema = new Schema({
   maxAttendees: {type: Number, required: true},
   requiredDai: {type: Number, required: true},
   state: {type: Number, required: true},
+  bannerImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
 
   name: { type: String, required: true },
-  banner: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
   description: { type: String, required: false },
   date: { type: Date, required: false},
 }, {

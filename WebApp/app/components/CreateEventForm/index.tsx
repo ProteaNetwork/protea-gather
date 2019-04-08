@@ -1,6 +1,6 @@
 /**
  *
- * CreateCommunityForm
+ * CreateEventForm
  *
  */
 
@@ -50,18 +50,18 @@ interface OwnProps extends WithStyles<typeof styles> {
   submitForm(data): void;
 }
 
-const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
+const CreateEventForm: React.SFC<OwnProps> = (props: OwnProps) => {
   const { submitForm, classes } = props;
   return (
     <div className={classes.background}>
       <Paper square={true} className={classes.paperRoot} elevation={0}>
         <Form className={classes.formRoot}>
           <Typography className={classes.heading} component="h1" variant="h1">
-            Create a community
+            Create an event
           </Typography>
           <FormControl>
             <Typography className={classes.subHeading} component="h4" variant="h4">
-              Community banner
+              Event banner
             </Typography>
             <Field component={UploadImageField} name="bannerImage"  />
           </FormControl>
@@ -69,13 +69,18 @@ const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
             <Field name="name" label="Name:" component={TextField}/>
           </FormControl>
           <FormControl>
-            <Field name="tokenSymbol" label="Token Symbol:" component={TextField}/>
+            <Field name="maxAttendees" label="Maximum attendees (0 for unlimited):" type="number" component={TextField}/>
           </FormControl>
           <FormControl>
-            <Field name="contributionRate" type="number" label="Community contribution rate:"  component={TextField}/>
+            <Field name="requiredDai" label="Required Dai deposit:" type="number" component={TextField}/>
           </FormControl>
           <FormControl>
-            <Field name="reputationForAttendance" type="number" label="Reputation points for attendance"  component={TextField}/>
+            <Field
+              component={TextField}
+              label="Event date:"
+              type="datetime-local"
+              name="eventDate"
+            />
           </FormControl>
           <FormControl>
             <Field
@@ -87,10 +92,10 @@ const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
               rowsMax="12"
             />
           </FormControl>
-          <Field name="gradientDenominator" type="hidden" />
+          <Field name="eventManagerAddress" type="hidden" />
           <div>
             <Button className={classes.publishButton} onClick={submitForm}>
-              Publish community
+              Publish event
             </Button>
           </div>
         </Form>
@@ -99,4 +104,4 @@ const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
   );
 };
 
-export default withStyles(styles, { withTheme: true })(CreateCommunityForm);
+export default withStyles(styles, { withTheme: true })(CreateEventForm);

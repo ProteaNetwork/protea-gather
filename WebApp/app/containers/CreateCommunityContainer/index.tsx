@@ -14,8 +14,6 @@ import { ICommunity } from 'domain/communities/types';
 import * as Yup from 'yup';
 import { fileSizeValidation, MAX_FILE_SIZE, fileTypeValidation, SUPPORTED_IMAGE_FORMATS } from 'fileManagement';
 import CreateCommunityForm from 'components/CreateCommunityForm';
-import selectCreateCommunityState from './selectors';
-
 
 interface OwnProps {}
 
@@ -40,6 +38,7 @@ const CreateCommunityContainer: React.SFC<Props> = (props: Props) => {
     tokenSymbol: Yup.string().max(5, "Please keep the symbol under 5 charactors").required("Please specify a token symbol"),
     contributionRate: Yup.number().required("Please specify a contribution rate"),
     gradientDenominator: Yup.number().required(),
+    reputationForAttendance: Yup.number().required()
   })
   return (
     <Formik
@@ -50,6 +49,7 @@ const CreateCommunityContainer: React.SFC<Props> = (props: Props) => {
         tokenSymbol: "",
         contributionRate: 10,
         gradientDenominator: 2000,
+        reputationForAttendance: 100
       }}
       validationSchema={CreateCommunitySchema}
 
@@ -68,7 +68,6 @@ const CreateCommunityContainer: React.SFC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = selectCreateCommunityState;
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
@@ -79,7 +78,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
 }
 
 const withConnect = connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 );
 

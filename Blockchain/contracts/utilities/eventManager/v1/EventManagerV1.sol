@@ -48,6 +48,12 @@ contract EventManagerV1 is BaseUtility {
     {
     }
 
+    modifier onlyRsvpAvailable(uint256 _index) {
+        uint24 currentAttending = uint24(events_[_index].currentAttendees.length);
+        require((events_[_index].maxAttendees == 0 || (currentAttending + 1) >= events_[_index].maxAttendees), "RSVP not available");
+        _;
+    }
+
     modifier onlyActiveMember(address _account){
         (,,uint256 availableStake) = IMembershipManager(membershipManager_).getMembershipStatus(_account);
         require(availableStake > 0, "Membership invalid");
@@ -165,6 +171,7 @@ contract EventManagerV1 is BaseUtility {
     function rsvp(uint256 _index) 
         external  
         onlyPending(_index)
+        onlyRsvpAvailable(_index)
         returns (bool)
     {
         require(memberState_[_index][msg.sender] == 0, "RSVP not available");

@@ -39,12 +39,12 @@ https://rinkeby.etherscan.io/address/0x0f17d2198dbb9d7a50557284f7ee10dfa5e0628a
 ### yarn deploy:rinkeby
 The current contracts as of 20/03/2019 are deployed at the following address, with the following markets. 
 
-PseudoDai:              0x2B8E4C20bD9124c523957B0825A881eeC9E5bfEc
-Community Factory:      0x7a0cd5AF9a8b7EA78de043C62db171BC8558152A
-Basic Linear Factory:   0x5FAeD081a4572547D3f93B4f44781A3AF6FD0EE8
-Membership Mgr Fact:    0xb64Fd83473c7e2Ec2A9655812D5Bd8c3FB42e27A
-Event Manager Factory:  0x77e555DE67740769A74880f017f9dF995E6b54ab
+PseudoDai:              0xb5Cb54d52D1Addb86c36e1240F18c552Dd85A82b
+Community Factory:      0xECA9C2b4B4c4e8eCB7052751347724Ca60468168
+Basic Linear Factory:   0x1CC8E6aAaE5F1206ebA7E1e25f5D4221FAcFFA60
+Membership Mgr Fact:    0x8195e5977896f20471f45396eeaC286a27C7fB8b
+Event Manager Factory:  0xA515C0EeF16b2103370b785840524E4d6c164246
 
-Testing TBC:            0x996d2504f903D4b234AEeE80ba6605CE30cBa5F7
-Testing Membership:     0xb24424e3e8114bc13CBa8B7cBd6270b4dE1e8f71
-Testing Event manager:  0xE6dE965a7D0B81921F2b037470C039B351E8aa43
+Testing TBC:            0x19260257f967Fbd62998C71C6251c7482A1cE01F
+Testing Membership:     0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430
+Testing Event manager:  0x65464728B4fbfCEe4C4dEA20edeDce5CDAF913BE

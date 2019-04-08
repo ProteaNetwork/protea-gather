@@ -4,6 +4,7 @@ import LandingPageContainer from 'containers/LandingPageContainer';
 import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import CreateCommunityContainer from 'containers/CreateCommunityContainer';
 import ViewCommunityContainer from 'containers/ViewCommunityContainer';
+import CreateEventContainer from 'containers/CreateEventContainer';
 
 export interface appRoute {
   name: string;
@@ -40,6 +41,13 @@ const routes: appRoute[] = [
     name: 'ViewCommunity',
     path: '/communities/:tbcAddress?',
     component: ViewCommunityContainer,
+    isProtected: true,
+    isNavRequired: false,
+  },
+  {
+    name: 'CreateEvent',
+    path: '/events/:eventManagerAddress?/create/',
+    component: CreateEventContainer,
     isProtected: true,
     isNavRequired: false,
   },
