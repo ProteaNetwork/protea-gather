@@ -106,3 +106,41 @@ export async function withdrawMembershipStake(daiValue: BigNumber, membershipMan
   return false;
 }
 
+
+export async function registerUtility(utilityAddress: string, membershipManagerAddress: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+
+  const txReceipt = await(await membershipManagerContract.addUtility(utilityAddress)).wait();
+  // TODO: Error handling
+  const utilityAddedEvent = membershipManagerContract.interface.parseLog(await(txReceipt.events.filter(
+    event => event.eventSignature == membershipManagerContract.interface.events.UtilityAdded.signature
+  ))[0]);
+
+  if(utilityAddedEvent && utilityAddedEvent.values.issuer == utilityAddress){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+
+export async function setReputationReward(utilityAddress: string, membershipManagerAddress: string, rewardId: BigNumber, rewardAmount: BigNumber) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+
+  const txReceipt = await(await membershipManagerContract.setReputationRewardEvent(utilityAddress, rewardId, rewardAmount)).wait();
+  const reputationRewardSetEvent = membershipManagerContract.interface.parseLog(await(txReceipt.events.filter(
+    event => event.eventSignature == membershipManagerContract.interface.events.ReputationRewardSet.signature
+  ))[0]);
+
+  if(reputationRewardSetEvent && reputationRewardSetEvent.values.issuer == utilityAddress){
+    return true;
+  }else{
+    return false;
+  }
+}

@@ -7,13 +7,14 @@ interface IEvent{
 
   eventManagerAddress: string;
   organizer: string;
+
   attendees: string[];
   maxAttendees: number
   requiredDai: number
   state: number;
 
   name: string;
-  banner: string;
+  bannerImage: string;
   description: string;
   date: Date;
   memberState: Number;

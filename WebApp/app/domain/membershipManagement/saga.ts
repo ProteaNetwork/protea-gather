@@ -1,4 +1,4 @@
-import { fork, take, call, put, select, all } from "redux-saga/effects";
+import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
 import { checkStatus, increaseMembershipAction, withdrawMembershipAction } from "./actions";
 import { getCommunityMeta as getCommunityMetaApi } from "api/api";
 import { createCommunity as createCommunityApi } from "api/api";
@@ -31,15 +31,18 @@ export function* checkIfUserIsMember(membershipManagerAddress: string, tbcAddres
 // CRUD
 export function* increaseMembership(communityData: {tbcAddress:string, daiValue: number, membershipManagerAddress: string}){
   try{
-    yield put(setRemainingTxCountAction(2));
     // mint
-    const tokenVolume = yield call(getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
+    yield put(setRemainingTxCountAction(2));
     yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
+    const tokenVolume = yield call(getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
     const mintedVolume = yield call(mintTokens, tokenVolume, communityData.tbcAddress);
-    yield put(setRemainingTxCountAction(1));
+
     // stake
-    const mintedDaiValue = yield call(getDaiValueBurn, communityData.tbcAddress, mintedVolume);
+    yield put(setRemainingTxCountAction(1));
     yield put(setTxContextAction(`Reserving community tokens for membership.`));
+    yield delay(500);
+
+    const mintedDaiValue = yield call(getDaiValueBurn, communityData.tbcAddress, mintedVolume);
     yield call(increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
     yield put(setRemainingTxCountAction(0));
 
@@ -52,16 +55,17 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
 
 export function* withdrawMembership(communityData: {tbcAddress:string, daiValue: number, membershipManagerAddress: string}){
   try{
-    const membersTokens = yield call(getAvailableStake, communityData.membershipManagerAddress);
-    yield put(setRemainingTxCountAction(2));
-    const daiValue = yield call(getDaiValueBurn, communityData.tbcAddress, membersTokens);
-
-    // stake
+    // Unstake
     yield put(setTxContextAction(`Withdrawing ${communityData.daiValue} Dai worth of tokens from membership` ));
+    yield put(setRemainingTxCountAction(2));
+    const membersTokens = yield call(getAvailableStake, communityData.membershipManagerAddress);
+    const daiValue = yield call(getDaiValueBurn, communityData.tbcAddress, membersTokens);
     yield call(withdrawMembershipStake, daiValue, communityData.membershipManagerAddress)
-    yield put(setRemainingTxCountAction(1));
 
     yield put(setTxContextAction(`Exchanging community tokens for Dai` ));
+    yield put(setRemainingTxCountAction(1));
+    yield delay(500);
+
     const tokenBalance = yield call(getTokenBalance, communityData.tbcAddress);
     yield call(burnTokens, tokenBalance, communityData.tbcAddress);
     yield put(setRemainingTxCountAction(0));

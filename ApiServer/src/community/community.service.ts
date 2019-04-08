@@ -21,13 +21,13 @@ export class CommunityService {
     // if(!doc){
     //   const communityDoc = await new this.communityRepository({
     //     tbcAddress: tbcAddress,
-    //     membershipManager: "0xb24424e3e8114bc13CBa8B7cBd6270b4dE1e8f71",
-    //     eventManager: "0xE6dE965a7D0B81921F2b037470C039B351E8aa43",
+    //     membershipManager: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
+    //     eventManager: "0x65464728B4fbfCEe4C4dEA20edeDce5CDAF913BE",
     //     name: "community",
     //     tokenSymbol: "COM",
     //   });
     //   communityDoc.save();
-    //   return communityDoc.toObject();
+      // return communityDoc.toObject();
     // }
     return doc ? doc.toObject() : false;
   }

@@ -20,3 +20,9 @@ export const getEventMetaAction = createAsyncAction(
   ActionTypes.EVENT_META_SUCCESS,
   ActionTypes.EVENT_META_FAILURE
 )<string, IEvent, string>();
+
+export const createEventAction = createAsyncAction(
+  ActionTypes.EVENT_CREATE_TX_REQUEST,
+  ActionTypes.EVENT_CREATE_TX_SUCCESS,
+  ActionTypes.EVENT_CREATE_TX_FAILURE,
+)<IEvent, void, string>();

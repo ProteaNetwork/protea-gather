@@ -1,6 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
+import { makeSelectTxPending, makeSelectTxRemaining, makeSelectTxContext } from 'domain/transactionManagement/selectors';
 
 
 /**
@@ -26,11 +27,6 @@ const selectProfileImage = (state: ApplicationRootState) => state.userProfile.pr
 
 const selectDisplayName = (state: ApplicationRootState) => state.userProfile.displayName;
 
-const selectTxPendingState = (state: ApplicationRootState) => state.transactionManagement.txPending ? state.transactionManagement.txPending : false;
-
-const selectTxRemaining = (state: ApplicationRootState) => state.transactionManagement.txRemaining ? state.transactionManagement.txRemaining : 0;
-
-const selectTxContext = (state: ApplicationRootState) => state.transactionManagement.txContext ? state.transactionManagement.txContext : 0;
 
 /**
  * Default selector used by App
@@ -51,17 +47,6 @@ const makeSelectEthAddress = createSelector(selectEthAddress, substate => {
   return substate;
 })
 
-const makeSelectTxPending = createSelector(selectTxPendingState, substate => {
-  return substate;
-});
-
-const makeSelectTxRemaining = createSelector(selectTxRemaining, substate => {
-  return substate;
-});
-
-const makeSelectTxContext = createSelector(selectTxContext, substate => {
-  return substate;
-});
 
 // Root
 const selectApp = createSelector(

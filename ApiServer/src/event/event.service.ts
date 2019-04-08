@@ -4,11 +4,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { EventDocument } from './event.schema';
 import { Model } from 'mongoose';
 import { EventDTO } from './dto/event.dto';
+import { AttachmentService } from 'src/attachments/attachment.service';
 
 @Injectable()
 export class EventService {
-  constructor(@Inject(Modules.Logger) logger, @InjectModel(Schemas.Event) private readonly eventRepository: Model<EventDocument>){
-
+  constructor(
+    @Inject(Modules.Logger) logger,
+    @InjectModel(Schemas.Event) private readonly eventRepository: Model<EventDocument>,
+    private readonly attachmentService: AttachmentService)
+  {
   }
 
   async getEventById(eventId: string): Promise<EventDocument>{
@@ -17,7 +21,7 @@ export class EventService {
     // if(!doc){
     //   const eventDoc = await new this.eventRepository({
     //     eventId: eventId,
-    //     eventManagerAddress: "0xE6dE965a7D0B81921F2b037470C039B351E8aa43",
+    //     eventManagerAddress: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
     //     maxAttendees: 0,
     //     name: "Test event",
     //     organizer: "0xfaecAE4464591F8f2025ba8ACF58087953E613b1",
@@ -25,15 +29,21 @@ export class EventService {
     //     state: 1
     //   });
     //   eventDoc.save();
-    //   return eventDoc.toObject();
+      // return eventDoc.toObject();
     // }
     return doc ? doc.toObject() : false;
   }
 
-  async createEvent(eventData: EventDTO): Promise<EventDocument>{
-    const communityDoc = await new this.eventRepository(eventData);
-    communityDoc.save();
-    return communityDoc.toObject();
+  async createEvent(eventData: EventDTO, bannerImage): Promise<EventDocument>{
+    const eventDoc = await new this.eventRepository(eventData);
+    const attachment = await this.attachmentService.create({
+      filename: `${eventData.eventId}-${bannerImage.originalname}`,
+      contentType: bannerImage.mimetype
+    }, bannerImage);
+    eventDoc.bannerImage = attachment;
+
+    eventDoc.save();
+    return eventDoc.toObject();
   }
 
   async updateEvent(eventData: EventDTO): Promise<EventDocument>{

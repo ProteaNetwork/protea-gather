@@ -15,7 +15,7 @@ export const saveCommunity = createStandardAction(ActionTypes.SAVE_COMMUNITY)<IC
 
 export const statusUpdated = createStandardAction(ActionTypes.STATUS_UPDATED)<{
   tbcAddress: string,
-  transfersUnlocked: boolean, $
+  transfersUnlocked: boolean,
   isMember: boolean,
   availableStake: number,
   memberSince: Date,
