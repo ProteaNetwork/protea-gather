@@ -10,6 +10,7 @@ import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake
 import { statusUpdated, getCommunityAction } from "domain/communities/actions";
 import { ethers } from "ethers";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
+import { retry } from "redux-saga/effects";
 
 // Meta
 export function* checkIfUserIsMember(membershipManagerAddress: string, tbcAddress: string){
@@ -34,16 +35,16 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
     // mint
     yield put(setRemainingTxCountAction(2));
     yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
-    const tokenVolume = yield call(getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
-    const mintedVolume = yield call(mintTokens, tokenVolume, communityData.tbcAddress);
+    const tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
+    const mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
 
     // stake
     yield put(setRemainingTxCountAction(1));
     yield put(setTxContextAction(`Reserving community tokens for membership.`));
     yield delay(500);
 
-    const mintedDaiValue = yield call(getDaiValueBurn, communityData.tbcAddress, mintedVolume);
-    yield call(increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
+    const mintedDaiValue = yield retry(5, 2000, getDaiValueBurn, communityData.tbcAddress, mintedVolume);
+    yield retry(5, 2000, increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
     yield put(setRemainingTxCountAction(0));
 
     return true;
@@ -58,16 +59,16 @@ export function* withdrawMembership(communityData: {tbcAddress:string, daiValue:
     // Unstake
     yield put(setTxContextAction(`Withdrawing ${communityData.daiValue} Dai worth of tokens from membership` ));
     yield put(setRemainingTxCountAction(2));
-    const membersTokens = yield call(getAvailableStake, communityData.membershipManagerAddress);
-    const daiValue = yield call(getDaiValueBurn, communityData.tbcAddress, membersTokens);
-    yield call(withdrawMembershipStake, daiValue, communityData.membershipManagerAddress)
+    const membersTokens = yield retry(5, 2000, getAvailableStake, communityData.membershipManagerAddress);
+    const daiValue = yield retry(5, 2000, getDaiValueBurn, communityData.tbcAddress, membersTokens);
+    yield retry(5, 2000, withdrawMembershipStake, daiValue, communityData.membershipManagerAddress)
 
     yield put(setTxContextAction(`Exchanging community tokens for Dai` ));
     yield put(setRemainingTxCountAction(1));
-    yield delay(500);
+    yield delay(2000);
 
     const tokenBalance = yield call(getTokenBalance, communityData.tbcAddress);
-    yield call(burnTokens, tokenBalance, communityData.tbcAddress);
+    yield retry(5, 2000, burnTokens, tokenBalance, communityData.tbcAddress);
     yield put(setRemainingTxCountAction(0));
 
     return true;
@@ -82,11 +83,11 @@ export function* increaseMembershipListener(){
   while(true){
     const communityData = (yield take(increaseMembershipAction.request)).payload;
     // mint
-    const result = yield call(increaseMembership, communityData);
+    const result = yield retry(5, 2000, increaseMembership, communityData);
     if(result === true){
       // Trigger resolve community
       yield put(increaseMembershipAction.success());
-      yield put(getCommunityAction.request(communityData.tbcAddress))
+      // yield put(getCommunityAction.request(communityData.tbcAddress))
     }else{
       yield put(setRemainingTxCountAction(0));
       yield put(increaseMembershipAction.failure(result));
@@ -97,11 +98,11 @@ export function* increaseMembershipListener(){
 export function* withdrawMembershipListener(){
   while(true){
     const communityData = (yield take(withdrawMembershipAction.request)).payload;
-    const result = yield call(withdrawMembership, communityData);
+    const result = yield retry(5, 2000, withdrawMembership, communityData);
     if(result === true){
       // Trigger resolve community
       yield put(withdrawMembershipAction.success());
-      yield put(getCommunityAction.request(communityData.tbcAddress))
+      // yield put(getCommunityAction.request(communityData.tbcAddress))
     }else{
       yield put(setRemainingTxCountAction(0));
       yield put(withdrawMembershipAction.failure(result));

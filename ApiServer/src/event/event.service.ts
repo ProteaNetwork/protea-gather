@@ -22,11 +22,8 @@ export class EventService {
     //   const eventDoc = await new this.eventRepository({
     //     eventId: eventId,
     //     eventManagerAddress: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
-    //     maxAttendees: 0,
     //     name: "Test event",
     //     organizer: "0xfaecAE4464591F8f2025ba8ACF58087953E613b1",
-    //     requiredDai: 2,
-    //     state: 1
     //   });
     //   eventDoc.save();
       // return eventDoc.toObject();

@@ -1892,6 +1892,20 @@ describe('Event Manager', () => {
             let postGiftMemberState = await membershipManagerInstance.from(userAccount).getMembershipStatus(userAccount.wallet.address);            
             assert.ok(postGiftMemberState[2].gt(initialMemberState[2]), "Gift not issued")
 
+          
+            // Sorting out gift Admin 
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .claimGift(communityCreatorAccount.wallet.address, 0)
+            ).wait()
+
+             // Division had some remaining tokens, so manually transfering them
+             await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .emptyActivitySlot(0, communityCreatorAccount.wallet.address)
+            ).wait();
             // Check that utility pool empty
             utilityLockedPool = await membershipManagerInstance.from(userAccount).getUtilityStake(eventManagerInstance.contract.address, 0);
 
@@ -2070,6 +2084,14 @@ describe('Event Manager', () => {
                 let postGiftMemberState = await membershipManagerInstance.from(userAccount).getMembershipStatus(userAccount.wallet.address);            
                 assert.ok(postGiftMemberState[2].gt(initialMemberState[2]), "Gift not issued")
 
+
+                // Sorting out gift Admin 
+                await (
+                    await eventManagerInstance
+                        .from(communityCreatorAccount)
+                        .claimGift(communityCreatorAccount.wallet.address, 0)
+                ).wait()
+
                  // Division had some remaining tokens, so manually transfering them
                  await (
                     await eventManagerInstance
@@ -2232,6 +2254,14 @@ describe('Event Manager', () => {
                     await eventManagerInstance
                         .from(thirdUserAccount)
                         .claimGift(thirdUserAccount.wallet.address, 0)
+                ).wait()
+
+
+                // Sorting out gift Admin 
+                await (
+                    await eventManagerInstance
+                        .from(communityCreatorAccount)
+                        .claimGift(communityCreatorAccount.wallet.address, 0)
                 ).wait()
 
 
@@ -2449,6 +2479,14 @@ describe('Event Manager', () => {
                         .claimGift(fifthUser.wallet.address, 0)
                 ).wait()
 
+
+
+                // Sorting out gift Admin 
+                await (
+                    await eventManagerInstance
+                        .from(communityCreatorAccount)
+                        .claimGift(communityCreatorAccount.wallet.address, 0)
+                ).wait()
 
                 let postGiftMemberState = await membershipManagerInstance.from(userAccount).getMembershipStatus(userAccount.wallet.address);            
                 assert.ok(postGiftMemberState[2].gt(initialMemberState[2]), "Gift not issued")

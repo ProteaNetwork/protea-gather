@@ -279,7 +279,7 @@ contract EventManagerV1 is BaseUtility {
     {
         uint256 totalRemaining = IMembershipManager(membershipManager_).getUtilityStake(address(this), _index);
         if(totalRemaining > 0){
-            events_[_index].gift = totalRemaining.div(events_[_index].totalAttended);
+            events_[_index].gift = totalRemaining.div(events_[_index].totalAttended + 1);// accounts for the organizer to get a share
         }
     }
 

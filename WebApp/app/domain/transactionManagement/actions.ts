@@ -13,7 +13,7 @@ export const setPendingState = createStandardAction(ActionTypes.SET_PENDING_STAT
 
 export const refreshBalancesAction = createStandardAction(ActionTypes.REFRESH_BALANCES)<void>()
 
-export const setBalancesAction = createStandardAction(ActionTypes.SET_BALANCES)<{daiBalance: number, ethBalance: number}>();
+export const setBalancesAction = createStandardAction(ActionTypes.SET_BALANCES)<{daiBalance: number, ethBalance: number, ethAddress: string}>();
 
 export const setRemainingTxCountAction = createStandardAction(ActionTypes.SET_TX_REMAINING_COUNT)<number>();
 

@@ -13,7 +13,11 @@ const selectTransactionManagementDomain = (state: ApplicationRootState) => {
 /**
  * Other specific selectors
  */
-const txPendingState = (state: ApplicationRootState) => state.transactionManagement.txPending;
+const selectEthBalance = (state: ApplicationRootState) => state.transactionManagement.ethBalance;
+
+const selectDaiBalance = (state: ApplicationRootState) => state.transactionManagement.daiBalance;
+
+const selectEthAddress = (state: ApplicationRootState) => state.transactionManagement.ethAddress;
 
 const selectTxPendingState = (state: ApplicationRootState) => state.transactionManagement.txPending ? state.transactionManagement.txPending : false;
 
@@ -25,11 +29,22 @@ const selectTxContext = (state: ApplicationRootState) => state.transactionManage
  * Default selector used by TransactionManagement
  */
 
+export const selectBalances = createSelector(
+  selectEthBalance,
+  selectDaiBalance,
+  selectEthAddress,
+  (ethBalance, daiBalance, ethAddress) => ({
+    ethBalance: ethBalance,
+    daiBalance: daiBalance,
+    ethAddress: ethAddress
+  })
+);
+
 export const makeSelectTransactionManagement = createSelector(selectTransactionManagementDomain, substate => {
     return substate;
   });
 
-export const makeSelectTxPending = createSelector(txPendingState, substate => {
+export const makeSelectTxPending = createSelector(selectTxPendingState, substate => {
   return substate;
 });
 

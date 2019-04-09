@@ -1,16 +1,10 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
-import { initialState } from './reducer';
 import { ICommunity } from 'domain/communities/types';
 
 /**
  * Direct selector to the viewCommunityContainer state domain
  */
-
-const selectViewCommunityContainerDomain = (state: ApplicationRootState) => {
-  return state ? state.viewCommunity : initialState;
-};
-
 const selectCommunitiesDomain = (state: ApplicationRootState) => state.communities;
 const selectEventsDomain = (state: ApplicationRootState) => state.events;
 
@@ -65,4 +59,3 @@ const selectViewCommunityContainer = createStructuredSelector({
 });
 
 export default selectViewCommunityContainer;
-export { selectViewCommunityContainerDomain };

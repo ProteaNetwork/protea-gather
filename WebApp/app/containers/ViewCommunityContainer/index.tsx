@@ -8,10 +8,6 @@ import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 
-import injectSaga from 'utils/injectSaga';
-import injectReducer from 'utils/injectReducer';
-import reducer from './reducer';
-import saga from './saga';
 import selectViewCommunityContainer from './selectors';
 import { ICommunity } from 'domain/communities/types';
 import { Button } from '@material-ui/core';
@@ -149,20 +145,4 @@ const withConnect = connect(
   mapDispatchToProps,
 );
 
-// Remember to add the key to ./app/types/index.d.ts ApplicationRootState
-// <OwnProps> restricts access to the HOC's other props. This component must not do anything with reducer hoc
-const withReducer = injectReducer<OwnProps>({
-  key: 'viewCommunity',
-  reducer: reducer,
-});
-// <OwnProps> restricts access to the HOC's other props. This component must not do anything with saga hoc
-const withSaga = injectSaga<OwnProps>({
-  key: 'viewCommunity',
-  saga: saga,
-});
-
-export default compose(
-  withReducer,
-  withSaga,
-  withConnect,
-)(ViewCommunityContainer);
+export default compose(withConnect)(ViewCommunityContainer);

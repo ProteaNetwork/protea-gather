@@ -5,6 +5,7 @@ import { SvgIconProps } from '@material-ui/core/SvgIcon';
 import CreateCommunityContainer from 'containers/CreateCommunityContainer';
 import ViewCommunityContainer from 'containers/ViewCommunityContainer';
 import CreateEventContainer from 'containers/CreateEventContainer';
+import ViewEventContainer from 'containers/ViewEventContainer';
 
 export interface appRoute {
   name: string;
@@ -48,6 +49,13 @@ const routes: appRoute[] = [
     name: 'CreateEvent',
     path: '/events/:eventManagerAddress?/create/',
     component: CreateEventContainer,
+    isProtected: true,
+    isNavRequired: false,
+  },
+  {
+    name: 'ViewEvent',
+    path: '/events/:eventId?',
+    component: ViewEventContainer,
     isProtected: true,
     isNavRequired: false,
   },

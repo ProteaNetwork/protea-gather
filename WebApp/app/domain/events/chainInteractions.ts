@@ -15,31 +15,109 @@ export declare type EventFilter = {
 };
 
 
-export async function getEvents(eventManagerAddress: string){
-  const { web3, ethereum } = window as any;
+// View
+export async function getEventConfirmedAttendees(eventId: string): Promise<string[]>{
+  const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const eventManager = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
 
-  const eventCreatedFilter: EventFilter = eventManager.filters.EventCreated(null);
-  eventCreatedFilter.fromBlock = blockchainResources.publishedBlock;
-  let events = await Promise.all((await provider.getLogs(eventCreatedFilter)).map(async event => {
-    const parsedLog = (eventManager.interface.parseLog(event));
-    const eventData = await eventManager.getEvent(parsedLog.values.index);
-    const attendees = await eventManager.getRSVPdAttendees(parsedLog.values.index);
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.bigNumberify(eventId.split('-')[1]);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const filterMemberAttended:EventFilter = eventManagerContract.filters.MemberAttended(eventIndex, null);
+    filterMemberAttended.fromBlock = blockchainResources.publishedBlock;
+    const attendees = (await provider.getLogs(filterMemberAttended)).map(event => {
+      const parsedLog = (eventManagerContract.interface.parseLog(event));
+      return parsedLog.values.member
+    });
+
+    return attendees;
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+
+export async function getEvent(eventId: string){
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+
+  const eventManagerAddress = eventId.split('-')[0];
+  const eventIndex = eventId.split('-')[1];
+
+  try{
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+    const eventData = await eventManagerContract.getEvent(eventIndex);
+    const attendees = await eventManagerContract.getRSVPdAttendees(eventIndex);
+    const organizer = await eventManagerContract.getOrganiser(eventIndex);
+
+    let confirmedAttendees:string[] = [];
+    if(eventData[3] > 1){
+      confirmedAttendees = await getEventConfirmedAttendees(eventId);
+    }
 
     return {
       name: eventData[0],
       maxAttendees: eventData[1],
-      requiredDai: parseInt(ethers.utils.formatUnits(eventData[2], 18)),
+      requiredDai: parseFloat(ethers.utils.formatUnits(eventData[2], 18)),
       state: eventData[3],
       attendees: attendees,
-      eventId: `${eventManagerAddress}-${parsedLog.values.index}`,
+      confirmedAttendees: confirmedAttendees,
+      eventId: eventId,
       eventManagerAddress: eventManagerAddress,
-      organizer: parsedLog.values.publisher,
+      organizer: organizer
     }
-  }))
-  return events;
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+export async function getEventsTx(eventManagerAddress: string){
+  const { web3, ethereum } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+
+  try{
+    const eventManager = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+    const eventCreatedFilter: EventFilter = eventManager.filters.EventCreated(null);
+    eventCreatedFilter.fromBlock = blockchainResources.publishedBlock;
+    let events = await Promise.all((await provider.getLogs(eventCreatedFilter)).map(async event => {
+      const parsedLog = (eventManager.interface.parseLog(event));
+      const eventData = await eventManager.getEvent(parsedLog.values.index);
+      const attendees = await eventManager.getRSVPdAttendees(parsedLog.values.index);
+      let confirmedAttendees:string[] = [];
+      if(eventData[3] > 1){
+        confirmedAttendees = await getEventConfirmedAttendees(`${eventManagerAddress}-${parsedLog.values.index}`);
+      }
+      return {
+        name: eventData[0],
+        gift: parseFloat(ethers.utils.formatUnits(eventData[4], 18)),
+        maxAttendees: eventData[1],
+        requiredDai: parseFloat(ethers.utils.formatUnits(eventData[2], 18)),
+        state: eventData[3],
+        attendees: attendees,
+        confirmedAttendees: confirmedAttendees,
+        eventId: `${eventManagerAddress}-${parsedLog.values.index}`,
+        eventManagerAddress: eventManagerAddress,
+        organizer: parsedLog.values.publisher,
+      }
+    }))
+    return events;
+  }
+  catch(e){
+    throw e;
+  }
+
 }
 
 export async function checkMemberStateOnChain(eventId: string){
@@ -47,12 +125,18 @@ export async function checkMemberStateOnChain(eventId: string){
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
 
-  const eventManagerAddress = eventId.split('-')[0];
-  const eventIndex = eventId.split('-')[1];
-  const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
-  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = eventId.split('-')[1];
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const signerAddress = await signer.getAddress();
 
-  return (await eventManagerContract.getUserState(signerAddress, eventIndex));
+    return (await eventManagerContract.getUserState(signerAddress, eventIndex));
+  }
+  catch(e){
+    throw e;
+  }
+
 }
 
 
@@ -61,19 +145,259 @@ export async function publishEventToChain(eventManagerAddress: string, name: str
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
-  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const signerAddress = await signer.getAddress();
 
-  const txReceipt = await(await eventManagerContract.createEvent(name, maxAttendees, signerAddress, requiredDai)).wait();
-  // TODO: Error handling
-  const eventCreatedEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
-    event => event.eventSignature == eventManagerContract.interface.events.EventCreated.signature
-  ))[0]);
+    const txReceipt = await(await eventManagerContract.createEvent(name, maxAttendees, signerAddress, requiredDai)).wait();
+    // TODO: Error handling
+    const eventCreatedEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.EventCreated.signature
+    ))[0]);
 
-  return {
-    eventId: `${eventManagerAddress}-${parseInt(ethers.utils.formatUnits(eventCreatedEvent.values.index, 0))}`,
-    organizer: eventCreatedEvent.values.publisher,
-    name: name,
-    state: 1
+    return {
+      eventId: `${eventManagerAddress}-${parseInt(ethers.utils.formatUnits(eventCreatedEvent.values.index, 0))}`,
+      organizer: eventCreatedEvent.values.publisher,
+      name: name,
+      state: 1
+    }
   }
+  catch(e){
+    throw e;
+  }
+
+}
+
+// Controls
+
+export async function startEventTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  try{
+    const signerAddress = await signer.getAddress();
+
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.startEvent(eventIndex)).wait();
+    // TODO: Error handling
+    const eventStartedEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.EventStarted.signature
+    ))[0]);
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+export async function endEventTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  try{
+    const signerAddress = await signer.getAddress();
+
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.endEvent(eventIndex)).wait();
+    // TODO: Error handling
+    const eventConcludedEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.EventConcluded.signature
+    ))[0]);
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+export async function cancelEventTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  try{
+    const signerAddress = await signer.getAddress();
+
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.cancelEvent(eventIndex)).wait();
+    // TODO: Error handling
+    const eventConcludedEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.EventConcluded.signature
+    ))[0]);
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+
+export async function changeEventLimitTx(eventId: string, limit: number) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+
+  try{
+    const limitBn = ethers.utils.bigNumberify(limit);
+    const signerAddress = await signer.getAddress();
+
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const txReceipt = await(await eventManagerContract.changeParticipantLimit(eventIndex, limitBn)).wait();
+    return;
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+
+export async function manualConfirmAttendeesTx(eventId: string, attendees: string[]) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.organiserConfirmAttendance(eventIndex, attendees)).wait();
+    // TODO: Error handling
+    const memberAttendedEvents = await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.MemberAttended.signature
+    )).map(log => eventManagerContract.interface.parseLog(log));
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+
+export async function rsvpTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.rsvp(eventIndex)).wait();
+    // TODO: Error handling
+    const memberRegisteredEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.MemberRegistered.signature
+    ))[0]);
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+export async function cancelRsvpTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.cancelRsvp(eventIndex)).wait();
+    // TODO: Error handling
+    const memberCancelledEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.MemberCancelled.signature
+    ))[0]);
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+export async function confirmAttendanceTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+
+    const txReceipt = await(await eventManagerContract.confirmAttendance(eventIndex)).wait();
+    // TODO: Error handling
+    const memberAttendedEvent = eventManagerContract.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == eventManagerContract.interface.events.MemberAttended.signature
+    ))[0]);
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
+}
+
+export async function claimGiftTx(eventId: string) {
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  const signerAddress = await signer.getAddress();
+  try{
+    const eventManagerAddress = eventId.split('-')[0];
+    const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
+
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+
+    const txReceipt = await(await eventManagerContract.claimGift(signerAddress, eventIndex)).wait();
+    // TODO: Error handling
+
+    return
+  }
+  catch(e){
+    throw e;
+  }
+
 }

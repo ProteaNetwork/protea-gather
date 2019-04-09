@@ -6,12 +6,17 @@ interface IEvent{
   eventId: string; // eventManagerAddress-eventIndex
 
   eventManagerAddress: string;
+  membershipManagerAddress: string;
   organizer: string;
 
   attendees: string[];
   maxAttendees: number
   requiredDai: number
   state: number;
+  totalTokensStaked: number;
+  gift: number;
+
+  confirmedAttendees: string[];
 
   name: string;
   bannerImage: string;
