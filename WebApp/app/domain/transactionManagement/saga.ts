@@ -1,37 +1,26 @@
 import { takeLatest, put, race, take, fork, call } from "redux-saga/effects";
-import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction } from "./actions";
-import * as DaiContractAbi from "../../../../Blockchain/build/PseudoDaiToken.json";
-import { ethers } from "ethers";
+import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction } from "./actions";
+import { checkBalancesOnChain, mintDai } from "./chainInteractions";
+import { getAllCommunitiesAction } from "domain/communities/actions";
+import { delay } from "redux-saga/effects";
 
-// Ethers standard event filter type is missing the blocktags
-import { BlockTag } from 'ethers/providers/abstract-provider';
-
-export declare type EventFilter = {
-  address?: string;
-  topics?: Array<string>;
-  fromBlock?: BlockTag;
-  toBlock?: BlockTag
-};
-// Blockchain
-async function checkBalancesOnChain() {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
-
-  const daiBalance = parseFloat(ethers.utils.formatUnits((await daiContract.balanceOf(signer.getAddress())), 18));
-  const ethBalance = parseFloat(ethers.utils.formatEther(await signer.getBalance()));
-  return {
-    daiBalance: daiBalance,
-    ethBalance: ethBalance,
-  };
-}
 
 
 // Generators
 // Meta
 export function* refreshBalances(){
-  const newBalances = yield call(checkBalancesOnChain);
+  let newBalances = yield call(checkBalancesOnChain);
+  if(newBalances.daiBalance == 0){
+    yield put(setPendingState(true));
+    yield put(setRemainingTxCountAction(1));
+    yield put(setTxContextAction(`Setting up with pseudo dai`));
+    yield call(mintDai);
+    yield put(setPendingState(true));
+    yield put(setRemainingTxCountAction(0));
+    newBalances = yield call(checkBalancesOnChain);
+
+
+  }
   yield put(setBalancesAction(newBalances));
 }
 
@@ -44,7 +33,12 @@ export function* toggleTXPendingFlag(action) {
       success: take(action.type.replace('TX_REQUEST', 'TX_SUCCESS')),
       failure: take(action.type.replace('TX_REQUEST', 'TX_FAILURE'))
     })
-    yield put(setTxContextAction(`` ));
+    yield put(setTxContextAction(`Updating data from the chain`));
+    // TODO: Automatic update of previously looked up event & community
+    yield delay(5000);
+    yield put(getAllCommunitiesAction());
+    yield delay(2000);
+
     yield put(refreshBalancesAction())
   } catch (error) {
   } finally {

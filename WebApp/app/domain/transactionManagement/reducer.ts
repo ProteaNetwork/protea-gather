@@ -15,6 +15,7 @@ export const initialState: DomainState = {
   txPending: false,
   daiBalance: 0,
   ethBalance: 0,
+  ethAddress: "0x",
   txRemaining: 0,
   txContext: ''
 };

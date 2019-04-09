@@ -7,6 +7,7 @@ interface TransactionManagementState {
   txPending: boolean;
   daiBalance: number;
   ethBalance: number;
+  ethAddress: string;
   txRemaining: number;
   txContext: string;
 }

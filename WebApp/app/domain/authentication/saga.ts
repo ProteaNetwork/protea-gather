@@ -9,6 +9,8 @@ import { getPermit as getPermitApi, login } from '../../api/api';
 import * as userProfileActions from '../userProfile/actions';
 import * as authenticationActions from './actions';
 import ActionTypes from './constants';
+import { refreshBalances } from 'domain/transactionManagement/saga';
+import { refreshBalancesAction } from 'domain/transactionManagement/actions';
 
 export function* getPermit() {
   const { web3, ethereum } = window as any;
@@ -68,7 +70,7 @@ export function* refreshTokenPoller() {
     // Only refresh the token when it is nearing expiry.
     if ((Date.now() / 1000) + (delayDuration + 1) > decodedToken.exp) {
       // console.log(`Token is expiring soon. Refreshing...`);
-      yield getAccessToken(signedMessage, ethAddress);
+      yield call(getAccessToken, signedMessage, ethAddress);
       // console.log(`access token updated`);
     } else {
       // console.log(`token not refreshed, going to sleep for ${delayDuration}`);
@@ -86,6 +88,7 @@ export function* loginFlow() {
       yield call(getAccessToken, response, ethereum.selectedAddress);
       yield put(userProfileActions.getUserProfile.request());
       yield fork(refreshTokenPoller);
+      yield put(refreshBalancesAction());
       yield call(forwardTo, '/dashboard'); // TODO: have this only redirect when on log in
     } catch (error) {
       yield put(authenticationActions.authenticate.failure(error.message));

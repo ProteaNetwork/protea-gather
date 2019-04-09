@@ -7,9 +7,6 @@ export interface Event {
   eventId: string;
   eventManagerAddress: string;
   organizer: string;
-  maxAttendees: number
-  requiredDai: number
-  state: number;
 
   name: string;
   bannerImage: AttachmentDocument | ObjectId;
@@ -24,9 +21,6 @@ export const EventSchema = new Schema({
   eventManagerAddress: { type: String, required: true },
   organizer: {type: String, required: true },
   // attendees: [{type: String, required: false }],
-  maxAttendees: {type: Number, required: true},
-  requiredDai: {type: Number, required: true},
-  state: {type: Number, required: true},
   bannerImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
 
   name: { type: String, required: true },

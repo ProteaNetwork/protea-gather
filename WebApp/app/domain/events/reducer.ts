@@ -37,7 +37,7 @@ function eventsReducer(state: DomainState = initialState, action: DomainActions 
         ...state,
         [action.payload.eventId]: {
           ...state[action.payload.eventId],
-          memberState: action.payload.memberState,
+          ...action.payload,
         }
       }
     default:

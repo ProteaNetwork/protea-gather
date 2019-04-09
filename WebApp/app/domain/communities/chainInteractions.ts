@@ -24,29 +24,39 @@ export async function checkTransferApprovalState(tbcAddress: string){
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
   const signerAddress = await signer.getAddress();
+  try{
+    const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
 
-  const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
-
-  const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);
-  return approval.gt(ethers.utils.parseUnits("2", 18))
+    const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);
+    return approval.gt(ethers.utils.parseUnits("2", 18))
+  }
+  catch(e){
+    throw e;
+  }
 }
 
 export async function checkUserStateOnChain(membershipManagerAddress: string) {
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
-  const signerAddress = await signer.getAddress();
+  try{
+    const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const signerAddress = await signer.getAddress();
 
-  const memberstate = await membershipManager.getMembershipStatus(signerAddress);
+    const memberstate = await membershipManager.getMembershipStatus(signerAddress);
 
 
-  return {
-    isMember: parseInt(ethers.utils.formatUnits(memberstate[0],0))> 0 ? true : false,
-    availableStake: ethers.utils.formatUnits(memberstate[2],18),
-    memberSince: new Date(parseInt(ethers.utils.formatUnits(memberstate[0],0)) * 1000)
-  };
-  // TODO: To increase the validity of this, if the balance is zero, read the staking logs to see if user is just active;
+    return {
+      isMember: parseInt(ethers.utils.formatUnits(memberstate[0],0))> 0 ? true : false,
+      availableStake: ethers.utils.formatUnits(memberstate[2],18),
+      memberSince: new Date(parseInt(ethers.utils.formatUnits(memberstate[0],0)) * 1000)
+    };
+    // TODO: To increase the validity of this, if the balance is zero, read the staking logs to see if user is just active;
+
+  }
+  catch(e){
+    throw e;
+  }
 
 }
 
@@ -54,31 +64,37 @@ export async function getCommunitiesFromChain() {
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+  try{
+    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
 
-  const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, null);
-  filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
-  const communities = (await provider.getLogs(filterCommunitiesCreated)).map(e => {
-    const parsedLog = (communityFactory.interface.parseLog(e));
-    return {
-      tbcAddress: parsedLog.values.tokenManager,
-      eventManagerAddress: parsedLog.values.utilities[0],
-      membershipManagerAddress: parsedLog.values.membershipManager
-    }
-  });
-  return communities
+    const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, null);
+    filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
+    const communities = (await provider.getLogs(filterCommunitiesCreated)).map(e => {
+      const parsedLog = (communityFactory.interface.parseLog(e));
+      return {
+        tbcAddress: parsedLog.values.tokenManager,
+        eventManagerAddress: parsedLog.values.utilities[0],
+        membershipManagerAddress: parsedLog.values.membershipManager
+      }
+    });
+    return communities
+  }
+  catch(e){
+    throw e;
+  }
+
 }
 
 export async function getCommunityFromChain(tbcAddress: string) {
   const { web3, ethereum } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
-
-  const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, tbcAddress);
-  filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
 
   try{
+    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+
+    const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, tbcAddress);
+    filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
     const parsedLog = communityFactory.interface.parseLog((await provider.getLogs(filterCommunitiesCreated))[0]);
     return {
       tbcAddress: parsedLog.values.tokenManager,
@@ -87,7 +103,7 @@ export async function getCommunityFromChain(tbcAddress: string) {
     }
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -95,13 +111,13 @@ export async function getDaiValueMint(tbcAddress: string, tokenVolume: BigNumber
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     return (await tbcContract.priceToMint(tokenVolume));
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -109,13 +125,13 @@ export async function getDaiValueBurn(tbcAddress: string, tokenVolume: BigNumber
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     return (await tbcContract.rewardForBurn(tokenVolume));
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -123,14 +139,14 @@ export async function getTokenVolumeBuy(tbcAddress: string, daiValue: BigNumber)
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const tokenVolume = await tbcContract.colateralToTokenBuying(daiValue);
     return tokenVolume;
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -138,14 +154,14 @@ export async function getTokenVolumeSell(tbcAddress: string, daiValue: BigNumber
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const tokenVolume = await tbcContract.colateralToTokenSelling(daiValue);
     return tokenVolume;
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -153,15 +169,15 @@ export async function getTokenBalance(tbcAddress: string){
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
   const signerAddress = await signer.getAddress();
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const tokenVolume = await tbcContract.balanceOf(signerAddress);
     return tokenVolume;
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -170,19 +186,25 @@ export async function publishCommunityToChain(name: string, tokenSymbol: string,
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
-  const signerAddress = await signer.getAddress();
 
-  const txReceipt = await(await communityFactory.createCommunity(name, tokenSymbol, signerAddress, gradientDenominator, contributionRate)).wait();
-  // TODO: Error handling
-  const communityCreatedEvent = communityFactory.interface.parseLog(await(txReceipt.events.filter(
-    event => event.eventSignature == communityFactory.interface.events.CommunityCreated.signature
-  ))[0]);
+  try{
+    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const signerAddress = await signer.getAddress();
 
-  return {
-    tbcAddress: communityCreatedEvent.values.tokenManager,
-    membershipManagerAddress: communityCreatedEvent.values.membershipManager,
-    eventManagerAddress: communityCreatedEvent.values.utilities[0]
+    const txReceipt = await(await communityFactory.createCommunity(name, tokenSymbol, signerAddress, gradientDenominator, contributionRate)).wait();
+    // TODO: Error handling
+    const communityCreatedEvent = communityFactory.interface.parseLog(await(txReceipt.events.filter(
+      event => event.eventSignature == communityFactory.interface.events.CommunityCreated.signature
+    ))[0]);
+
+    return {
+      tbcAddress: communityCreatedEvent.values.tokenManager,
+      membershipManagerAddress: communityCreatedEvent.values.membershipManager,
+      eventManagerAddress: communityCreatedEvent.values.utilities[0]
+    }
+  }
+  catch(e){
+    throw e;
   }
 }
 
@@ -190,19 +212,18 @@ export async function updateTransferApproval(unlock: boolean, tbcAddress: string
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
 
   const targetValue = unlock ? ethers.constants.MaxUint256 : ethers.constants.Zero
 
   try{
+    const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await daiContract.approve(tbcAddress, targetValue)).wait();
     // TODO: check event to confirm
     return true;
   }
   catch(error){
-    return false;
+    throw error;
   }
-
 }
 
 // Mint & Burn functions
@@ -210,10 +231,10 @@ export async function mintTokens(tokenVolume: BigNumber, tbcAddress: string){
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
   const signerAddress = await signer.getAddress();
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await tbcContract.mint(signerAddress, tokenVolume)).wait()
     const mintTransferEvents = (await(txReceipt.events.filter(
       event => event.eventSignature == tbcContract.interface.events.Transfer.signature
@@ -223,7 +244,7 @@ export async function mintTokens(tokenVolume: BigNumber, tbcAddress: string){
     return mintEvent.values.value;
   }
   catch(error){
-    return false;
+    throw error;
   }
 }
 
@@ -231,10 +252,10 @@ export async function burnTokens(tokenVolume: BigNumber, tbcAddress: string){
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
   const signerAddress = await signer.getAddress();
 
   try{
+    const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await tbcContract.burn(tokenVolume)).wait()
     const burntTransferEvents = (await(txReceipt.events.filter(
       event => event.eventSignature == tbcContract.interface.events.Transfer.signature
@@ -244,6 +265,6 @@ export async function burnTokens(tokenVolume: BigNumber, tbcAddress: string){
     return burnEvent.values.value;
   }
   catch(error){
-    return false;
+      throw error;
   }
 }

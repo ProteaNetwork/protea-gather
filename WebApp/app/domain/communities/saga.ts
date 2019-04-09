@@ -14,6 +14,7 @@ import { checkStatus } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { increaseMembership } from "domain/membershipManagement/saga";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
+import { retry } from "redux-saga/effects";
 
 export declare type EventFilter = {
   address?: string;
@@ -72,18 +73,17 @@ export function* createCommunity() {
       yield put(setTxContextAction(`Publishing your community to the chain` ));
       newCommunity = {
         ...newCommunity,
-        ...(yield call(publishCommunityToChain, newCommunity.name, newCommunity.tokenSymbol, newCommunity.gradientDenominator, newCommunity.contributionRate))
+        ...(yield retry(5, 2000, publishCommunityToChain, newCommunity.name, newCommunity.tokenSymbol, newCommunity.gradientDenominator, newCommunity.contributionRate))
       }
 
       yield put(setRemainingTxCountAction(2));
       yield put(setTxContextAction(`Registering the events management module` ));
-      yield delay(500);
-      yield call(registerUtility, newCommunity.eventManagerAddress, newCommunity.membershipManagerAddress)
+
+      yield retry(5, 2000, registerUtility, newCommunity.eventManagerAddress, newCommunity.membershipManagerAddress)
 
       yield put(setRemainingTxCountAction(1));
       yield put(setTxContextAction(`Setting reputation tracking on the events module` ));
-      yield delay(500);
-      yield call(setReputationReward,
+      yield retry(5, 2000, setReputationReward,
         newCommunity.eventManagerAddress,
         newCommunity.membershipManagerAddress,
         ethers.utils.parseUnits('0', 0),
@@ -94,7 +94,6 @@ export function* createCommunity() {
       yield put(setTxContextAction(`Storing images & meta data`));
       yield call(createCommunityInDB, newCommunity);
 
-      yield delay(500);
       yield put(createCommunityAction.success());
       yield call(forwardTo, `/communities/${newCommunity.tbcAddress}`);
     }
@@ -110,28 +109,25 @@ export function* joinCommunity(){
     try{
       yield put(setRemainingTxCountAction(3));
       yield put(setTxContextAction("Unlocking Dai transfers to the community"));
-      yield call(updateTransferApproval, true, communityData.tbcAddress);
-
-      yield delay(500);
+      yield retry(5, 2000, updateTransferApproval, true, communityData.tbcAddress)
 
       // mint
       yield put(setRemainingTxCountAction(2));
       yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
-      const tokenVolume = yield call(getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
-      const mintedVolume = yield call(mintTokens, tokenVolume, communityData.tbcAddress);
+      const tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
+      const mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
 
-      yield delay(500);
 
       // stake
       yield put(setRemainingTxCountAction(1));
       yield put(setTxContextAction(`Reserving community tokens for membership.`));
-      const mintedDaiValue = yield call(getDaiValueBurn, communityData.tbcAddress, mintedVolume);
-      yield call(increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
+      const mintedDaiValue = yield retry(5, 2000, getDaiValueBurn, communityData.tbcAddress, mintedVolume);
+      yield retry(5, 2000, increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
 
       yield put(setRemainingTxCountAction(0));
       yield put(joinCommunityAction.success());
-      yield delay(1000);
-      yield put(getCommunityAction.request(communityData.tbcAddress));
+      // yield delay(1500);
+      // yield put(getCommunityAction.request(communityData.tbcAddress));
 
     }
     catch(e){
