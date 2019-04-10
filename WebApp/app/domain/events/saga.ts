@@ -23,6 +23,17 @@ export function* checkMemberState(eventId: string, membershipManagerAddress: str
   yield put(statusUpdated({eventId: eventId, memberState: memberState, stakedTokens:stakedTokens, totalTokensStaked: totalTokensStaked}));
 }
 
+export function* populateCommunityEvents(community: ICommunity) {
+  let events: IEvent[] = yield call(getEventsTx, community.eventManagerAddress)
+  events = events.map(event => {
+    event.membershipManagerAddress = community.membershipManagerAddress
+    return event;
+  })
+  yield all(events.map(event => (put(saveEvent(event)))));
+  yield all(events.map((event: IEvent) => (put(checkStatus({eventId: event.eventId, membershipManagerAddress: event.membershipManagerAddress})))));
+  yield all(events.map(event => (put(getEventMetaAction.request(event.eventId)))));
+}
+
 export function* getEventMeta(requestData){
   try{
     const eventMeta = yield call(getEventMetaApi, requestData);
@@ -33,17 +44,10 @@ export function* getEventMeta(requestData){
   }
 }
 
-export function* populateCommunityEvents() {
+export function* populateCommunityEventsListener() {
   while(true){
     const community: ICommunity = (yield take(saveCommunity)).payload;
-    let events: IEvent[] = yield call(getEventsTx, community.eventManagerAddress)
-    events = events.map(event => {
-      event.membershipManagerAddress = community.membershipManagerAddress
-      return event;
-    })
-    yield all(events.map(event => (put(saveEvent(event)))));
-    yield all(events.map((event: IEvent) => (put(checkStatus({eventId: event.eventId, membershipManagerAddress: event.membershipManagerAddress})))));
-    yield all(events.map(event => (put(getEventMetaAction.request(event.eventId)))));
+    yield fork(populateCommunityEvents, community);
   }
 }
 
@@ -336,7 +340,7 @@ export function* claimGiftListener(){
 }
 
 export default function* root() {
-  yield fork(populateCommunityEvents);
+  yield fork(populateCommunityEventsListener);
   yield fork(checkMemberStateListener);
   yield fork(getEventMetaListener);
   yield fork(getEventListener);

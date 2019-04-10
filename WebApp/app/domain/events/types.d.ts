@@ -7,6 +7,7 @@ interface IEvent{
 
   eventManagerAddress: string;
   membershipManagerAddress: string;
+
   organizer: string;
 
   attendees: string[];

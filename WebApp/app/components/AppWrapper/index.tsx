@@ -71,6 +71,7 @@ const styles = theme => createStyles({
     flexGrow: 1,
     minHeight: '100vh',
     boxSizing: 'border-box',
+    maxWidth: "100%",
   },
   contentLoggedIn: {
     // padding: `${56 + theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`

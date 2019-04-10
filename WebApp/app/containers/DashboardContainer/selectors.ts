@@ -4,6 +4,8 @@ import { initialState } from './reducer';
 import { selectMyCommunties } from '../../domain/communities/selectors';
 import selectEventDomainRoot, { selectMyUpcomingEvents, selectMyPastEvents, selectMyActiveEvents, selectMyHostedEvents } from 'domain/events/selectors';
 import { IEvent } from 'domain/events/types';
+import { ICommunity } from 'domain/membershipManagement/types';
+import { makeSelectEthAddress } from 'containers/App/selectors';
 
 /**
  * Direct selector to the dashboardContainer state domain
@@ -12,14 +14,13 @@ import { IEvent } from 'domain/events/types';
 /**
  * Other specific selectors
  */
-const selectDiscoverEvents = createSelector(selectMyCommunties, selectEventDomainRoot,
-  (myCommunities, allEvents) => {
-    const eventManagers = (Object.values(myCommunities)).map(com => com.eventManagerAddress);
-    const eventsArray = Object.values(allEvents);
-    return eventsArray.filter((evt: IEvent) => eventManagers.includes(evt.eventManagerAddress)).filter(event => event.memberState == 0);
+const selectDiscoverEvents = createSelector(selectMyCommunties, selectEventDomainRoot, makeSelectEthAddress,
+  (myCommunities, allEvents, ethAddress): IEvent[] => {
+    const eventManagers = (Object.values(myCommunities)).map((com: ICommunity)=> com.eventManagerAddress);
+    const eventsArray: IEvent[] = Object.values(allEvents);
+    return eventsArray.filter((evt: IEvent) => eventManagers.includes(evt.eventManagerAddress)).filter((event: IEvent) => (event.memberState == 0 && event.organizer.toLowerCase() != ethAddress.toLowerCase()));
   }
 )
-
 
 /**
  * Default selector used by DashboardContainer

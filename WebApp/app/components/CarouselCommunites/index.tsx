@@ -1,6 +1,6 @@
 /**
  *
- * CarouselEvents
+ * CarouselCommunites
  *
  */
 
@@ -15,6 +15,8 @@ import Slider, { Settings as SliderSettings } from 'react-slick';
 import { compose } from 'redux';
 import { colors } from 'theme';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
+import CommunityCard from 'components/CommunityCard';
+import { ICommunity } from 'domain/communities/types';
 
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
@@ -28,14 +30,6 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   },
   label:{
     marginTop: 10
-  },
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'left',
-    padding: `${spacing.unit * 2}px ${spacing.unit * 2}px ${spacing.unit * 2}px`,
-    marginTop: `${spacing.unit * 2}px`,
-    marginBottom: `${spacing.unit * 2}px`,
   },
   innerCarousel: {
     marginTop: 20,
@@ -86,7 +80,7 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
 
 interface OwnProps {
   classes: any;
-  events: any[];
+  communities: ICommunity[];
   width: Breakpoint;
   label: string;
 }
@@ -129,8 +123,8 @@ function FabPrevious(props) {
   );
 }
 
-function CarouselEvents(props: OwnProps) {
-  const { classes, events, width, label } = props;
+function CarouselCommunites(props: OwnProps) {
+  const { classes, communities, width, label } = props;
 
   const getCarouselSlidesToShow = () => {
     if (isWidthUp('xl', width)) {
@@ -171,9 +165,9 @@ function CarouselEvents(props: OwnProps) {
       <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
       <Slider {...carouselSettings}>
         {
-          events && events.map(e => (
-            <div key={e.eventId}>
-              <EventCard {...e} />
+          communities && communities.map(c => (
+            <div key={c.tbcAddress}>
+              <CommunityCard {...c} />
             </div>
           ))
         }
@@ -185,4 +179,4 @@ function CarouselEvents(props: OwnProps) {
 export default compose(
   withStyles(styles, { withTheme: true }),
   withWidth(),
-)(CarouselEvents);
+)(CarouselCommunites);

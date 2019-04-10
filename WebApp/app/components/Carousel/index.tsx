@@ -1,21 +1,26 @@
 /**
  *
- * CarouselEvents
+ * Carousel
  *
  */
 
 import { Fab, Paper, Theme, Typography, withWidth } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
-// import Carousel from 'nuka-carousel';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
-import EventCard from 'components/EventCard';
-import React, { Fragment } from 'react';
+import React, { Fragment, ReactNode, ReactChild, FunctionComponent } from 'react';
 import Slider, { Settings as SliderSettings } from 'react-slick';
 import { compose } from 'redux';
 import { colors } from 'theme';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
+import { render } from 'enzyme';
 
+
+interface OwnProps {
+  classes: any;
+  width: Breakpoint;
+  label: string;
+}
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -28,14 +33,6 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   },
   label:{
     marginTop: 10
-  },
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'left',
-    padding: `${spacing.unit * 2}px ${spacing.unit * 2}px ${spacing.unit * 2}px`,
-    marginTop: `${spacing.unit * 2}px`,
-    marginBottom: `${spacing.unit * 2}px`,
   },
   innerCarousel: {
     marginTop: 20,
@@ -84,15 +81,9 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   },
 });
 
-interface OwnProps {
-  classes: any;
-  events: any[];
-  width: Breakpoint;
-  label: string;
-}
 
 function FabNext(props) {
-  const { className, style, onClick } = props;
+  const { className, style, onClick} = props;
   return (
     <Fab
     // className={className}
@@ -129,60 +120,57 @@ function FabPrevious(props) {
   );
 }
 
-function CarouselEvents(props: OwnProps) {
-  const { classes, events, width, label } = props;
-
-  const getCarouselSlidesToShow = () => {
-    if (isWidthUp('xl', width)) {
-      return 4;
-    }
-
-    if (isWidthUp('lg', width)) {
-      return 3;
-    }
-
-    if (isWidthUp('md', width)) {
-      return 2;
-    }
-
-    return 1;
-  };
+export class Carousel extends React.Component<OwnProps> {
 
 
-  const carouselSettings: SliderSettings = {
-    className: classes.innerCarousel,
-    // centerPadding: '60px',
-    arrows: true,
-    dots: true,
-    dotsClass: classes.carouselDots,
-    slidesToScroll: 1,
-    rows: 2,
-    slidesPerRow: getCarouselSlidesToShow(),
-    infinite: true,
-    centerMode: false,
-    prevArrow: <FabPrevious />,
-    nextArrow: <FabNext />,
-    appendDots: dots => (
-      <ul> {dots} </ul>
-    ),
-  };
-  return (
-    <Fragment>
-      <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
-      <Slider {...carouselSettings}>
-        {
-          events && events.map(e => (
-            <div key={e.eventId}>
-              <EventCard {...e} />
-            </div>
-          ))
-        }
-      </Slider>
-    </Fragment>
-  );
+  render(){
+    const { classes, children, width } = this.props;
+    const getCarouselSlidesToShow = () => {
+      if (isWidthUp('xl', width)) {
+        return 4;
+      }
+
+      if (isWidthUp('lg', width)) {
+        return 3;
+      }
+
+      if (isWidthUp('md', width)) {
+        return 2;
+      }
+
+      return 1;
+    };
+
+
+    const carouselSettings: SliderSettings = {
+      className: classes.innerCarousel,
+      // centerPadding: '60px',
+      arrows: true,
+      dots: true,
+      dotsClass: classes.carouselDots,
+      // slidesToScroll: 1,
+      rows: 2,
+      slidesToShow: getCarouselSlidesToShow(),
+      infinite: false,
+      centerMode: false,
+      prevArrow: <FabPrevious />,
+      nextArrow: <FabNext />,
+      appendDots: dots => (
+        <ul> {dots} </ul>
+      ),
+    };
+    return (
+      <Fragment>
+        <Slider {...carouselSettings}>
+          {children}
+        </Slider>
+      </Fragment>
+    );
+  }
+
 }
 
 export default compose(
   withStyles(styles, { withTheme: true }),
   withWidth(),
-)(CarouselEvents);
+)(Carousel);

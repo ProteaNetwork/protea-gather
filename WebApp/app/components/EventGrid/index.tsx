@@ -62,7 +62,7 @@ function EventGrid(props: Props) {
             <ListSubheader component="div">Events</ListSubheader>
           </GridListTile>
           {events.map(e => (
-            <GridListTile key={e.eventID} className={classes.gridListTile}>
+            <GridListTile key={e.eventId} className={classes.gridListTile}>
               <EventCard {...e} />
             </GridListTile>
           ))}

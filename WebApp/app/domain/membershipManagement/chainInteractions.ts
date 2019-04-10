@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { BigNumber } from "ethers/utils";
 import { BlockTag } from 'ethers/providers/abstract-provider';
 import { blockchainResources } from "blockchainResources";
+import { getDaiValueBurn } from "domain/communities/chainInteractions";
 
 export declare type EventFilter = {
   address?: string;
@@ -97,7 +98,7 @@ export async function getAvailableStake(membershipManagerAddress: string){
 
 }
 
-export async function checkUserStateOnChain(membershipManagerAddress: string) {
+export async function checkUserStateOnChain(membershipManagerAddress: string, tbcAddress: string) {
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
@@ -107,10 +108,11 @@ export async function checkUserStateOnChain(membershipManagerAddress: string) {
 
     const memberstate = await membershipManager.getMembershipStatus(signerAddress);
 
+    const daiValue = await getDaiValueBurn(tbcAddress,memberstate[2]);
 
     return {
       isMember: parseInt(ethers.utils.formatUnits(memberstate[0],0))> 0 ? true : false,
-      availableStake: ethers.utils.formatUnits(memberstate[2],18),
+      availableStake: ethers.utils.formatUnits(daiValue,18),
       memberSince: new Date(parseInt(ethers.utils.formatUnits(memberstate[0],0)) * 1000)
     };
     // TODO: To increase the validity of this, if the balance is zero, read the staking logs to see if user is just active;

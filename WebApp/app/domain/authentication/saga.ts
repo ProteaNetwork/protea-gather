@@ -18,8 +18,8 @@ export function* getPermit() {
 
   const signer = yield provider.getSigner();
   const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
-      if(accountArray.code && accountArray.code == 4001){
-        throw("Connection rejected");
+  if(accountArray.code && accountArray.code == 4001){
+    throw("Connection rejected");
   }
 
   try {
@@ -54,7 +54,10 @@ export function* refreshTokenPoller() {
     const signedMessage = yield select((state: ApplicationRootState) => state.authentication.signedPermit);
     const apiToken = yield select((state: ApplicationRootState) => state.authentication.accessToken);
     const { ethereum } = window as any;
-    const ethAddress = ethereum.selectedAddress; // Use the window address in case the address has changed and we somehow miss the onChange event.
+    const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
+    if(accountArray.code && accountArray.code == 4001){
+      throw("Connection rejected");
+    }
 
     let delayDuration;
     let decodedToken;
@@ -62,7 +65,7 @@ export function* refreshTokenPoller() {
       decodedToken = yield call(jwtDecode, apiToken);
     } catch (error) {
       // console.log(`Unable to decode token. Refreshing...`);
-      const newToken = yield call(getAccessToken, signedMessage, ethAddress);
+      const newToken = yield call(getAccessToken, signedMessage, accountArray[0]);
       decodedToken = yield call(jwtDecode, newToken);
     }
 
@@ -70,7 +73,7 @@ export function* refreshTokenPoller() {
     // Only refresh the token when it is nearing expiry.
     if ((Date.now() / 1000) + (delayDuration + 1) > decodedToken.exp) {
       // console.log(`Token is expiring soon. Refreshing...`);
-      yield call(getAccessToken, signedMessage, ethAddress);
+      yield call(getAccessToken, signedMessage, accountArray[0]);
       // console.log(`access token updated`);
     } else {
       // console.log(`token not refreshed, going to sleep for ${delayDuration}`);
@@ -85,7 +88,11 @@ export function* loginFlow() {
 
     try {
       const response = yield call(getPermit);
-      yield call(getAccessToken, response, ethereum.selectedAddress);
+      const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
+      if(accountArray.code && accountArray.code == 4001){
+        throw("Connection rejected");
+      }
+      yield call(getAccessToken, response, accountArray[0]);
       yield put(userProfileActions.getUserProfile.request());
       yield fork(refreshTokenPoller);
       yield put(refreshBalancesAction());
@@ -131,6 +138,11 @@ export const addressChangeEventChannel = eventChannel(emit => {
 export function* addressChangeListener() {
   while (true) {
     const newAddress = yield take(addressChangeEventChannel);
+    const { ethereum } = window as any;
+    const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
+    if(accountArray.code && accountArray.code == 4001){
+      throw("Connection rejected");
+    }
     yield put(authenticationActions.setEthAddress({ethAddress : newAddress}));
     yield put(authenticationActions.logOut());
   }

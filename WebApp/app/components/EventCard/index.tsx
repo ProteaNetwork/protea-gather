@@ -11,6 +11,9 @@ import Chip from '@material-ui/core/Chip';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import apiUrlBuilder from 'api/apiUrlBuilder';
+import Blockies from 'react-blockies';
+import { colors } from 'theme';
 
 // import styled from 'styles/styled-components';
 const styles = ({ palette, spacing }: Theme) => createStyles({
@@ -19,17 +22,27 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
     height: 370,
   },
   cardContent: {
-    backgroundColor: palette.secondary.light,
+    backgroundColor: colors.proteaBranding.blackBg,
+    color: colors.white
   },
   media: {
     width: '100%',
     height: 300,
+    overflow: 'hidden',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
+    '& canvas':{
+      objectPosition: "center",
+      objectFit: "cover",
+      minWidth: "100%",
+    }
   },
   chip: {
-    margin: spacing.unit,
-    float: 'left',
+    backgroundColor: colors.proteaBranding.blackBg,
+    color: colors.white,
+    position: 'absolute',
+    top: 15,
+    left: 15
   },
   header: {
     width: '100%',
@@ -40,40 +53,79 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
   link: {
     textDecoration: 'none',
   },
+  chipImage:{
+    overflow: 'hidden',
+    borderRadius: "60px",
+    marginLeft: 3
+  },
 });
 
 export interface OwnProps {
   classes: any;
-  eventName: string;
-  eventID: string;
-  image: string;
+  name: string;
+  eventId: string;
+  bannerImage: string;
   comLogo: string;
   displayCommunityName: boolean;
-  onClick(id: string): void;
 }
 
 
 function EventCard(props: OwnProps) {
-  const { classes, eventName, eventID, image, comLogo, displayCommunityName = true } = props;
+  const { classes, name, eventId, bannerImage, comLogo, displayCommunityName = true } = props;
   return (
     <Card className={classes.card}>
-      <Link to="/event" className={classes.link} >
-        <CardActionArea onClick={() => props.onClick(eventID)}>
+      <Link to={`/events/${eventId}`} className={classes.link} >
+        <CardActionArea>
           {displayCommunityName &&
-            <Chip
-              avatar={<Avatar alt="Community Name" src={comLogo} />}
-              label="Community Name"
+            (comLogo && <Chip
+              avatar={<Avatar alt={name} src={apiUrlBuilder.attachmentStream(comLogo)} />}
+              label={`${name}`}
               className={classes.chip}
+              />
+            )
+            ||
+            displayCommunityName && !comLogo &&
+            <Chip
+              label={`${name}`}
+              className={classes.chip}
+              avatar={<Blockies
+                seed={eventId}
+                size={13}
+                scale={2}
+                color={colors.proteaBranding.orange}
+                bgColor={colors.white}
+                spotColor={colors.proteaBranding.pink}
+                className={classes.chipImage}
+              />}
+
             />
+
+
           }
-          <CardMedia
+          {
+            bannerImage && <CardMedia
             className={classes.media}
-            image={image}
-            title={eventName}
+            image={apiUrlBuilder.attachmentStream(bannerImage)}
+            title={name}
           />
+          }
+          {
+            !bannerImage && <section className={classes.media}>
+              <Blockies
+                seed={eventId}
+                size={105}
+                scale={4}
+                color={colors.proteaBranding.orange}
+                bgColor={colors.white}
+                spotColor={colors.proteaBranding.pink}
+
+              />
+            </section>
+          }
+
           <CardContent className={classes.cardContent}>
-            <Typography className={classes.header} gutterBottom variant="h5" component="h2">
-              {eventName}
+            <Typography  color="inherit"className={classes.header} gutterBottom variant="h5" component="h2">
+              {name}
             </Typography>
           </CardContent>
         </CardActionArea>
