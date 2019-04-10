@@ -63,7 +63,7 @@ function CommunityGrid(props: Props) {
             <ListSubheader component="div">Communities</ListSubheader>
           </GridListTile>
           {communities.map(c => (
-            <GridListTile key={c.id} className={classes.gridListTile}>
+            <GridListTile key={c.tbcAddress} className={classes.gridListTile}>
               <CommunityCard {...c} />
             </GridListTile>
           ))}

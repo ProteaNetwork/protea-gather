@@ -14,7 +14,7 @@ import { retry } from "redux-saga/effects";
 
 // Meta
 export function* checkIfUserIsMember(membershipManagerAddress: string, tbcAddress: string){
-  const memberData = yield call(checkUserStateOnChain, membershipManagerAddress);
+  const memberData = yield call(checkUserStateOnChain, membershipManagerAddress, tbcAddress);
   const approvalState = yield call(checkTransferApprovalState, tbcAddress);
   const liquidTokens =  ethers.utils.formatUnits(yield call(getTokenBalance, tbcAddress), 18);
   const isAdmin =  yield call(checkAdminState, membershipManagerAddress);

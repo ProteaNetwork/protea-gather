@@ -8,6 +8,9 @@ import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography } from 
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
+import apiUrlBuilder from 'api/apiUrlBuilder';
+import { colors } from 'theme';
+import Blockies from 'react-blockies';
 
 const styles = ({ palette }: Theme) => createStyles({
   card: {
@@ -15,13 +18,20 @@ const styles = ({ palette }: Theme) => createStyles({
     height: 'auto',
   },
   cardContent: {
-    backgroundColor: palette.secondary.light,
+    backgroundColor: colors.proteaBranding.blackBg,
+    color: colors.white
   },
   media: {
     width: '100%',
     height: 300,
+    overflow: 'hidden',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
+    '& canvas':{
+      objectPosition: "center",
+      objectFit: "cover",
+      minWidth: "100%",
+    }
   },
   header: {
     width: 400,
@@ -29,15 +39,16 @@ const styles = ({ palette }: Theme) => createStyles({
   },
   link: {
     textDecoration: 'none',
+    color: colors.white
   },
 });
 
 export interface OwnProps {
   name: string;
-  tokens: number;
-  logo: string;
-  id: string;
-  onClick(id: string): void;
+  availableStake: number;
+  bannerImage: string;
+  comLogo: string;
+  tbcAddress: string;
 }
 
 interface StyleProps {
@@ -47,21 +58,36 @@ interface StyleProps {
 type Props = OwnProps & StyleProps;
 
 function CommunityCard(props: Props) {
-  const { classes, tokens, logo, name, id } = props;
+  const { classes, availableStake, bannerImage, name,  tbcAddress } = props;
   return (
     <Card className={classes.card}>
-      <Link to="/community" className={classes.link} >
-        <CardActionArea onClick={() => props.onClick(id)} >
-          <CardMedia
+      <Link to={`/communities/${tbcAddress}`} className={classes.link} >
+        <CardActionArea>
+          {
+            bannerImage && <CardMedia
             className={classes.media}
-            image={logo}
+            image={apiUrlBuilder.attachmentStream(bannerImage)}
             title={name} />
+          }
+          {
+            !bannerImage && <section className={classes.media}>
+              <Blockies
+                seed={tbcAddress}
+                size={105}
+                scale={4}
+                color={colors.proteaBranding.orange}
+                bgColor={colors.white}
+                spotColor={colors.proteaBranding.pink}
+
+              />
+            </section>
+          }
           <CardContent className={classes.cardContent}>
-            <Typography className={classes.header} variant="h5" component="h2" gutterBottom>
+            <Typography color="inherit" className={classes.header} variant="h5" component="h2" gutterBottom>
               {name}
             </Typography>
-            <Typography color="textSecondary">
-              Tokens: {tokens}
+            <Typography color="inherit">
+              Available Stake: {availableStake} DAI
             </Typography>
           </CardContent>
         </CardActionArea>

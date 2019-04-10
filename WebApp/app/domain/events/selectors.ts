@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 import { initialState } from './reducer';
+import { IEvent } from './types';
+import { makeSelectEthAddress } from 'containers/App/selectors';
 
 /**
  * Direct selector to the EventsDomain
@@ -10,60 +12,50 @@ const selectEventsDomain = (state: ApplicationRootState) => {
   return state ? state.events : {};
 };
 
-const selectEthAddress = (state: ApplicationRootState) => {
-  return state ? state.authentication.ethAddress : "";
-}
-
 /**
  * Other specific selectors
  */
 export const selectMyEvents = createSelector(selectEventsDomain,
   (allEvents) => {
-    const arr = Object.values(allEvents);
-    return arr.filter(event => event.memberState > 0);
+    return (Object.values(allEvents).filter((event: IEvent) => event.memberState > 0));
   }
 )
 
 export const selectMyUpcomingEvents = createSelector(selectMyEvents,
   (allMyEvents) => {
-    const arr = Object.values(allMyEvents);
-    return arr.filter(event => event.state == 1);
+    return (Object.values(allMyEvents).filter((event: IEvent) => event.state == 1));
   }
 )
 
 export const selectMyActiveEvents = createSelector(selectMyEvents,
   (allMyEvents) => {
     const arr = Object.values(allMyEvents);
-    return arr.filter(event => event.state == 2);
+    return (Object.values(allMyEvents).filter((event: IEvent) => event.state == 2));
   }
 )
 
 export const selectMyPastEvents = createSelector(selectMyEvents,
   (allMyEvents) => {
-    const arr = Object.values(allMyEvents);
-    return arr.filter(event => event.state == 3);
+    return (Object.values(allMyEvents).filter((event: IEvent) => event.state == 3));
   }
 )
 
-export const selectMyHostedEvents = createSelector(selectMyEvents, selectEthAddress,
+export const selectMyHostedEvents = createSelector(selectMyEvents, makeSelectEthAddress,
   (allMyEvents, myEthAddress) => {
-    const arr = Object.values(allMyEvents);
-    return arr.filter(event => (event.state < 3 && event.organizer.toLowerCase() == myEthAddress)).map(event => event.eventId);
+    return (Object.values(allMyEvents).filter((event: IEvent) => (event.state < 3 && event.organizer.toLowerCase() == myEthAddress.toLowerCase())).map((event: IEvent) => event.eventId));
   }
 )
 
 // Notifications
 export const selectMyPendingAttendance = createSelector(selectMyEvents,
   (allMyEvents) => {
-    const arr = Object.values(allMyEvents);
-    return arr.filter(event => event.state == 2 && event.memberState == 1).map(event => event.eventId);
+    return (Object.values(allMyEvents).filter((event: IEvent) => event.state == 2 && event.memberState == 1).map((event: IEvent) => event.eventId));
   }
 )
 
 export const selectMyRemainingGifts = createSelector(selectMyEvents,
   (allMyEvents) => {
-    const arr = Object.values(allMyEvents);
-    return arr.filter(event => (event.state == 3 && event.memberState == 99) || (event.state == 4 && event.memberState == 1)).map(event => event.eventId);
+    return Object.values(allMyEvents).filter((event: IEvent) => (event.state == 3 && event.memberState == 99) || (event.state == 4 && event.memberState == 1)).map((event: IEvent) => event.eventId);
   }
 )
 

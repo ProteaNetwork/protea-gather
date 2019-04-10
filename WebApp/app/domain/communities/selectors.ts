@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 import { initialState } from './reducer';
+import { ICommunity } from './types';
 
 /**
  * Direct selector to the communitiesDomain
@@ -15,8 +16,7 @@ const selectCommunitiesDomain = (state: ApplicationRootState) => {
  */
 export const selectMyCommunties = createSelector(selectCommunitiesDomain,
   (allCommunities) => {
-    const arr = Object.values(allCommunities);
-    return arr.filter(com => com.isMember);
+    return (Object.values(allCommunities).filter((com: ICommunity) => com.isMember));
   }
 )
 

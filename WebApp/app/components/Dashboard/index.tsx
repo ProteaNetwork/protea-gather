@@ -9,16 +9,23 @@ import Slider, { Settings as SliderSettings } from 'react-slick';
 import { compose } from 'redux';
 import '../../css/slick-theme.css';
 import '../../css/slick.css';
+import { ICommunity } from 'domain/communities/types';
+import { IEvent } from 'domain/events/types';
+import { colors } from 'theme';
+import { ChevronRight, ChevronLeft } from '@material-ui/icons';
+import CarouselEvents from 'components/CarouselEvents';
+import Carousel from 'components/Carousel';
+import CarouselCommunites from 'components/CarouselCommunites';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
-    width: 'auto',
+    width: '100%',
+    maxWidth: '100vw',
+    boxSizing: 'border-box',
     display: 'block', // Fix IE 11 issue.
-    marginLeft: spacing.unit * 3,
-    marginRight: spacing.unit * 3,
+    padding: "20px",
     [breakpoints.up(400 + spacing.unit * 3 * 2)]: {
-      marginLeft: 'auto',
-      marginRight: 'auto',
+      padding: "20px",
     },
   },
   paper: {
@@ -44,135 +51,71 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   extendedIcon: {
     marginRight: spacing.unit,
   },
-  carouselButton: {
-    backgroundColor: 'orange',
-  },
-  innerCarousel: {
-    'marginTop': 20,
-    '& .slick-slide > * > * > *': {
-      width: 'calc(100% - 20px)',
-      margin: '0 auto',
-    },
-  },
-  carouselDots: {
-    'width': '100%',
-    'position': 'absolute',
-    'margin': 0,
-    'display': 'flex',
-    'flexDirection': 'row',
-    'justifyContent': 'center',
-    'alignItems': 'center',
-    'bottom': -15,
-    'padding': 0,
-    '& > li': {
-      'display': 'block',
-      'width': 10,
-      'height': 10,
-      'borderRadius': 20,
-      'overflow': 'hidden',
-      'backgroundColor': 'black',
-      'margin': '0 5px',
-      'opacity': 0.5,
-      'transitionDuration': '200ms',
-      '& > *': {
-        cursor: 'pointer',
-        margin: 0,
-        display: 'block',
-        height: '100%',
-        width: '100%',
-        padding: 0,
-      },
-      '&:hover': {
-        opacity: 1,
-      },
-    },
-  },
   headers: {
     marginBottom: `${spacing.unit * 2}px`,
   },
 });
 
-interface Props extends WithStyles<typeof styles> {
+interface OwnProps extends WithStyles<typeof styles> {
   classes: any;
   width: Breakpoint;
-  communities: any[];
-  events: any[];
+  myCommunities: ICommunity[],
+  myUpcomingEvents: IEvent[],
+  myPastEvents: IEvent[],
+  myActiveEvents: IEvent[],
+  myHostingEvents: IEvent[],
+  discoverEvents: IEvent[]
 }
 
-function FabNext(props) {
-  const { className, style, onClick } = props;
-  return (
-    <Fab
-      className={className}
-      style={{...style,
-              display: 'block',
-              position: 'absolute',
-              top: '50%',
-              transform: 'translate(-50%,-50%)',
-              right: '10px',
-              backgroundColor: 'orange'}}
-      onClick={onClick} />
-  );
-}
-
-function FabPrevious(props) {
-  const { className, style, onClick } = props;
-  return (
-    <Fab
-      className={className}
-      style={{...style,
-              display: 'block',
-              position: 'absolute',
-              top: '50%',
-              transform: 'translate(-50%,-50%)',
-              left: '60px',
-              zIndex: '1',
-              backgroundColor: 'orange'}}
-      onClick={onClick} />
-  );
-}
-
-function Dashboard(props: Props) {
-  const { classes, communities, events, width } = props;
-
-  const getCarouselSlidesToShow = () => {
-    if (isWidthUp('xl', width)) {
-      return 4;
-    }
-
-    if (isWidthUp('lg', width)) {
-      return 3;
-    }
-
-    if (isWidthUp('md', width)) {
-      return 2;
-    }
-
-    return 1;
-  };
-
-  const sliderSettings: SliderSettings = {
-    className: classes.innerCarousel,
-    centerPadding: '60px',
-    arrows: true,
-    dots: true,
-    dotsClass: classes.carouselDots,
-    slidesToShow: getCarouselSlidesToShow(),
-    slidesToScroll: 1,
-    infinite: true,
-    centerMode: true,
-    prevArrow: <FabPrevious />,
-    nextArrow: <FabNext />,
-    appendDots: dots => (
-      <ul> {dots} </ul>
-    ),
-  };
+const Dashboard: React.FunctionComponent<OwnProps> = (props: OwnProps) =>{
+  const { classes, width, myUpcomingEvents, discoverEvents, myCommunities } = props;
 
   return (
     <Fragment>
-      <Paper className={classes.paperCarousel}>
-        Dashboard
-      </Paper>
+      <section className={classes.layout}>
+        {/* <Fragment>
+          <Typography className={classes.label} component="h2" variant="h2">
+            My Upcoming Events
+          </Typography>
+
+          {
+            // @ts-ignoreyy
+            <Carousel>
+            {
+              myUpcomingEvents.map(e =>
+                // @ts-ignore
+                <EventCard key={e.eventId} {...e} />
+              )
+            }
+            </Carousel>
+          }
+        </Fragment> */}
+        <Fragment>
+          <CarouselEvents
+            // @ts-ignore
+            label="My upcoming events"
+            // @ts-ignore
+            events={myUpcomingEvents} >
+          </CarouselEvents>
+        </Fragment>
+        <Fragment>
+          <CarouselEvents
+            // @ts-ignore
+            label="Discover Events"
+            // @ts-ignore
+            events={discoverEvents} >
+          </CarouselEvents>
+        </Fragment>
+        <Fragment>
+          <CarouselCommunites
+            // @ts-ignore
+            label="My Communities"
+            // @ts-ignore
+            communities={myCommunities} >
+
+          </CarouselCommunites>
+        </Fragment>
+      </section>
     </Fragment>
   );
 }

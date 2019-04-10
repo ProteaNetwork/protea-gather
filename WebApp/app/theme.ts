@@ -6,7 +6,8 @@ export const colors = {
     orangeDark: '#f57c00',
     orangeLight: '#ffa000',
     pink: '#FF4081',
-    black: '#333333'
+    black: '#333333',
+    blackBg: '#464441'
   },
   white: '#FFFFFF',
   black: '#000000',
@@ -60,8 +61,17 @@ const theme = createMuiTheme({
       }
     },
     MuiTypography:{
+      root:{
+        color: colors.white
+      },
       h1:	{
         fontSize: 29,
+      },
+      h2:{
+        color: colors.white,
+        fontWeight: 200,
+        fontSize: 26,
+        textTransform: 'uppercase'
       },
       h4: {
         fontSize: 21
