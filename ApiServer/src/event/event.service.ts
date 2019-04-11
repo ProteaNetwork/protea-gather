@@ -21,9 +21,8 @@ export class EventService {
     // if(!doc){
     //   const eventDoc = await new this.eventRepository({
     //     eventId: eventId,
-    //     eventManagerAddress: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
+    //     eventManagerAddress: "0x767560Ec6994E0daAE45a6b6F47a9917cF4BB38A",
     //     name: "Test event",
-    //     organizer: "0xfaecAE4464591F8f2025ba8ACF58087953E613b1",
     //   });
     //   eventDoc.save();
       // return eventDoc.toObject();

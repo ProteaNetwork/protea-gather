@@ -21,8 +21,8 @@ export class CommunityService {
     // if(!doc){
     //   const communityDoc = await new this.communityRepository({
     //     tbcAddress: tbcAddress,
-    //     membershipManager: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
-    //     eventManager: "0x65464728B4fbfCEe4C4dEA20edeDce5CDAF913BE",
+    //     membershipManager: "0x215C41703cb44e7f57C5b7e87Fb116D5F618B474",
+    //     eventManager: "0x767560Ec6994E0daAE45a6b6F47a9917cF4BB38A",
     //     name: "community",
     //     tokenSymbol: "COM",
     //   });
