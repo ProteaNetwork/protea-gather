@@ -6,6 +6,9 @@ import CreateCommunityContainer from 'containers/CreateCommunityContainer';
 import ViewCommunityContainer from 'containers/ViewCommunityContainer';
 import CreateEventContainer from 'containers/CreateEventContainer';
 import ViewEventContainer from 'containers/ViewEventContainer';
+import DiscoverEventsContainer from 'containers/DiscoverEventsContainer';
+import DiscoverCommunitiesContainer from 'containers/DiscoverCommunitiesContainer';
+import ProfileContainer from 'containers/ProfileContainer';
 
 export interface appRoute {
   name: string;
@@ -32,32 +35,53 @@ const routes: appRoute[] = [
     routeNavLinkIcon: Dashboard,
   },
   {
-    name: 'CreateCommunity',
+    name: 'Create Community',
     path: '/communities/create',
     component: CreateCommunityContainer,
     isProtected: true,
     isNavRequired: false,
   },
   {
-    name: 'ViewCommunity',
+    name: 'View Community',
     path: '/communities/:tbcAddress?',
     component: ViewCommunityContainer,
     isProtected: true,
     isNavRequired: false,
   },
   {
-    name: 'CreateEvent',
+    name: 'Communities',
+    path: '/communities/',
+    component: DiscoverCommunitiesContainer,
+    isProtected: true,
+    isNavRequired: true,
+  },
+  {
+    name: 'Create Event',
     path: '/events/:eventManagerAddress?/create/',
     component: CreateEventContainer,
     isProtected: true,
     isNavRequired: false,
   },
   {
-    name: 'ViewEvent',
+    name: 'View Event',
     path: '/events/:eventId?',
     component: ViewEventContainer,
     isProtected: true,
     isNavRequired: false,
+  },
+  {
+    name: 'Events',
+    path: '/events/',
+    component: DiscoverEventsContainer,
+    isProtected: true,
+    isNavRequired: true,
+  },
+  {
+    name: 'Profle',
+    path: '/profile/:ethAddress?',
+    component: ProfileContainer,
+    isProtected: true,
+    isNavRequired: true,
   },
 ];
 
