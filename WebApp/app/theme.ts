@@ -127,6 +127,13 @@ const theme = createMuiTheme({
       root:{
         margin: "5px 0"
       }
+    },
+    MuiListItem:{
+      button:{
+        '&:hover':{
+          backgroundColor: colors.proteaBranding.pink
+        }
+      }
     }
   }
 
