@@ -9,6 +9,7 @@ import { Theme, createStyles, withStyles, WithStyles, Paper } from '@material-ui
 import { Button, Typography, Tabs, Tab, AppBar } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
+import Fab from '@material-ui/core/Fab';
 
 const styles = ({ spacing }: Theme) => createStyles({
   root: {
@@ -19,7 +20,6 @@ const styles = ({ spacing }: Theme) => createStyles({
     backgroundColor: colors.proteaBranding.blackBg,
     width:'100%',
     color: colors.white,
-    padding: `${spacing.unit * 2}px, ${spacing.unit * 2}px, ${spacing.unit * 2}px, ${spacing.unit * 2}px`,
     paddingTop: spacing.unit * 2,
     paddingBottom: spacing.unit * 2,
     paddingLeft: spacing.unit * 2,
@@ -36,6 +36,22 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   texts: {
     color: colors.white,
+  },
+  joinBar: {
+    backgroundColor: colors.proteaBranding.orange,
+    paddingTop: spacing.unit * 4,
+    paddingBottom: spacing.unit * 4,
+    paddingLeft: spacing.unit * 2,
+    paddingRight: spacing.unit * 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    
+  },
+  joinBut: {
+    backgroundColor: colors.proteaBranding.pink,
+
   }
 });
 
@@ -44,10 +60,22 @@ interface OwnProps extends WithStyles<typeof styles> {
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
   daiBalance: number;
+  daiStake: number;
+  member: number;
+  createdDate: string;
 }
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { classes, value, handleChange, handleChangeIndex, daiBalance } = props;
+  const {
+    classes, 
+    value, 
+    handleChange, 
+    handleChangeIndex, 
+    daiBalance,
+    daiStake,
+    member,
+    createdDate,
+  } = props;
 
   return (
     <Fragment>
@@ -66,19 +94,29 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
           </Tabs>
         </AppBar>
         <SwipeableViews
-          // axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-          //dir={theme.direction}
           index={value}
           onChangeIndex={handleChangeIndex}
         >
-        {/** ABOUT */}
-        
+{/** ABOUT */}
         {value === 0 ? 
-          <section className={classes.infoBar}>
-            <div>
-              <Typography className={classes.texts}>Membership {daiBalance} DAI</Typography>
-              <Typography className={classes.texts}>Image</Typography>
-            </div>
+          <section>
+            <section className={classes.infoBar}>
+              <div>
+                <Typography className={classes.texts}>Membership {daiBalance} DAI</Typography>
+                <Typography className={classes.texts}>Commitment {daiStake} DAI</Typography>
+              </div>
+              <div>
+                <Typography className={classes.texts}>Members {member}</Typography>
+                <Typography className={classes.texts}>Created {createdDate}</Typography>
+              </div>
+            </section>
+            <section className={classes.joinBar}>
+              <Fab 
+                className={classes.joinBut}
+                size="large">
+                JOIN
+              </Fab>
+            </section>
           </section>
         : 
           <section>
