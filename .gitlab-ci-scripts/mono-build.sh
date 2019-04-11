@@ -1,4 +1,9 @@
 #!/bin/bash -ex
 
-yarn &&\
+cd Blockchain
+yarn
+yarn build
+
+cd ../
+yarn
 yarn build
