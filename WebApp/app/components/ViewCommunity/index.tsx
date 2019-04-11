@@ -10,6 +10,11 @@ import { Button, Typography, Tabs, Tab, AppBar } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
 import Fab from '@material-ui/core/Fab';
+import CarouselEvents from 'components/CarouselEvents';
+import { IEvent } from 'domain/events/types';
+import apiUrlBuilder from 'api/apiUrlBuilder';
+import Blockies from 'react-blockies';
+import { ICommunity } from 'domain/communities/types';
 
 const styles = ({ spacing }: Theme) => createStyles({
   root: {
@@ -22,8 +27,8 @@ const styles = ({ spacing }: Theme) => createStyles({
     color: colors.white,
     paddingTop: spacing.unit * 2,
     paddingBottom: spacing.unit * 2,
-    paddingLeft: spacing.unit * 2,
-    paddingRight: spacing.unit * 2,
+    paddingLeft: spacing.unit * 4,
+    paddingRight: spacing.unit * 4,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -39,10 +44,8 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   joinBar: {
     backgroundColor: colors.proteaBranding.orange,
-    paddingTop: spacing.unit * 4,
-    paddingBottom: spacing.unit * 4,
-    paddingLeft: spacing.unit * 2,
-    paddingRight: spacing.unit * 2,
+    paddingTop: spacing.unit * 2,
+    paddingBottom: spacing.unit * 2,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -51,7 +54,6 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   joinBut: {
     backgroundColor: colors.proteaBranding.pink,
-
   }
 });
 
@@ -59,10 +61,7 @@ interface OwnProps extends WithStyles<typeof styles> {
   value: number;
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
-  daiBalance: number;
-  daiStake: number;
-  member: number;
-  createdDate: string;
+  community: ICommunity;
 }
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -71,20 +70,20 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     value, 
     handleChange, 
     handleChangeIndex, 
-    daiBalance,
-    daiStake,
-    member,
-    createdDate,
+    community,
   } = props;
 
   return (
     <Fragment>
       <AppBar position="static" color="default">
+        <section className={classes.infoBar}>
+          <Typography variant='h1' className={classes.texts}>{community.name}</Typography>
+        </section>
           <Tabs
             value={value}
             onChange={handleChange}
-            indicatorColor="primary"
-            textColor="primary"
+            indicatorColor={colors.proteaBranding.blackBg}
+            textColor={colors.white}
             variant="fullWidth"
           >
             <Tab label="ABOUT" />
@@ -100,14 +99,32 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
 {/** ABOUT */}
         {value === 0 ? 
           <section>
+            <section>
+              {
+                community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
+                </img>)
+              }
+              {
+                !community.bannerImage && (
+                  <Blockies
+                  seed={community.description}
+                  size={500}
+                  scale={2}
+                  color={colors.proteaBranding.orange}
+                  bgColor={colors.white}
+                  spotColor={colors.proteaBranding.pink}
+                />
+                )
+              }
+            </section>
             <section className={classes.infoBar}>
               <div>
-                <Typography className={classes.texts}>Membership {daiBalance} DAI</Typography>
-                <Typography className={classes.texts}>Commitment {daiStake} DAI</Typography>
+                <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
+                <Typography className={classes.texts}>Available Stake: {community.availableStake}</Typography>
               </div>
               <div>
-                <Typography className={classes.texts}>Members {member}</Typography>
-                <Typography className={classes.texts}>Created {createdDate}</Typography>
+                <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
+                <Typography className={classes.texts}>{community.isMember ? `Joined: ${community.memberSince.toDateString()}` : `Join today`}</Typography>
               </div>
             </section>
             <section className={classes.joinBar}>
@@ -116,6 +133,24 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 size="large">
                 JOIN
               </Fab>
+            </section>
+            <section className={classes.infoBar}>
+              <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
+              <Typography className={classes.texts}>{community.description}</Typography>
+            </section>
+            <section>
+             <CarouselEvents
+                // @ts-ignore
+                label="UPCOMING EVENTS"
+                // @ts-ignore
+                events={upcomingEvents} >
+              </CarouselEvents>
+              <CarouselEvents
+                // @ts-ignore
+                label="PAST EVENTS"
+                // @ts-ignore
+                events={upcomingEvents} >
+              </CarouselEvents>
             </section>
           </section>
         : 

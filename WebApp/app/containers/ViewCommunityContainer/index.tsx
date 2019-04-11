@@ -64,10 +64,7 @@ class ViewCommunityContainer extends React.Component<Props>  {
           value={this.state.value}
           handleChange={this.handleChange}
           handleChangeIndex={this.handleChangeIndex}
-          daiBalance={123}
-          daiStake={32}
-          member={20}
-          createdDate={"20 June 2019"}
+          community={community}
         />
         <h2>
           Balances
