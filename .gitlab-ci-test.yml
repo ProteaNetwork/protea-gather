@@ -1,110 +1,90 @@
 .push_deploy:
   when: manual
   allow_failure: false
-  
-build:feature_frontend:
-  stage: build
-  only:
-    changes: 
-      - Frontend/*
-  except:
-    - ^((?!^feature-.*$).)*$
-    - ^((?!^feature\/.*$).)*$
-  artifacts:
-    paths:
-      - Frontend/
-  script:
-    - .gitlab-ci-scripts/frontend-build.sh
-    
-test:feature_frontend:
-  stage: test
-  only:
-    changes: 
-      - Frontend/*
-  except:
-    - ^((?!^feature-.*$).)*$
-    - ^((?!^feature\/.*$).)*$
-  dependencies:
-    - build:feature_frontend
-  script:
-    - .gitlab-ci-scripts/frontend-test.sh
-    
-build:feature_backend:
-  stage: build
-  only:
-    changes:
-      - ApiServer/*
-  except:
-    - ^((?!^feature-.*$).)*$
-    - ^((?!^feature\/.*$).)*$
-  artifacts:
-    paths:
-      - ApiServer/
-  script:
-    - .gitlab-ci-scripts/apiserver-build.sh
-    
-test:feature_backend:
-  stage: test
-  only:
-    changes:
-      - ApiServer/*
-  except:
-    - ^((?!^feature-.*$).)*$
-    - ^((?!^feature\/.*$).)*$
-  dependencies:
-    - build:feature_backend
-  script:
-    - .gitlab-ci-scripts/apiserver-test.sh
-    
-build:nightly_frontend:
-  stage: build
-  only:
-    changes:
-      - Frontend/*
-  except:
-    - ^((?!^nightly.*$).)*$
-  artifacts:
-    paths:
-      - Frontend/
-  script:
-    - .gitlab-ci-scripts/frontend-build.sh
-    
-test:nightly_frontend:
-  stage: test
-  only:
-    changes:
-      - Frontend/*
-  except:
-    - ^((?!^nightly.*$).)*$
-  dependencies:
-    - build:nightly_frontend
-  script:
-    - .gitlab-ci-scripts/frontend-test.sh
 
-build:nightly_backend:
+build:dev_monorepo:
   stage: build
   only:
     changes:
       - ApiServer/*
-  except:
-    - ^((?!^nightly.*$).)*$
+      - WebApp/*
+  except: 
+    - ^(?!(feature|bugfix).*$).*$
   artifacts:
     paths:
-      - ApiServer/
+      - ApiServer/dist
+      - WebApp/build
   script:
-    - .gitlab-ci-scripts/apiserver-build.sh
-
-test:nightly_backend:
+    - .gitlab-ci-scripts/mono-build.sh
+    
+test:dev_monorepo:
   stage: test
   only:
     changes:
       - ApiServer/*
+      - WebApp/*
   except:
-    - ^((?!^nightly.*$).)*$
+    - ^(?!(feature|bugfix).*$).*$
   dependencies:
-    - build:nightly_backend
+    - build:dev_monorepo
   script:
-    - .gitlab-ci-scripts/apiserver-test.sh
+    - .gitlab-ci-scripts/mono-test.sh
+    
+build:nightly_monorepo:
+  stage: build
+  only:
+    refs:
+      - nightly
+    changes:
+      - ApiServer/*
+      - WebApp/*
+  artifacts:
+    paths:
+      - ApiServer/dist
+      - WebApp/build
+  script:
+    - .gitlab-ci-scripts/mono-build.sh
+    
+test:nightly_monorepo:
+  stage: test
+  only:
+    refs:
+      - nightly
+    changes:
+      - ApiServer/*
+      - WebApp/*
+  dependencies:
+    - build:nightly_monorepo
+  script:
+    - .gitlab-ci-scripts/mono-test.sh
+
+build:staging_monorepo:
+  stage: build
+  only:
+    refs:
+      - staging
+    changes:
+      - ApiServer/*
+      - WebApp/*
+  artifacts:
+    paths:
+      - ApiServer/dist
+      - WebApp/build
+  script:
+    - .gitlab-ci-scripts/mono-build.sh
+    
+test:staging_monorepo:
+  stage: test
+  only:
+    refs:
+      - staging
+    changes:
+      - ApiServer/*
+      - WebApp/*
+  dependencies:
+    - build:staging_monorepo
+  script:
+    - .gitlab-ci-scripts/mono-test.sh
     
 merge:to_master:
   stage: merge

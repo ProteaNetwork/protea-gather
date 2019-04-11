@@ -1,0 +1,18 @@
+version: '3.5'
+services:
+  docker-env:
+    image: registry.gitlab.com/linumlabs/molecule-sandbox/build/docker-env:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+  k8s-env:
+    image: registry.gitlab.com/linumlabs/molecule-sandbox/build/k8s-env:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.k8s
+  node-env:
+    image: registry.gitlab.com/linumlabs/molecule-sandbox/build/node-env:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+
