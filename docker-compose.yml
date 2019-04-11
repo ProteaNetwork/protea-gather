@@ -1,8 +1,44 @@
-version: '3'
+version: '3.5'
 services:
-  protea-frontend:
+  mongo:
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    command: mongod --smallfiles --logpath=/dev/null
+#    logging:
+#      options:
+#        max-size: 50m
+  apiserver:
+    image: $PROTEA_BACKEND_CONTAINER_RELEASE_IMAGE
+    build:
+      context: ./ApiServer
+    depends_on:
+      - mongo
+    ports:
+      - 3001:3001
+    links:
+      - mongo
+  webapp:
     image: $PROTEA_FRONTEND_CONTAINER_RELEASE_IMAGE
     build:
-      context: Frontend/.
+      context: ./WebApp
+      args: 
+        - API_HOST=$API_HOST # Passed from pipeline env
+        - API_SCHEMA=$API_SCHEMA # Passed from pipeline env
+    depends_on:
+      - apiserver
     ports:
       - 3000:80
+    links:
+      - apiserver
+volumes:
+    mongodb:
+
+#  ganache:
+#    image: $GANACHE_CONTAINER_IMAGE
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.Ganache
+#    ports:
+#      - 7545:7545

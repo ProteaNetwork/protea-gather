@@ -17,17 +17,6 @@ export class EventService {
 
   async getEventById(eventId: string): Promise<EventDocument>{
     const doc = await this.eventRepository.findOne({eventId});
-    // DEBUG used only in populating new instances
-    // if(!doc){
-    //   const eventDoc = await new this.eventRepository({
-    //     eventId: eventId,
-    //     eventManagerAddress: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
-    //     name: "Test event",
-    //     organizer: "0xfaecAE4464591F8f2025ba8ACF58087953E613b1",
-    //   });
-    //   eventDoc.save();
-      // return eventDoc.toObject();
-    // }
     return doc ? doc.toObject() : false;
   }
 

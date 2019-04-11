@@ -37,14 +37,10 @@ Contract deployments on test nets are to use our internal test account
 https://rinkeby.etherscan.io/address/0x0f17d2198dbb9d7a50557284f7ee10dfa5e0628a
 
 ### yarn deploy:rinkeby
-The current contracts as of 20/03/2019 are deployed at the following address, with the following markets. 
+The current contracts as of 11/04/2019 are deployed on Rinkeby at the following address, with the following markets. 
 
-PseudoDai:              0xfaeBBc23c5Ad6d810eBe50727f847c4Dc7adB49d
-Community Factory:      0x4bFF293fFDD340b90799a211DE92f126aF28cBB3
-Basic Linear Factory:   0x86DD0DBdca8bB19c009b7871C97e31Cb9761B37C
-Membership Mgr Fact:    0xb976c8451120a4219FfA07E83D4F25cdfFbc9932
-Event Manager Factory:  0x442C9648f2BB8B0B38A850777B13Bfbc5Ed8a0d9
-
-Testing TBC:            0x623edF1D4CE1b5BD18AF11004122f56ed28C8028
-Testing Membership:     0x407DF03a78a8bbd72Fe445c4Dd4c6b4049AB6702
-Testing Event manager:  0x9806edDb94e5A2Dd9Fd76abDCc525712fE83176d
+PseudoDai:              0x080654F69f7EdEb74BaaBcA37de5819744A49535
+Community Factory:      0xB55f81Cd94F07d9c5C476AAb6b0beCCd2DB24833
+Basic Linear Factory:   0xf81A79DC18A9df50002F2628f7e8931c5DA64A02
+Membership Mgr Fact:    0xc06Bc518A3227E1bF89Dee75C19e4A3c7a198181
+Event Manager Factory:  0xb621Ce801A370d29b42615394376394C6fa760E1

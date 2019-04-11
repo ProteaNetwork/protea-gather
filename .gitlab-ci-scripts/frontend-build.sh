@@ -1,5 +1,5 @@
 #!/bin/bash -ex
 
-cd Frontend/
-npm install
-npm run build
+cd WebApp/ &&\
+yarn &&\
+yarn build

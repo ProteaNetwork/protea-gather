@@ -1,4 +1,4 @@
 #!/bin/bash -ex
 
-cd WebApp/
+#yarn test
 ls

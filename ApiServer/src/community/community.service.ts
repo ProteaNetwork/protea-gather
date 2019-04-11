@@ -17,18 +17,6 @@ export class CommunityService {
 
   async getCommunityByTbcAddress(tbcAddress: string): Promise<CommunityDocument> {
     const doc = await this.communityRepository.findOne({tbcAddress});
-    // DEBUG used only in populating new instances
-    // if(!doc){
-    //   const communityDoc = await new this.communityRepository({
-    //     tbcAddress: tbcAddress,
-    //     membershipManager: "0x4Ce301a9F7a83C9bFAE3a4F06ad2Fe5404c62430",
-    //     eventManager: "0x65464728B4fbfCEe4C4dEA20edeDce5CDAF913BE",
-    //     name: "community",
-    //     tokenSymbol: "COM",
-    //   });
-    //   communityDoc.save();
-      // return communityDoc.toObject();
-    // }
     return doc ? doc.toObject() : false;
   }
 
