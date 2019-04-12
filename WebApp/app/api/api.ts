@@ -2,15 +2,7 @@ import apiRequest from './apiRequest';
 import apiUrlBuilder from './apiUrlBuilder';
 import { ICommunity } from 'domain/communities/types';
 import { IEvent } from 'domain/events/types';
-
-// Helpers
-const formDataHelper = async (data: any) => {
-  const requestData = new FormData();
-  await Object.keys(data).map(key => {
-    requestData.append(`${key}`, data[key]);
-  })
-  return requestData;
-}
+import formDataHelper from './formDataHelper';
 
 export function login(signedAccessPermit: string, ethAddress: string): Promise<any> {
   const body = JSON.stringify({ signedAccessPermit: signedAccessPermit, ethAddress: ethAddress});
@@ -36,10 +28,13 @@ export function getEventMeta(eventId: string): Promise<any> {
 
 // Creation
 export async function createCommunity(community: ICommunity, apiToken: string): Promise<any> {
-  return apiRequest('POST', apiUrlBuilder.createCommunity, (await formDataHelper(community)), undefined, true, apiToken)
+  return apiRequest('POST', apiUrlBuilder.createCommunity, formDataHelper(community), undefined, true, apiToken)
+}
+
+export async function updateCommunity(community: ICommunity, apiToken: string): Promise<any> {
+  return apiRequest('PUT', apiUrlBuilder.updateCommunity(community.tbcAddress), formDataHelper(community), undefined, true, apiToken)
 }
 
 export async function createEvent(event: IEvent, apiToken: string): Promise<any> {
-  const formData =  await formDataHelper(event);
-  return apiRequest('POST', apiUrlBuilder.createEvent, formData, undefined, true, apiToken)
+  return apiRequest('POST', apiUrlBuilder.createEvent, formDataHelper(event), undefined, true, apiToken)
 }

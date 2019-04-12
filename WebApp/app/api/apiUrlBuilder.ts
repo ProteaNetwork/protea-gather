@@ -11,6 +11,7 @@ const apiUrlBuilder = {
   getEventMeta: (eventId: string) => generateUri(`event/${eventId}`),
   attachmentStream: (attachmentId: string) => generateUri(`attachment/${attachmentId}/stream`),
   createCommunity: generateUri(`community`),
+  updateCommunity: (tbcAddress: string) => generateUri(`community/${tbcAddress}/update`),
   createEvent: generateUri(`event`),
 };
 

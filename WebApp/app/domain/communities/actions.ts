@@ -34,6 +34,12 @@ export const createCommunityAction = createAsyncAction(
   ActionTypes.CREATE_TX_FAILURE,
 )<ICommunity, void, string>();
 
+export const updateCommunityAction = createAsyncAction(
+  ActionTypes.UPDATE_COMMUNITY_REQUEST,
+  ActionTypes.UPDATE_COMMUNITY_SUCCESS,
+  ActionTypes.UPDATE_COMMUNITY_FAILURE,
+)<ICommunity, void, string>();
+
 export const getCommunityAction = createAsyncAction(
   ActionTypes.GET_COMMUNITY_REQUEST,
   ActionTypes.GET_COMMUNITY_SUCCESS,
