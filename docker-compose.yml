@@ -24,6 +24,7 @@ services:
     image: $PROTEA_FRONTEND_CONTAINER_RELEASE_IMAGE
     build:
       context: .
+      dockerfile: ./WebApp/Dockerfile
       args: 
         - API_HOST=$API_HOST # Passed from pipeline env
         - API_SCHEMA=$API_SCHEMA # Passed from pipeline env
