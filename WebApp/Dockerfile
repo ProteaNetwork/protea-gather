@@ -1,6 +1,7 @@
 # Use LTS Node environment as build environment
 FROM node:carbon AS builder
 
+ARG NODE_OPTIONS
 ARG API_HOST
 ARG API_SCHEMA
 
