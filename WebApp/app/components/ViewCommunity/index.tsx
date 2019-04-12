@@ -134,11 +134,17 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
               </div>
             </section>
             <section className={classes.joinBar}>
-              <Fab 
+              {!community.isMember && <Fab 
                 className={classes.joinBut}
                 size="large">
                 JOIN
-              </Fab>
+              </Fab>}
+              {community.isAdmin && <Fab 
+                className={classes.joinBut}
+                size="large"
+                variant="extended">
+                CREATE EVENT
+              </Fab>}
             </section>
             <section className={classes.infoBar}>
               <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
