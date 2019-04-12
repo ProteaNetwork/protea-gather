@@ -4,16 +4,16 @@ FROM node:carbon AS builder
 # Initialize working directory
 RUN mkdir -p /app/ApiServer
 RUN mkdir -p /app/Blockchain/build
-RUN mkdir /build
+RUN mkdir /temp
 
 ADD ./ApiServer/ /app
-ADD ./Blockchain/ /build
+ADD ./Blockchain/ /temp
 
-WORKDIR /build
+WORKDIR /temp
 RUN yarn
 RUN yarn build
-ADD /build/Blockchain/build/ /app/Blockchain/build
-RUN rm -rf /build
+RUN cp -r /temp/build/. /app/Blockchain/build
+RUN rm -rf /temp
 
 WORKDIR /app/ApiServer
 
