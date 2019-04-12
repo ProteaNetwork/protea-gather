@@ -11,10 +11,12 @@ import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
 import Fab from '@material-ui/core/Fab';
 import CarouselEvents from 'components/CarouselEvents';
+import AttendeesCarousel from 'components/AttendeesCarousel';
 import { IEvent } from 'domain/events/types';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import Blockies from 'react-blockies';
 import { ICommunity } from 'domain/communities/types';
+import AttendeeCard from 'components/AttendeeCard';
 
 const styles = ({ spacing }: Theme) => createStyles({
   root: {
@@ -209,14 +211,22 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
             </section>
           </section>
         }
-        {/** MEMBERS */}
-          <div>
-
-          </div>
-        {/** STATS */}
-          <div>
-
-          </div>
+{/** MEMBERS */}
+          {value === 2 &&
+            <section>
+              <section className={classes.infoBar}>
+                <Typography>Members information is not yet available</Typography>
+              </section>
+            </section>
+          }
+{/** STATS */}
+          {value === 3 &&
+            <section>
+              <section className={classes.infoBar}>
+                <Typography>Stat information is not yet available</Typography>
+              </section>
+            </section>
+          }
         </SwipeableViews>
     </Fragment>
   );
