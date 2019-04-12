@@ -61,9 +61,11 @@ export class AttachmentService {
     return result.contentType;
   }
 
-  async delete(attachmentId: string): Promise<boolean> {
+  public async delete(attachment: string | ObjectId | AttachmentDocument): Promise<boolean> {
+    const idToDelete = (attachment instanceof ObjectId) ? attachment : 
+        (typeof(attachment) === 'string') ? new ObjectId(attachment) : attachment._id;
     const result = new Promise<boolean>((resolve, reject) => {
-      this.attachmentGridFsRepository.unlinkById(new ObjectId(attachmentId), (error, unlinkedAttachment) => {
+      this.attachmentGridFsRepository.unlinkById(idToDelete, (error, unlinkedAttachment) => {
         resolve(true);
         reject(false);
       });

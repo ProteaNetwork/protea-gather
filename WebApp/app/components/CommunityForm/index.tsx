@@ -1,6 +1,6 @@
 /**
  *
- * CreateCommunityForm
+ * CommunityForm
  *
  */
 
@@ -39,25 +39,28 @@ const styles = (theme: Theme) =>
       flexDirection: 'column',
       padding: '20px'
     },
-    publishButton:{
+    submitButton:{
       margin: "0 auto",
       display: 'block'
     },
-
+    hiddenFormControl: {
+      display: 'none',
+    }
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
+  isNew: boolean;
   submitForm(data): void;
 }
 
-const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { submitForm, classes } = props;
+const CommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
+  const { submitForm, classes, isNew } = props;
   return (
     <div className={classes.background}>
       <Paper square={true} className={classes.paperRoot} elevation={0}>
         <Form className={classes.formRoot}>
           <Typography className={classes.heading} component="h1" variant="h1">
-            Create a community
+            {(isNew) ? "Create a community" : "Update Community Metadata"}
           </Typography>
           <FormControl>
             <Typography className={classes.subHeading} component="h4" variant="h4">
@@ -66,15 +69,15 @@ const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
             <Field component={UploadImageField} name="bannerImage"  />
           </FormControl>
           <FormControl>
-            <Field name="name" label="Name:" component={TextField}/>
+            <Field name="name" label="Name:" component={TextField} disabled={!isNew} />
           </FormControl>
           <FormControl>
-            <Field name="tokenSymbol" label="Token Symbol:" component={TextField}/>
+            <Field name="tokenSymbol" label="Token Symbol:" component={TextField} disabled={!isNew} />
           </FormControl>
-          <FormControl>
+          <FormControl className={(!isNew) ? classes.hiddenFormControl : undefined}>
             <Field name="contributionRate" type="number" label="Community contribution rate:"  component={TextField}/>
           </FormControl>
-          <FormControl>
+          <FormControl className={(!isNew) ? classes.hiddenFormControl : undefined}>
             <Field name="reputationForAttendance" type="number" label="Reputation points for attendance"  component={TextField}/>
           </FormControl>
           <FormControl>
@@ -88,9 +91,10 @@ const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
             />
           </FormControl>
           <Field name="gradientDenominator" type="hidden" />
+          <Field name="tbcAddress" type="hidden" />
           <div>
-            <Button className={classes.publishButton} onClick={submitForm}>
-              Publish community
+            <Button className={classes.submitButton} onClick={submitForm}>
+              {(isNew) ? "Publish community" : "Update community"}
             </Button>
           </div>
         </Form>
@@ -99,4 +103,4 @@ const CreateCommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
   );
 };
 
-export default withStyles(styles, { withTheme: true })(CreateCommunityForm);
+export default withStyles(styles, { withTheme: true })(CommunityForm);
