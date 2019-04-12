@@ -75,7 +75,7 @@ const styles = theme => createStyles({
   },
   contentLoggedIn: {
     // padding: `${56 + theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`
-    paddingTop:"64px"
+    paddingTop:"55px"
   },
   link: {
     textDecoration: 'none',

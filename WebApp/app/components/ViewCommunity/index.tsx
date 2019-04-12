@@ -54,6 +54,16 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   joinBut: {
     backgroundColor: colors.proteaBranding.pink,
+  },
+  bannerImg: {
+    height:'30vh',
+    overflow: 'hidden',
+    "& > *":{
+      width: "100% !important",
+      height: "100% !important",
+      objectFit: "cover",
+      objectPosition: "center"
+    }
   }
 });
 
@@ -63,7 +73,6 @@ interface OwnProps extends WithStyles<typeof styles> {
   handleChangeIndex(index: any): void;
   community: ICommunity;
   upcomingEvents:  IEvent[];
-  pastEvents:  IEvent[];
 }
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -74,14 +83,13 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     handleChangeIndex, 
     community,
     upcomingEvents,
-    pastEvents,
   } = props;
 
   return (
     <Fragment>
       <AppBar position="static" color="default">
         <section className={classes.infoBar}>
-          <Typography variant='h1' className={classes.texts}>{community.name}</Typography>
+          <Typography variant='h1' className={classes.texts}>{`${community.name}`}</Typography>
         </section>
           <Tabs
             value={value}
@@ -101,19 +109,19 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
           onChangeIndex={handleChangeIndex}
         >
 {/** ABOUT */}
-        {value === 0 ? 
+        {value === 0 &&
           <section>
-            <section>
+            <section  className={classes.bannerImg}>
               {
                 community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
                 </img>)
               }
               {
                 !community.bannerImage && (
-                  <Blockies
+                <Blockies
                   seed={community.description}
-                  size={250}
-                  scale={2}
+                  size={125}
+                  scale={5}
                   color={colors.proteaBranding.orange}
                   bgColor={colors.white}
                   spotColor={colors.proteaBranding.pink}
@@ -129,12 +137,12 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
               <div>
                 <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
                 <Typography className={classes.texts}>
-                  {community.isMember ? `Joined: ${community.memberSince}` : `Join today!`}
+                  {community.isMember ? `Joined: ${community.memberSince}` : (!community.isAdmin && `Join today!`)}
                 </Typography>
               </div>
             </section>
             <section className={classes.joinBar}>
-              {!community.isMember && <Fab 
+              {(!community.isMember && !community.isAdmin) && <Fab 
                 className={classes.joinBut}
                 size="large">
                 JOIN
@@ -151,29 +159,25 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
               <Typography className={classes.texts}>{community.description}</Typography>
             </section>
             <section>
-             <CarouselEvents
-                // @ts-ignore
-                label="UPCOMING EVENTS"
-                // @ts-ignore
-                events={upcomingEvents} >
-              </CarouselEvents>
-              <CarouselEvents
-                // @ts-ignore
-                label="PAST EVENTS"
-                // @ts-ignore
-                events={pastEvents} >
-              </CarouselEvents>
+              {upcomingEvents.length === 0 ? 
+                <Typography></Typography>
+              :
+                <CarouselEvents
+                  // @ts-ignore
+                  label="UPCOMING EVENTS"
+                  // @ts-ignore
+                  events={upcomingEvents} >
+                </CarouselEvents>
+              }  
             </section>
           </section>
-        : 
+        }
+{/** EVENTS */}
+        {value === 1 &&
           <section>
             <label >Image</label>
           </section>
         }
-        {/** EVENTS */}
-          <div>
-
-          </div>
         {/** MEMBERS */}
           <div>
 

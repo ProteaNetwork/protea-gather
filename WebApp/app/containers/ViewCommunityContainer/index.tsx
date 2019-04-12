@@ -29,7 +29,6 @@ interface OwnProps extends RouteComponentProps<RouteParams>, React.Props<RoutePa
 
 interface DispatchProps {
   getCommunity(tbcAddress: string):void;
-  onJoinCommunity(daiValue: number, tbcAddress: string): void;
   onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onWithdrawMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
@@ -65,8 +64,7 @@ class ViewCommunityContainer extends React.Component<Props>  {
           handleChange={this.handleChange}
           handleChangeIndex={this.handleChangeIndex}
           community={community}
-          upcomingEvents={[]}
-          pastEvents={[]}
+          upcomingEvents={ events.filter((event: IEvent) => event.state == 1)}
         />
         <h2>
           Balances
@@ -110,7 +108,7 @@ class ViewCommunityContainer extends React.Component<Props>  {
         </h2>
         <div>
           {
-            events && events.map(event => {
+            events && events.filter((event: IEvent) => event.state == 1).map(event => {
 
               return(
                 <div key={event.eventId}>
