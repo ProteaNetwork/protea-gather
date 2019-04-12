@@ -14,11 +14,24 @@ export declare type EventFilter = {
   toBlock?: BlockTag
 };
 
+
+export async function resolveENSaddress(potentialName: string){
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  return await (provider.resolveName(potentialName));
+}
+
+export async function findENSaddress(accountAddress: string){
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  return await (provider.lookupAddress(accountAddress));
+}
+
 export async function checkBalancesOnChain() {
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
+  const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
   const signerAddress = await signer.getAddress();
 
   const daiBalance = parseFloat(ethers.utils.formatUnits((await daiContract.balanceOf(signerAddress)), 18));
@@ -34,7 +47,7 @@ export async function mintDai(){
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
-  const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
+  const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
   const signerAddress = await signer.getAddress();
 
   const txReceipt = await(await daiContract.mint()).wait();

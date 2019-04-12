@@ -25,7 +25,7 @@ export async function checkTransferApprovalState(tbcAddress: string){
   const signer = await provider.getSigner();
   const signerAddress = await signer.getAddress();
   try{
-    const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
 
     const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);
     return approval.gt(ethers.utils.parseUnits("2", 18))
@@ -65,7 +65,7 @@ export async function getCommunitiesFromChain() {
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
   const signer = await provider.getSigner();
   try{
-    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, CommunityFactoryABI.abi, provider)).connect(signer);
 
     const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, null);
     filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
@@ -91,7 +91,7 @@ export async function getCommunityFromChain(tbcAddress: string) {
   const signer = await provider.getSigner();
 
   try{
-    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, CommunityFactoryABI.abi, provider)).connect(signer);
 
     const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, tbcAddress);
     filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
@@ -188,7 +188,7 @@ export async function publishCommunityToChain(name: string, tokenSymbol: string,
   const signer = await provider.getSigner();
 
   try{
-    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, CommunityFactoryABI.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     const txReceipt = await(await communityFactory.createCommunity(name, tokenSymbol, signerAddress, gradientDenominator, contributionRate)).wait();
@@ -216,7 +216,7 @@ export async function updateTransferApproval(unlock: boolean, tbcAddress: string
   const targetValue = unlock ? ethers.constants.MaxUint256 : ethers.constants.Zero
 
   try{
-    const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await daiContract.approve(tbcAddress, targetValue)).wait();
     // TODO: check event to confirm
     return true;
