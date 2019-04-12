@@ -14,7 +14,6 @@ export declare type EventFilter = {
   toBlock?: BlockTag
 };
 
-
 export async function resolveENSaddress(potentialName: string){
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
