@@ -37,7 +37,26 @@ export async function getTotalRemainingInUtilityTx(membershipManagerAddress: str
   catch(e){
     throw e;
   }
+}
 
+
+export async function getMembersTx(membershipManagerAddress: string){
+  const { web3 } = window as any;
+  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
+  const signer = await provider.getSigner();
+  try{
+    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const filterMembershipStaked:EventFilter = membershipManagerContract.filters.MembershipStaked(null, null);
+    filterMembershipStaked.fromBlock = blockchainResources.publishedBlock;
+    const memberAddresses = (await provider.getLogs(filterMembershipStaked)).map(e => {
+      const parsedLog = (membershipManagerContract.interface.parseLog(e));
+      return parsedLog.values.member;
+    });
+    return memberAddresses;
+  }
+  catch(e){
+    throw e;
+  }
 }
 
 export async function getLockedCommitmentTx(membershipManagerAddress:string, eventId: string){

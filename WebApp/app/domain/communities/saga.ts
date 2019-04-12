@@ -10,7 +10,7 @@ import { ICommunity } from "./types";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
 import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "./chainInteractions";
-import { checkStatus } from "domain/membershipManagement/actions";
+import { checkStatus, getMembersAction } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { increaseMembership } from "domain/membershipManagement/saga";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
@@ -50,6 +50,7 @@ export function* fetchCommunity(tbcAddress){
 export function* resolveCommunity(community){
   yield put(saveCommunity(community));
   yield put(checkStatus({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
+  yield put(getMembersAction({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
   yield put(getCommunityMetaAction.request(community.tbcAddress));
 }
 

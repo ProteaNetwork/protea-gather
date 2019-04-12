@@ -1,13 +1,13 @@
 import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
-import { checkStatus, increaseMembershipAction, withdrawMembershipAction } from "./actions";
+import { checkStatus, increaseMembershipAction, withdrawMembershipAction, getMembersAction } from "./actions";
 import { getCommunityMeta as getCommunityMetaApi } from "api/api";
 import { createCommunity as createCommunityApi } from "api/api";
 
 // Ethers standard event filter type is missing the blocktags
 import { ICommunity } from "./types";
 import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "domain/communities/chainInteractions";
-import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState } from "./chainInteractions";
-import { statusUpdated, getCommunityAction } from "domain/communities/actions";
+import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState, getMembersTx } from "./chainInteractions";
+import { statusUpdated, getCommunityAction, setMemberList } from "domain/communities/actions";
 import { ethers } from "ethers";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { retry } from "redux-saga/effects";
@@ -110,6 +110,11 @@ export function* withdrawMembershipListener(){
   }
 }
 
+export function* getCommunityMember(tbcAddress: string, membershipManagerAddress: string){
+  const memberList = yield call(getMembersTx, membershipManagerAddress);
+  yield put(setMemberList({tbcAddress: tbcAddress, memberList: memberList}));
+}
+
 // Listeners
 export function* checkIfUserIsMemberListener(){
   while(true){
@@ -118,8 +123,16 @@ export function* checkIfUserIsMemberListener(){
   }
 }
 
+export function* getCommunityMembersListener(){
+  while(true){
+    const communityData = (yield take(getMembersAction)).payload;
+    yield fork(getCommunityMember, communityData.tbcAddress, communityData.membershipManagerAddress);
+  }
+}
+
 export default function* root() {
   yield fork(checkIfUserIsMemberListener);
   yield fork(increaseMembershipListener);
   yield fork(withdrawMembershipListener);
+  yield fork(getCommunityMembersListener);
 }

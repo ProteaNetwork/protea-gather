@@ -22,3 +22,7 @@ export const withdrawMembershipAction = createAsyncAction(
   ActionTypes.WITHDRAW_MEMBERSHIP_TX_FAILURE,
 )<{daiValue: number, tbcAddress: string, membershipManagerAddress: string}, void, string>();
 
+export const getMembersAction = createStandardAction(
+  ActionTypes.GET_MEMBERS,
+)<{tbcAddress: string, membershipManagerAddress: string}>();
+

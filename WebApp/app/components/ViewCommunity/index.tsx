@@ -44,7 +44,7 @@ const styles = ({ spacing }: Theme) => createStyles({
   texts: {
     color: colors.white,
   },
-  joinBar: {
+  buttonArea: {
     backgroundColor: colors.proteaBranding.orange,
     paddingTop: spacing.unit * 2,
     paddingBottom: spacing.unit * 2,
@@ -52,10 +52,13 @@ const styles = ({ spacing }: Theme) => createStyles({
     justifyContent: 'center',
     alignItems: 'center',
     display: 'flex',
-    
+    flexWrap: 'wrap',
   },
-  joinBut: {
+  buttons: {
     backgroundColor: colors.proteaBranding.pink,
+    flexGrow: 1,
+    flexBasis: "40%",
+    margin: 5,
   },
   bannerImg: {
     height:'30vh',
@@ -145,18 +148,27 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 </Typography>
               </div>
             </section>
-            <section className={classes.joinBar}>
-              {(!community.isMember && !community.isAdmin) && <Fab 
-                className={classes.joinBut}
+            <section className={classes.buttonArea}>
+              {!community.isMember && <Button 
+                className={classes.buttons}
                 size="large">
                 JOIN
-              </Fab>}
-              {community.isAdmin && <Fab 
-                className={classes.joinBut}
-                size="large"
-                variant="extended">
+              </Button>}
+              {community.isAdmin && <Button 
+                className={classes.buttons}
+                size="large">
                 CREATE EVENT
-              </Fab>}
+              </Button>}
+              <Button 
+                className={classes.buttons}
+                size="large">
+                CREATE EVENT
+              </Button>
+              <Button 
+                className={classes.buttons}
+                size="large">
+                CREATE EVENT
+              </Button>
             </section>
             <section className={classes.infoBar}>
               <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
@@ -224,6 +236,9 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
             <section>
               <section className={classes.infoBar}>
                 <Typography>Stat information is not yet available</Typography>
+              </section>
+              <section>
+
               </section>
             </section>
           }

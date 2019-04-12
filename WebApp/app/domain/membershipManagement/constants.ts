@@ -15,6 +15,8 @@ enum ActionTypes {
   WITHDRAW_MEMBERSHIP_TX_REQUEST = 'protea/membershipManagement/WITHDRAW_MEMBERSHIP_TX_REQUEST',
   WITHDRAW_MEMBERSHIP_TX_SUCCESS = 'protea/membershipManagement/WITHDRAW_MEMBERSHIP_TX_SUCCESS',
   WITHDRAW_MEMBERSHIP_TX_FAILURE = 'protea/membershipManagement/WITHDRAW_MEMBERSHIP_TX_FAILURE',
+
+  GET_MEMBERS = 'protea/membershipManagement/GET_MEMBERS',
 }
 
 export default ActionTypes;

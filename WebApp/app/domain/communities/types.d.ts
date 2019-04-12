@@ -18,7 +18,8 @@ interface ICommunity{
   memberSince: Date;
   liquidTokens: number;
   isAdmin: boolean;
-  comLogo: string
+  comLogo: string;
+  memberList: string[];
 }
 
 /* --- STATE --- */
