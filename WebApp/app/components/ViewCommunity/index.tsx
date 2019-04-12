@@ -229,6 +229,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
               <section className={classes.infoBar}>
                 <Typography>Members information is not yet available</Typography>
               </section>
+              {/** TODO add member list */}
             </section>
           }
 {/** STATS */}
@@ -238,7 +239,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 <Typography>Stat information is not yet available</Typography>
               </section>
               <section>
-
+                {/** TODO add the buttons for buying and selling inside community */}
               </section>
             </section>
           }
