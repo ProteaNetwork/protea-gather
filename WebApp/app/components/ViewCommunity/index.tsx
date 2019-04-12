@@ -72,7 +72,8 @@ interface OwnProps extends WithStyles<typeof styles> {
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
   community: ICommunity;
-  upcomingEvents:  IEvent[];
+  upcomingEvents: IEvent[];
+  pastEvents: IEvent[];
 }
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -83,6 +84,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     handleChangeIndex, 
     community,
     upcomingEvents,
+    pastEvents,
   } = props;
 
   return (
@@ -160,7 +162,9 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
             </section>
             <section>
               {upcomingEvents.length === 0 ? 
-                <Typography></Typography>
+                <section className={classes.infoBar}>
+                  <Typography className={classes.texts}>No upcoming events</Typography>
+                </section>
               :
                 <CarouselEvents
                   // @ts-ignore
@@ -175,7 +179,34 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
 {/** EVENTS */}
         {value === 1 &&
           <section>
-            <label >Image</label>
+             <section>
+              {upcomingEvents.length === 0 ? 
+                <section className={classes.infoBar}>
+                  <Typography className={classes.texts}>No upcoming events</Typography>
+                </section>
+              :
+                <CarouselEvents
+                  // @ts-ignore
+                  label="UPCOMING EVENTS"
+                  // @ts-ignore
+                  events={upcomingEvents} >
+                </CarouselEvents>
+              }  
+            </section>
+            <section>
+              {upcomingEvents.length === 0 ? 
+                <section className={classes.infoBar}>
+                  <Typography className={classes.texts}>No past events</Typography>
+                </section>
+              :
+                <CarouselEvents
+                  // @ts-ignore
+                  label="PAST EVENTS"
+                  // @ts-ignore
+                  events={pastEvents} >
+                </CarouselEvents>
+              }  
+            </section>
           </section>
         }
         {/** MEMBERS */}
