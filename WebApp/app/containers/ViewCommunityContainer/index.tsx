@@ -65,6 +65,8 @@ class ViewCommunityContainer extends React.Component<Props>  {
           handleChange={this.handleChange}
           handleChangeIndex={this.handleChangeIndex}
           community={community}
+          upcomingEvents={[]}
+          pastEvents={[]}
         />
         <h2>
           Balances

@@ -27,8 +27,8 @@ const styles = ({ spacing }: Theme) => createStyles({
     color: colors.white,
     paddingTop: spacing.unit * 2,
     paddingBottom: spacing.unit * 2,
-    paddingLeft: spacing.unit * 4,
-    paddingRight: spacing.unit * 4,
+    paddingLeft: spacing.unit * 2,
+    paddingRight: spacing.unit * 2,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -62,6 +62,8 @@ interface OwnProps extends WithStyles<typeof styles> {
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
   community: ICommunity;
+  upcomingEvents:  IEvent[];
+  pastEvents:  IEvent[];
 }
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -71,6 +73,8 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     handleChange, 
     handleChangeIndex, 
     community,
+    upcomingEvents,
+    pastEvents,
   } = props;
 
   return (
@@ -108,7 +112,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 !community.bannerImage && (
                   <Blockies
                   seed={community.description}
-                  size={500}
+                  size={250}
                   scale={2}
                   color={colors.proteaBranding.orange}
                   bgColor={colors.white}
@@ -120,11 +124,13 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
             <section className={classes.infoBar}>
               <div>
                 <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
-                <Typography className={classes.texts}>Available Stake: {community.availableStake}</Typography>
+                <Typography className={classes.texts}>Available Stake: {Math.round(community.availableStake)}</Typography>
               </div>
               <div>
                 <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
-                <Typography className={classes.texts}>{community.isMember ? `Joined: ${community.memberSince.toDateString()}` : `Join today`}</Typography>
+                <Typography className={classes.texts}>
+                  {community.isMember ? `Joined: ${community.memberSince}` : `Join today!`}
+                </Typography>
               </div>
             </section>
             <section className={classes.joinBar}>
@@ -149,7 +155,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 // @ts-ignore
                 label="PAST EVENTS"
                 // @ts-ignore
-                events={upcomingEvents} >
+                events={pastEvents} >
               </CarouselEvents>
             </section>
           </section>
