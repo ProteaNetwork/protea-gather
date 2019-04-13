@@ -8,6 +8,7 @@ import { BigNumber } from "ethers/utils";
 import { BlockTag } from 'ethers/providers/abstract-provider';
 import { blockchainResources, getBlockchainObjects } from "blockchainResources";
 import { getDaiValueBurn } from "domain/communities/chainInteractions";
+import { IMember } from "./types"
 
 export declare type EventFilter = {
   address?: string;
@@ -35,7 +36,6 @@ export async function getTotalRemainingInUtilityTx(membershipManagerAddress: str
   }
 }
 
-
 export async function getMembersTx(membershipManagerAddress: string){
   const { web3 } = window as any;
   const provider = new ethers.providers.Web3Provider(web3.currentProvider);
@@ -44,11 +44,24 @@ export async function getMembersTx(membershipManagerAddress: string){
     const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const filterMembershipStaked:EventFilter = membershipManagerContract.filters.MembershipStaked(null, null);
     filterMembershipStaked.fromBlock = blockchainResources.publishedBlock;
-    const memberAddresses = (await provider.getLogs(filterMembershipStaked)).map(e => {
+
+    let added: String[] = [];
+    let results: IMember[] = [];
+    (await provider.getLogs(filterMembershipStaked)).map(e => {
       const parsedLog = (membershipManagerContract.interface.parseLog(e));
-      return parsedLog.values.member;
+
+      const member: IMember = {
+        ethAddress: parsedLog.values.member,
+        name: "",
+        profileImage: ""
+      };
+      if(added.indexOf(member.ethAddress) < 0){
+        added.push(member.ethAddress);
+        results.push(member);
+      }
     });
-    return memberAddresses;
+
+    return results;
   }
   catch(e){
     throw e;

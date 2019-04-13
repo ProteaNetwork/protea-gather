@@ -1,18 +1,16 @@
 import { ActionType } from 'typesafe-actions';
 import * as actions from './actions';
 import { ApplicationRootState } from 'types';
+import { ICommunity } from 'domain/communities/types';
 
-interface ICommunity{
-  tbcAddress: string;
-  eventManagerAddress: string;
-  membershipManagerAddress: string;
-  bannerImage: string;
+export interface IMemberArray{
+  [key: string]: IMember;
+}
+
+export interface IMember{
+  ethAddress: string;
   name: string;
-  tokenSymbol: string;
-  gradientDenominator: number;
-  contributionRate: number;
-  description: string;
-  isMember: boolean;
+  profileImage: string;
 }
 
 /* --- STATE --- */

@@ -1,21 +1,20 @@
 /**
  *
- * CarouselEvents
+ * MembersCarousel
  *
  */
 
-import { Fab, Paper, Theme, Typography, withWidth } from '@material-ui/core';
+import { Fab, Paper, Theme, withWidth } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
-// import Carousel from 'nuka-carousel';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
-import EventCard from 'components/EventCard';
+import MemberCard from 'components/MemberCard';
 import React, { Fragment } from 'react';
 import Slider, { Settings as SliderSettings } from 'react-slick';
 import { compose } from 'redux';
+import { ChevronRight, ChevronLeft } from '@material-ui/icons';
 import { colors } from 'theme';
-import { ChevronLeft, ChevronRight } from '@material-ui/icons';
-
+import { IMember } from 'domain/membershipManagement/types';
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   layout: {
@@ -86,9 +85,8 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
 
 interface OwnProps {
   classes: any;
-  events: any[];
+  members: IMember[];
   width: Breakpoint;
-  label: string;
 }
 
 function FabNext(props) {
@@ -129,8 +127,8 @@ function FabPrevious(props) {
   );
 }
 
-function CarouselEvents(props: OwnProps) {
-  const { classes, events, width, label } = props;
+const MembersCarousel: React.SFC<OwnProps> = (props: OwnProps) => {
+  const { classes, members, width } = props;
 
   const getCarouselSlidesToShow = () => {
     if (isWidthUp('xl', width)) {
@@ -141,48 +139,46 @@ function CarouselEvents(props: OwnProps) {
       return 3;
     }
 
-    if (isWidthUp('sm', width)) {
+    if (isWidthUp('md', width)) {
       return 2;
     }
 
     return 1;
   };
 
-
-  const carouselSettings: SliderSettings = {
+  const sliderSettings: SliderSettings = {
     className: classes.innerCarousel,
-    // centerPadding: '60px',
+    centerPadding: '60px',
     arrows: true,
     dots: true,
     dotsClass: classes.carouselDots,
+    slidesToShow: getCarouselSlidesToShow(),
     slidesToScroll: 1,
-    rows: 2,
-    slidesPerRow: getCarouselSlidesToShow(),
     infinite: true,
-    centerMode: false,
+    centerMode: true,
     prevArrow: <FabPrevious />,
     nextArrow: <FabNext />,
     appendDots: dots => (
       <ul> {dots} </ul>
     ),
   };
+
   return (
     <Fragment>
-      <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
-      <Slider {...carouselSettings}>
+      <Slider {...sliderSettings}>
         {
-          events && events.map(e => (
-            <div key={e.eventId}>
-              <EventCard {...e} />
+          members && members.map((member: IMember) =>
+            <div key={member.ethAddress}>
+              <MemberCard {...member} />
             </div>
-          ))
+          )
         }
       </Slider>
     </Fragment>
   );
-}
+};
 
 export default compose(
   withStyles(styles, { withTheme: true }),
   withWidth(),
-)(CarouselEvents);
+)(MembersCarousel);

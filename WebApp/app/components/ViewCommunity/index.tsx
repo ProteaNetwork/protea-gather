@@ -9,15 +9,15 @@ import { Theme, createStyles, withStyles, WithStyles, Paper } from '@material-ui
 import { Button, Typography, Tabs, Tab, AppBar, Input } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
-import Fab from '@material-ui/core/Fab';
 import CarouselEvents from 'components/CarouselEvents';
-import AttendeesCarousel from 'components/AttendeesCarousel';
+import MembersCarousel from 'components/MembersCarousel';
 import { IEvent } from 'domain/events/types';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import Blockies from 'react-blockies';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { ICommunity } from 'domain/communities/types';
-import AttendeeCard from 'components/AttendeeCard';
+import dayjs from 'dayjs';
+import MembersTab from 'components/MembersTab';
+import { IMember } from 'domain/membershipManagement/types';
 
 const styles = ({ spacing }: Theme) => createStyles({
   root: {
@@ -28,7 +28,7 @@ const styles = ({ spacing }: Theme) => createStyles({
     backgroundColor: colors.proteaBranding.blackBg,
     width:'100%',
     color: colors.white,
-    paddingTop: spacing.unit * 2,
+    paddingTop: spacing.unit * 3,
     paddingBottom: spacing.unit * 2,
     paddingLeft: spacing.unit * 2,
     paddingRight: spacing.unit * 2,
@@ -75,6 +75,10 @@ const styles = ({ spacing }: Theme) => createStyles({
     "& > *":{
       width: "100%"
     }
+  },
+  eventsSection:{
+    padding: 20,
+
   }
 });
 
@@ -118,145 +122,150 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
         <div className={classes.infoBar}>
           <Typography variant='h1' className={classes.texts}>{`${community.name}`}</Typography>
         </div>
-          <Tabs
-            value={slideIndex}
-            onChange={handleChange}
-            variant="fullWidth"
-          >
-            <Tab label="ABOUT" />
-            <Tab label="EVENTS" />
-            <Tab label="MEMBERS" />
-            <Tab label="STATS" />
-          </Tabs>
-        </AppBar>
-        <SwipeableViews
-          index={slideIndex}
-          onChangeIndex={handleChangeIndex}>
-          <section>
-            <section className={classes.bannerImg}>
-              {
-                community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
-                </img>)
-              }
-              {
-                !community.bannerImage && (
-                <Blockies
-                  seed={community.description}
-                  size={125}
-                  scale={5}
-                  color={colors.proteaBranding.orange}
-                  bgColor={colors.white}
-                  spotColor={colors.proteaBranding.pink}
-                />
-                )
-              }
-            </section>
-            <section className={classes.infoBar}>
-              <div>
-                <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
-                <Typography className={classes.texts}>Available Stake: {Math.round(community.availableStake)}DAI</Typography>
-              </div>
-              <div>
-                <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
-                <Typography className={classes.texts}>
-                  {community.isMember ? `Joined: ${community.memberSince}` : `Join today!`}
-                </Typography>
-              </div>
-            </section>
-            <section className={classes.buttonArea}>
-              {!community.isMember && <Button
-                className={classes.buttons}
-                onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                size="large">
-                {`JOIN for ${daiTxAmount}Dai`}
-              </Button>}
-              {community.isMember && <Button
-                className={classes.buttons}
-                onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                size="large">
-                {`Increase stake by ${daiTxAmount}Dai`}
-              </Button>}
-              {community.isMember && <Button
-                className={classes.buttons}
-                onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                size="large">
-                {`Withdraw stake by ${daiTxAmount}Dai`}
-              </Button>}
-              {community.isAdmin && <Button
-                className={classes.buttons}
-                size="large">
-                CREATE EVENT
-              </Button>}
-            </section>
-            <section className={classes.puchasingSection}>
-              <Input type="number" inputProps={{ min: "1", max: `${Math.round(balances.daiBalance)}`, step: "1" }} onChange={(event) => handleDaiValueChange(event)} value={daiTxAmount} />
-              <Typography className={classes.texts} component="p" variant="subtitle1">
-                Please set the value here
-              </Typography>
-
-            </section>
-            <section className={classes.infoBar}>
-              <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
-              <Typography className={classes.texts}>{community.description}</Typography>
-            </section>
+        <Tabs
+          value={slideIndex}
+          onChange={handleChange}
+          variant="fullWidth" >
+          <Tab label="ABOUT" />
+          <Tab label="EVENTS" />
+          <Tab label="MEMBERS" />
+          <Tab label="STATS" />
+        </Tabs>
+      </AppBar>
+      <SwipeableViews
+        index={slideIndex}
+        onChangeIndex={handleChangeIndex}>
+        <section>
+          <section className={classes.bannerImg}>
+            {
+              community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
+              </img>)
+            }
+            {
+              !community.bannerImage && (
+              <Blockies
+                seed={community.description}
+                size={125}
+                scale={5}
+                color={colors.proteaBranding.orange}
+                bgColor={colors.white}
+                spotColor={colors.proteaBranding.pink}
+              />
+              )
+            }
           </section>
-          <section>
-            {upcomingEvents.length === 0 ?
+          <section className={classes.infoBar}>
+            <div>
+              <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
+              <Typography className={classes.texts}>Available Stake: {parseFloat(`${community.availableStake}`).toFixed(2)}DAI</Typography>
+            </div>
+            <div>
+              <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
+              <Typography className={classes.texts}>
+                {community.isMember ? `Joined: ${dayjs(community.memberSince).format('YYYY-MM-DD')}` : `Join today!`}
+              </Typography>
+            </div>
+          </section>
+          <section className={classes.buttonArea}>
+            {!community.isMember && <Button
+              className={classes.buttons}
+              onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+              size="large">
+              {`JOIN for ${daiTxAmount}Dai`}
+            </Button>}
+            {community.isMember && <Button
+              className={classes.buttons}
+              onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+              size="large">
+              {`Increase stake by ${daiTxAmount}Dai`}
+            </Button>}
+            {community.isMember && <Button
+              className={classes.buttons}
+              onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+              size="large">
+              {`Withdraw stake by ${daiTxAmount}Dai`}
+            </Button>}
+            {community.isAdmin && <Button
+              className={classes.buttons}
+              size="large">
+              CREATE EVENT
+            </Button>}
+          </section>
+          <section className={classes.puchasingSection}>
+            <Input type="number" inputProps={{ min: "1", max: `${parseFloat(`${balances.daiBalance}`).toFixed(2)}`, step: "1" }} onChange={(event) => handleDaiValueChange(event)} value={daiTxAmount} />
+            <Typography className={classes.texts} component="p" variant="subtitle1">
+              Please set the value here
+            </Typography>
+
+          </section>
+          <section className={classes.infoBar}>
+            <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
+            <Typography className={classes.texts}>{community.description}</Typography>
+          </section>
+        </section>
+        <section className={classes.eventsSection}>
+          {upcomingEvents.length === 0 ?
+            <div className={classes.infoBar}>
+              <Typography className={classes.texts}>No upcoming events</Typography>
+            </div>
+          :
+            <CarouselEvents
+              // @ts-ignore
+              label="UPCOMING EVENTS"
+              // @ts-ignore
+              events={upcomingEvents} >
+            </CarouselEvents>
+          }
+            <div>
+            {activeEvents.length === 0 ?
+              <section className={classes.infoBar}>
+                <Typography className={classes.texts}>No active events</Typography>
+              </section>
+            :
+              <CarouselEvents
+                // @ts-ignore
+                label="ACTIVE EVENTS"
+                // @ts-ignore
+                events={activeEvents} >
+              </CarouselEvents>
+            }
+            </div>
+          <div>
+            {pastEvents.length === 0 ?
               <div className={classes.infoBar}>
-                <Typography className={classes.texts}>No upcoming events</Typography>
+                <Typography className={classes.texts}>No past events</Typography>
               </div>
             :
               <CarouselEvents
                 // @ts-ignore
-                label="UPCOMING EVENTS"
+                label="PAST EVENTS"
                 // @ts-ignore
-                events={upcomingEvents} >
+                events={pastEvents} >
               </CarouselEvents>
             }
-              <div>
-              {activeEvents.length === 0 ?
-                <section className={classes.infoBar}>
-                  <Typography className={classes.texts}>No active events</Typography>
-                </section>
-              :
-                <CarouselEvents
-                  // @ts-ignore
-                  label="ACTIVE EVENTS"
-                  // @ts-ignore
-                  events={activeEvents} >
-                </CarouselEvents>
-              }
+          </div>
+        </section>
+        <section>
+          {community.memberList.length === 0 &&
+              <div className={classes.infoBar}>
+                <Typography className={classes.texts}>No past events</Typography>
               </div>
-            <div>
-              {pastEvents.length === 0 ?
-                <div className={classes.infoBar}>
-                  <Typography className={classes.texts}>No past events</Typography>
-                </div>
-              :
-                <CarouselEvents
-                  // @ts-ignore
-                  label="PAST EVENTS"
-                  // @ts-ignore
-                  events={pastEvents} >
-                </CarouselEvents>
-              }
-            </div>
-          </section>
-          <section>
-            <div className={classes.infoBar}>
-              <Typography>Members information is not yet available</Typography>
-            </div>
-            {/** TODO add member list */}
-          </section>
-          <section>
-            <div className={classes.infoBar}>
-              <Typography>Stats information is not yet available</Typography>
-            </div>
-            <div>
-              {/** TODO add the buttons for buying and selling inside community */}
-            </div>
-          </section>
-        </SwipeableViews>
+          }
+          {
+             community.memberList.length > 0 &&
+             (community.memberList.map((member: IMember) => <MembersTab key={member.ethAddress} stateMessage={""} member={member}/>
+              ))
+            }
+        </section>
+        <section>
+          <div className={classes.infoBar}>
+            <Typography>Stats information is not yet available</Typography>
+          </div>
+          <div>
+            {/** TODO add the buttons for buying and selling inside community */}
+          </div>
+        </section>
+      </SwipeableViews>
     </Fragment>
   );
 };

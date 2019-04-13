@@ -23,7 +23,6 @@ import { forwardTo } from "utils/history";
 import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "./chainInteractions";
 import { checkStatus, getMembersAction } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
-import { increaseMembership } from "domain/membershipManagement/saga";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
