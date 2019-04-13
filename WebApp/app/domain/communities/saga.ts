@@ -1,15 +1,15 @@
 import { fork, take, call, put, select, all, delay, takeLatest } from "redux-saga/effects";
-import { 
-  getAllCommunitiesAction, 
-  saveCommunity, 
+import {
+  getAllCommunitiesAction,
+  saveCommunity,
   getCommunityMetaAction,
-  createCommunityAction, 
-  getCommunityAction, 
+  createCommunityAction,
+  getCommunityAction,
   joinCommunityAction,
   updateCommunityAction,
 } from "./actions";
 import { ethers } from "ethers";
-import { 
+import {
   getCommunityMeta as getCommunityMetaApi,
   createCommunity as createCommunityApi,
   updateCommunity as updateCommunityApi

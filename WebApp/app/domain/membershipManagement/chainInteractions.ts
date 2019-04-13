@@ -113,7 +113,6 @@ export async function checkUserStateOnChain(membershipManagerAddress: string, tb
     const signerAddress = await signer.getAddress();
 
     const memberstate = await membershipManager.getMembershipStatus(signerAddress);
-
     const daiValue = await getDaiValueBurn(tbcAddress,memberstate[2]);
 
     return {

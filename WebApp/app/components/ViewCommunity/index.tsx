@@ -6,7 +6,7 @@
 
 import React, { Fragment } from 'react';
 import { Theme, createStyles, withStyles, WithStyles, Paper } from '@material-ui/core';
-import { Button, Typography, Tabs, Tab, AppBar } from '@material-ui/core';
+import { Button, Typography, Tabs, Tab, AppBar, Input } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
 import Fab from '@material-ui/core/Fab';
@@ -15,6 +15,7 @@ import AttendeesCarousel from 'components/AttendeesCarousel';
 import { IEvent } from 'domain/events/types';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import Blockies from 'react-blockies';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { ICommunity } from 'domain/communities/types';
 import AttendeeCard from 'components/AttendeeCard';
 
@@ -68,16 +69,30 @@ const styles = ({ spacing }: Theme) => createStyles({
       objectFit: "cover",
       objectPosition: "center"
     }
+  },
+  puchasingSection:{
+    padding: spacing.unit * 2,
+    "& > *":{
+      width: "100%"
+    }
   }
 });
 
 interface OwnProps extends WithStyles<typeof styles> {
   slideIndex: number;
+  daiTxAmount: number;
+  balances: any;
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
+  handleDaiValueChange(event: any): void;
+  onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
+  onWithdrawMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
+  onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   community: ICommunity;
   upcomingEvents: IEvent[];
   pastEvents: IEvent[];
+  activeEvents: IEvent[];
+  classes: any;
 }
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -89,11 +104,17 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     community,
     upcomingEvents,
     pastEvents,
+    onJoinCommunity,
+    daiTxAmount,
+    handleDaiValueChange,
+    balances,
+    onIncreaseMembership,
+    onWithdrawMembership,
+    activeEvents
   } = props;
-
   return (
     <Fragment>
-      <AppBar position="static" color="default">
+      <AppBar position="static" >
         <div className={classes.infoBar}>
           <Typography variant='h1' className={classes.texts}>{`${community.name}`}</Typography>
         </div>
@@ -110,53 +131,74 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
         </AppBar>
         <SwipeableViews
           index={slideIndex}
-          onChangeIndex={handleChangeIndex}
-        >
-          <section  className={classes.bannerImg}>
-            {
-              community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
-              </img>)
-            }
-            {
-              !community.bannerImage && (
-              <Blockies
-                seed={community.description}
-                size={125}
-                scale={5}
-                color={colors.proteaBranding.orange}
-                bgColor={colors.white}
-                spotColor={colors.proteaBranding.pink}
-              />
-              )
-            }
-          </section>
-          <section className={classes.infoBar}>
-            <div>
-              <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
-              <Typography className={classes.texts}>Available Stake: {Math.round(community.availableStake)}</Typography>
-            </div>
-            <div>
-              <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
-              <Typography className={classes.texts}>
-                {community.isMember ? `Joined: ${community.memberSince}` : (!community.isAdmin && `Join today!`)}
+          onChangeIndex={handleChangeIndex}>
+          <section>
+            <section className={classes.bannerImg}>
+              {
+                community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
+                </img>)
+              }
+              {
+                !community.bannerImage && (
+                <Blockies
+                  seed={community.description}
+                  size={125}
+                  scale={5}
+                  color={colors.proteaBranding.orange}
+                  bgColor={colors.white}
+                  spotColor={colors.proteaBranding.pink}
+                />
+                )
+              }
+            </section>
+            <section className={classes.infoBar}>
+              <div>
+                <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
+                <Typography className={classes.texts}>Available Stake: {Math.round(community.availableStake)}DAI</Typography>
+              </div>
+              <div>
+                <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
+                <Typography className={classes.texts}>
+                  {community.isMember ? `Joined: ${community.memberSince}` : `Join today!`}
+                </Typography>
+              </div>
+            </section>
+            <section className={classes.buttonArea}>
+              {!community.isMember && <Button
+                className={classes.buttons}
+                onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+                size="large">
+                {`JOIN for ${daiTxAmount}Dai`}
+              </Button>}
+              {community.isMember && <Button
+                className={classes.buttons}
+                onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+                size="large">
+                {`Increase stake by ${daiTxAmount}Dai`}
+              </Button>}
+              {community.isMember && <Button
+                className={classes.buttons}
+                onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+                size="large">
+                {`Withdraw stake by ${daiTxAmount}Dai`}
+              </Button>}
+              {community.isAdmin && <Button
+                className={classes.buttons}
+                size="large">
+                CREATE EVENT
+              </Button>}
+            </section>
+            <section className={classes.puchasingSection}>
+              <Input type="number" inputProps={{ min: "1", max: `${Math.round(balances.daiBalance)}`, step: "1" }} onChange={(event) => handleDaiValueChange(event)} value={daiTxAmount} />
+              <Typography className={classes.texts} component="p" variant="subtitle1">
+                Please set the value here
               </Typography>
-            </div>
-          </section>
-          <section className={classes.buttonArea}>
-            {!community.isMember && <Button
-              className={classes.buttons}
-              size="large">
-              JOIN
-            </Button>}
-            {community.isAdmin && <Button
-              className={classes.buttons}
-              size="large">
-              CREATE EVENT
-            </Button>}
-          </section>
-          <section className={classes.infoBar}>
-            <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
-            <Typography className={classes.texts}>{community.description}</Typography>
+
+            </section>
+            <section className={classes.infoBar}>
+              <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
+              <Typography className={classes.texts}>{community.description}</Typography>
+            </section>
           </section>
           <section>
             {upcomingEvents.length === 0 ?
@@ -171,24 +213,22 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 events={upcomingEvents} >
               </CarouselEvents>
             }
-          </section>
-          <section>
-             <div>
-              {upcomingEvents.length === 0 ?
+              <div>
+              {activeEvents.length === 0 ?
                 <section className={classes.infoBar}>
-                  <Typography className={classes.texts}>No upcoming events</Typography>
+                  <Typography className={classes.texts}>No active events</Typography>
                 </section>
               :
                 <CarouselEvents
                   // @ts-ignore
-                  label="UPCOMING EVENTS"
+                  label="ACTIVE EVENTS"
                   // @ts-ignore
-                  events={upcomingEvents} >
+                  events={activeEvents} >
                 </CarouselEvents>
               }
-            </div>
+              </div>
             <div>
-              {upcomingEvents.length === 0 ?
+              {pastEvents.length === 0 ?
                 <div className={classes.infoBar}>
                   <Typography className={classes.texts}>No past events</Typography>
                 </div>
@@ -202,20 +242,20 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
               }
             </div>
           </section>
-            <div>
-              <div className={classes.infoBar}>
-                <Typography>Members information is not yet available</Typography>
-              </div>
-              {/** TODO add member list */}
+          <section>
+            <div className={classes.infoBar}>
+              <Typography>Members information is not yet available</Typography>
             </div>
-            <section>
-              <div className={classes.infoBar}>
-                <Typography>Stat information is not yet available</Typography>
-              </div>
-              <div>
-                {/** TODO add the buttons for buying and selling inside community */}
-              </div>
-            </section>
+            {/** TODO add member list */}
+          </section>
+          <section>
+            <div className={classes.infoBar}>
+              <Typography>Stats information is not yet available</Typography>
+            </div>
+            <div>
+              {/** TODO add the buttons for buying and selling inside community */}
+            </div>
+          </section>
         </SwipeableViews>
     </Fragment>
   );

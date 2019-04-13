@@ -13,7 +13,7 @@ import { setRemainingTxCountAction, setTxContextAction } from "domain/transactio
 import { retry } from "redux-saga/effects";
 
 // Meta
-export function* checkIfUserIsMember(membershipManagerAddress: string, tbcAddress: string){
+export function* checkMemberStates(membershipManagerAddress: string, tbcAddress: string){
   const memberData = yield call(checkUserStateOnChain, membershipManagerAddress, tbcAddress);
   const approvalState = yield call(checkTransferApprovalState, tbcAddress);
   const liquidTokens =  ethers.utils.formatUnits(yield call(getTokenBalance, tbcAddress), 18);
@@ -110,28 +110,27 @@ export function* withdrawMembershipListener(){
   }
 }
 
-export function* getCommunityMember(tbcAddress: string, membershipManagerAddress: string){
+export function* getCommunityMembers(tbcAddress: string, membershipManagerAddress: string){
   const memberList = yield call(getMembersTx, membershipManagerAddress);
   yield put(setMemberList({tbcAddress: tbcAddress, memberList: memberList}));
 }
 
-// Listeners
-export function* checkIfUserIsMemberListener(){
+export function* checkMemberStatusListener(){
   while(true){
     const communityData = (yield take(checkStatus)).payload;
-    yield fork(checkIfUserIsMember, communityData.membershipManagerAddress, communityData.tbcAddress);
+    yield fork(checkMemberStates, communityData.membershipManagerAddress, communityData.tbcAddress);
   }
 }
 
 export function* getCommunityMembersListener(){
   while(true){
     const communityData = (yield take(getMembersAction)).payload;
-    yield fork(getCommunityMember, communityData.tbcAddress, communityData.membershipManagerAddress);
+    yield fork(getCommunityMembers, communityData.tbcAddress, communityData.membershipManagerAddress);
   }
 }
 
 export default function* root() {
-  yield fork(checkIfUserIsMemberListener);
+  yield fork(checkMemberStatusListener);
   yield fork(increaseMembershipListener);
   yield fork(withdrawMembershipListener);
   yield fork(getCommunityMembersListener);

@@ -41,6 +41,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 class ViewCommunityContainer extends React.Component<Props>  {
   state = {
     slideIndex: 0,
+    daiTxAmount: 1,
   };
 
   componentDidMount(){
@@ -55,48 +56,30 @@ class ViewCommunityContainer extends React.Component<Props>  {
     this.setState({ slideIndex: index });
   };
 
+  handleDaiValueChange = (event) => {
+    this.setState({daiTxAmount: event.target.value})
+  }
+
   render() {
-    const { community, events, balances , onIncreaseMembership, onWithdrawMembership, onJoinCommunity} = this.props;
+    const { community, events, balances, onIncreaseMembership, onWithdrawMembership, onJoinCommunity} = this.props;
     return (
     <Fragment>
-        <ViewCommunity
-          slideIndex={this.state.slideIndex}
-          handleChange={this.handleChange}
-          handleChangeIndex={this.handleChangeIndex}
-          community={community}
-          upcomingEvents={events.filter((event: IEvent) => event.state == 1)}
-          pastEvents={events.filter((event: IEvent) => event.state == 3)}
-        />
-        <h2>
-          Community details
-        </h2>
-        <div>
-          {
-            community && Object.keys(community).map(key => {
-              return (<span key={key}>
-                {
-                  `${key}: ${community[key]} ||  `
-                }
-              </span>)
-            })
-          }
-        </div>
-        {community && <Fragment>
-          <Button disabled={community.transfersUnlocked} onClick={() => onJoinCommunity(2, community.tbcAddress, community.membershipManagerAddress)}>
-            Join for 2 Dai
-          </Button>
-          <Button onClick={() => onIncreaseMembership(2, community.tbcAddress, community.membershipManagerAddress)}>
-            Increase by 2 Dai
-          </Button>
-          <Button onClick={() => onWithdrawMembership(2, community.tbcAddress, community.membershipManagerAddress)}>
-            Withdraw by 2 Dai
-          </Button>
-          <Button disabled={!community.isAdmin} onClick={() => this.props.history.push(`/events/${community.eventManagerAddress}/create`)}>
-            Create Event
-          </Button>
-        </Fragment>
-        }
-      </Fragment>
+      <ViewCommunity
+        slideIndex={this.state.slideIndex}
+        handleChange={this.handleChange}
+        balances={balances}
+        handleChangeIndex={this.handleChangeIndex}
+        handleDaiValueChange={this.handleDaiValueChange}
+        onIncreaseMembership={onIncreaseMembership}
+        onWithdrawMembership={onWithdrawMembership}
+        onJoinCommunity={onJoinCommunity}
+        community={community}
+        daiTxAmount={this.state.daiTxAmount}
+        upcomingEvents={events.filter((event: IEvent) => event.state == 1)}
+        activeEvents={events.filter((event: IEvent) => event.state == 2)}
+        pastEvents={events.filter((event: IEvent) => event.state == 3)}
+      />
+    </Fragment>
     );
   }
 };
