@@ -40,19 +40,19 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 class ViewCommunityContainer extends React.Component<Props>  {
   state = {
-    value: 0,
+    slideIndex: 0,
   };
 
   componentDidMount(){
     this.props.getCommunity(this.props.match.params.tbcAddress);
   }
 
-  handleChange = (event, value) => {
-    this.setState({ value });
+  handleChange = (event, slideIndex) => {
+    this.setState({ slideIndex });
   };
 
   handleChangeIndex = index => {
-    this.setState({ value: index });
+    this.setState({ slideIndex: index });
   };
 
   render() {
@@ -60,20 +60,13 @@ class ViewCommunityContainer extends React.Component<Props>  {
     return (
     <Fragment>
         <ViewCommunity
-          value={this.state.value}
+          slideIndex={this.state.slideIndex}
           handleChange={this.handleChange}
           handleChangeIndex={this.handleChangeIndex}
           community={community}
           upcomingEvents={events.filter((event: IEvent) => event.state == 1)}
           pastEvents={events.filter((event: IEvent) => event.state == 3)}
         />
-        <h2>
-          Balances
-        </h2>
-        <div>
-          Eth Balance: {`${balances.ethBalance}`},
-          Dai Balance: {`${balances.daiBalance}`}
-        </div>
         <h2>
           Community details
         </h2>
@@ -88,7 +81,6 @@ class ViewCommunityContainer extends React.Component<Props>  {
             })
           }
         </div>
-        <br/>
         {community && <Fragment>
           <Button disabled={community.transfersUnlocked} onClick={() => onJoinCommunity(2, community.tbcAddress, community.membershipManagerAddress)}>
             Join for 2 Dai
@@ -104,29 +96,6 @@ class ViewCommunityContainer extends React.Component<Props>  {
           </Button>
         </Fragment>
         }
-        <h2>
-          Event details
-        </h2>
-        <div>
-          {
-            events && events.filter((event: IEvent) => event.state == 1).map(event => {
-
-              return(
-                <div key={event.eventId}>
-                  {
-                    Object.keys(event).map(key => {
-                      return `${key}: ${event[key]} ||  `
-                    })
-                  }
-                  <br />
-                  <Button onClick={() => this.props.history.push(`/events/${event.eventId}`)}>
-                    Open {`${event.name}`}
-                  </Button>
-                </div>
-              )
-            })
-          }
-        </div>
       </Fragment>
     );
   }

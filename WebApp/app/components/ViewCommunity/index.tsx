@@ -46,8 +46,7 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   buttonArea: {
     backgroundColor: colors.proteaBranding.orange,
-    paddingTop: spacing.unit * 2,
-    paddingBottom: spacing.unit * 2,
+    padding: spacing.unit * 2,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -73,7 +72,7 @@ const styles = ({ spacing }: Theme) => createStyles({
 });
 
 interface OwnProps extends WithStyles<typeof styles> {
-  value: number;
+  slideIndex: number;
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
   community: ICommunity;
@@ -83,10 +82,10 @@ interface OwnProps extends WithStyles<typeof styles> {
 
 const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
   const {
-    classes, 
-    value, 
-    handleChange, 
-    handleChangeIndex, 
+    classes,
+    slideIndex,
+    handleChange,
+    handleChangeIndex,
     community,
     upcomingEvents,
     pastEvents,
@@ -95,14 +94,12 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
   return (
     <Fragment>
       <AppBar position="static" color="default">
-        <section className={classes.infoBar}>
+        <div className={classes.infoBar}>
           <Typography variant='h1' className={classes.texts}>{`${community.name}`}</Typography>
-        </section>
+        </div>
           <Tabs
-            value={value}
+            value={slideIndex}
             onChange={handleChange}
-            indicatorColor={colors.proteaBranding.blackBg}
-            textColor={colors.white}
             variant="fullWidth"
           >
             <Tab label="ABOUT" />
@@ -112,89 +109,72 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
           </Tabs>
         </AppBar>
         <SwipeableViews
-          index={value}
+          index={slideIndex}
           onChangeIndex={handleChangeIndex}
         >
-{/** ABOUT */}
-        {value === 0 &&
-          <section>
-            <section  className={classes.bannerImg}>
-              {
-                community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
-                </img>)
-              }
-              {
-                !community.bannerImage && (
-                <Blockies
-                  seed={community.description}
-                  size={125}
-                  scale={5}
-                  color={colors.proteaBranding.orange}
-                  bgColor={colors.white}
-                  spotColor={colors.proteaBranding.pink}
-                />
-                )
-              }
-            </section>
-            <section className={classes.infoBar}>
-              <div>
-                <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
-                <Typography className={classes.texts}>Available Stake: {Math.round(community.availableStake)}</Typography>
-              </div>
-              <div>
-                <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
-                <Typography className={classes.texts}>
-                  {community.isMember ? `Joined: ${community.memberSince}` : (!community.isAdmin && `Join today!`)}
-                </Typography>
-              </div>
-            </section>
-            <section className={classes.buttonArea}>
-              {!community.isMember && <Button 
-                className={classes.buttons}
-                size="large">
-                JOIN
-              </Button>}
-              {community.isAdmin && <Button 
-                className={classes.buttons}
-                size="large">
-                CREATE EVENT
-              </Button>}
-              <Button 
-                className={classes.buttons}
-                size="large">
-                CREATE EVENT
-              </Button>
-              <Button 
-                className={classes.buttons}
-                size="large">
-                CREATE EVENT
-              </Button>
-            </section>
-            <section className={classes.infoBar}>
-              <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
-              <Typography className={classes.texts}>{community.description}</Typography>
-            </section>
-            <section>
-              {upcomingEvents.length === 0 ? 
-                <section className={classes.infoBar}>
-                  <Typography className={classes.texts}>No upcoming events</Typography>
-                </section>
-              :
-                <CarouselEvents
-                  // @ts-ignore
-                  label="UPCOMING EVENTS"
-                  // @ts-ignore
-                  events={upcomingEvents} >
-                </CarouselEvents>
-              }  
-            </section>
+          <section  className={classes.bannerImg}>
+            {
+              community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
+              </img>)
+            }
+            {
+              !community.bannerImage && (
+              <Blockies
+                seed={community.description}
+                size={125}
+                scale={5}
+                color={colors.proteaBranding.orange}
+                bgColor={colors.white}
+                spotColor={colors.proteaBranding.pink}
+              />
+              )
+            }
           </section>
-        }
-{/** EVENTS */}
-        {value === 1 &&
+          <section className={classes.infoBar}>
+            <div>
+              <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
+              <Typography className={classes.texts}>Available Stake: {Math.round(community.availableStake)}</Typography>
+            </div>
+            <div>
+              <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
+              <Typography className={classes.texts}>
+                {community.isMember ? `Joined: ${community.memberSince}` : (!community.isAdmin && `Join today!`)}
+              </Typography>
+            </div>
+          </section>
+          <section className={classes.buttonArea}>
+            {!community.isMember && <Button
+              className={classes.buttons}
+              size="large">
+              JOIN
+            </Button>}
+            {community.isAdmin && <Button
+              className={classes.buttons}
+              size="large">
+              CREATE EVENT
+            </Button>}
+          </section>
+          <section className={classes.infoBar}>
+            <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
+            <Typography className={classes.texts}>{community.description}</Typography>
+          </section>
           <section>
-             <section>
-              {upcomingEvents.length === 0 ? 
+            {upcomingEvents.length === 0 ?
+              <div className={classes.infoBar}>
+                <Typography className={classes.texts}>No upcoming events</Typography>
+              </div>
+            :
+              <CarouselEvents
+                // @ts-ignore
+                label="UPCOMING EVENTS"
+                // @ts-ignore
+                events={upcomingEvents} >
+              </CarouselEvents>
+            }
+          </section>
+          <section>
+             <div>
+              {upcomingEvents.length === 0 ?
                 <section className={classes.infoBar}>
                   <Typography className={classes.texts}>No upcoming events</Typography>
                 </section>
@@ -205,13 +185,13 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   // @ts-ignore
                   events={upcomingEvents} >
                 </CarouselEvents>
-              }  
-            </section>
-            <section>
-              {upcomingEvents.length === 0 ? 
-                <section className={classes.infoBar}>
+              }
+            </div>
+            <div>
+              {upcomingEvents.length === 0 ?
+                <div className={classes.infoBar}>
                   <Typography className={classes.texts}>No past events</Typography>
-                </section>
+                </div>
               :
                 <CarouselEvents
                   // @ts-ignore
@@ -219,30 +199,23 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   // @ts-ignore
                   events={pastEvents} >
                 </CarouselEvents>
-              }  
-            </section>
+              }
+            </div>
           </section>
-        }
-{/** MEMBERS */}
-          {value === 2 &&
-            <section>
-              <section className={classes.infoBar}>
+            <div>
+              <div className={classes.infoBar}>
                 <Typography>Members information is not yet available</Typography>
-              </section>
+              </div>
               {/** TODO add member list */}
-            </section>
-          }
-{/** STATS */}
-          {value === 3 &&
+            </div>
             <section>
-              <section className={classes.infoBar}>
+              <div className={classes.infoBar}>
                 <Typography>Stat information is not yet available</Typography>
-              </section>
-              <section>
+              </div>
+              <div>
                 {/** TODO add the buttons for buying and selling inside community */}
-              </section>
+              </div>
             </section>
-          }
         </SwipeableViews>
     </Fragment>
   );

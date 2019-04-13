@@ -134,6 +134,11 @@ const theme = createMuiTheme({
           backgroundColor: colors.proteaBranding.pink
         }
       }
+    },
+    MuiTab:{
+      selected:{
+        backgroundColor: colors.proteaBranding.orange
+      }
     }
   }
 
