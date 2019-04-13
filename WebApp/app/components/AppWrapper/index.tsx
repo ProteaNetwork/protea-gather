@@ -16,7 +16,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import classNames from 'classnames';
 import { appRoute } from 'containers/App/routes';
 import React, { Fragment } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import ReactSVG from 'react-svg';
 import { colors } from 'theme';
 
@@ -100,6 +100,15 @@ const styles = theme => createStyles({
     paddingLeft: theme.spacing.unit * 3,
     paddingBottom: theme.spacing.unit * 3,
   },
+  paperRoot:{
+    backgroundColor: colors.proteaBranding.blackBg,
+    paddingTop: 65,
+    color: colors.white,
+  },
+  navItem:{
+    color: colors.white,
+
+  }
 });
 
 interface Props extends WithStyles<typeof styles> {
@@ -127,12 +136,11 @@ class AppWrapper extends React.Component<Props> {
 
   public render() {
     const { classes, isLoggedIn, children, displayName, daiBalance, profileImage, onLogout, navLinks, ethAddress } = this.props;
-
     return (
       <div className={classes.root}>
       {isLoggedIn && (
-        // <ClickAwayListener onClickAway={this.close}>
-          <AppBar
+          <Fragment>
+            <AppBar
             position="fixed"
             className={classes.appBar} >
             <Toolbar
@@ -156,10 +164,34 @@ class AppWrapper extends React.Component<Props> {
                     <MenuIcon />
                   </IconButton>
               }
-              <ReactSVG className={classes.appBarLogo} src="/protea_logo_outline.svg" />
+              <Link className={classes.appBarLogo} to="/dashboard">
+                <ReactSVG src="/protea_logo_outline.svg" />
+              </Link>
             </Toolbar>
           </AppBar>
-        // </ClickAwayListener>
+          <ClickAwayListener onClickAway={this.close}>
+            <Drawer
+              variant="persistent"
+              classes= {{paper: classes.paperRoot}}
+              anchor="left"
+              open={this.state.open} >
+              <List>
+                {
+                  navLinks.map(({ name, path, routeNavLinkIcon }) => (
+                    <NavLink to={path} className={classes.link} key={name}>
+                      <ListItem button>
+                        {/* <ListItemIcon>
+                          {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
+                        </ListItemIcon> */}
+                        <ListItemText className={classes.navItem} primaryTypographyProps={{color:"inherit" }} color="inherit" primary={name} />
+                      </ListItem>
+                    </NavLink>
+                  ))
+                }
+              </List>
+            </Drawer>
+          </ClickAwayListener>
+          </Fragment>
         )}
 
         <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
@@ -171,37 +203,3 @@ class AppWrapper extends React.Component<Props> {
 }
 
 export default withStyles(styles, { withTheme: true })(AppWrapper);
-
-// <ClickAwayListener onClickAway={this.close}>
-//   <Drawer
-//     variant="persistent"
-//     open={this.state.open} >
-//     <div className={classes.spacer} />
-//     <div className={classes.userInformation}>
-//       <Avatar alt={name} src={image} className={classes.bigAvatar}>{name.substring(0, 1)}</Avatar>
-//       <Typography variant="h3">{name}</Typography>
-//       {/* <Typography variant="body1">{ensName}</Typography> */}
-//       <Typography variant="body1">{tokenBalance} DAI</Typography>
-//       <Button onClick={onLogout}>Logout</Button>
-//     </div>
-//     <Divider />
-//     <List>
-//       {
-//         navLinks.map(({ name, path, routeNavLinkIcon }) => (
-//           <NavLink to={path} className={classes.link} key={name}>
-//             <ListItem button>
-//               <ListItemIcon>
-//                 {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
-//               </ListItemIcon>
-//               <ListItemText primary={name} />
-//             </ListItem>
-//           </NavLink>
-//         ))
-//       }
-//     </List>
-//   </Drawer>
-// </ClickAwayListener>
-// <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
-//   {isLoggedIn && <div className={classes.toolbar} />}
-//   {children}
-// </main>

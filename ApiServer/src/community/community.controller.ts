@@ -30,9 +30,16 @@ export class CommunityController {
     return await this.communityService.createCommunity(bodyData, bannerImage);
   }
 
-  @Put()
+  @Put(':tbcAddress/update')
   @UseGuards(AuthGuard('jwt'))
-  async updateCommunity(@Body() bodyData: CommunityDTO){
-    return await this.communityService.updateCommunity(bodyData);
+  @UseInterceptors(FileInterceptorHelper(
+    {
+      name: 'bannerImage',
+      maxCount: 1,
+      type: FileOptions.PICTURE
+    }
+  ))
+  async updateCommunity(@Param('tbcAddress') tbcAddress, @Body() bodyData, @UploadedFile() bannerImage){
+    return await this.communityService.updateCommunity(tbcAddress, bodyData, bannerImage);
   }
 }

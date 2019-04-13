@@ -24,6 +24,9 @@ enum ActionTypes {
   JOIN_COMMUNITY_TX_FAILURE = 'protea/communities/JOIN_COMMUNITY_TX_FAILURE',
 
   SET_MEMBER_LIST = 'protea/communities/SET_MEMBER_LIST',
+  UPDATE_COMMUNITY_REQUEST = 'protea/communities/UPDATE_COMMUNITY_REQUEST',
+  UPDATE_COMMUNITY_SUCCESS = 'protea/communities/UPDATE_COMMUNITY_SUCCESS',
+  UPDATE_COMMUNITY_FAILURE = 'protea/communities/UPDATE_COMMUNITY_FAILURE',
 }
 
 export default ActionTypes;

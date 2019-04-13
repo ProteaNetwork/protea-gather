@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CommunityDTO {
   @IsString()
@@ -13,8 +13,8 @@ export class CommunityDTO {
   tokenSymbol: string;
   @IsString()
   description: string;
-  // @IsNumber()
-  // gradientDenominator: number;
-  // @IsNumber()
-  // contributionRate: number;
+  @IsString()
+  gradientDenominator: number;
+  @IsString()
+  contributionRate: number;
 }

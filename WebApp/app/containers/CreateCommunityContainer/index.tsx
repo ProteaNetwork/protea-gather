@@ -13,7 +13,7 @@ import { createCommunityAction } from 'domain/communities/actions';
 import { ICommunity } from 'domain/communities/types';
 import * as Yup from 'yup';
 import { fileSizeValidation, MAX_FILE_SIZE, fileTypeValidation, SUPPORTED_IMAGE_FORMATS } from 'fileManagement';
-import CreateCommunityForm from 'components/CreateCommunityForm';
+import CommunityForm from 'components/CommunityForm';
 
 interface OwnProps {}
 
@@ -61,8 +61,9 @@ const CreateCommunityContainer: React.SFC<Props> = (props: Props) => {
       }
 
       render={({submitForm}) =>
-        <CreateCommunityForm
-          submitForm={submitForm} />
+        <CommunityForm
+          submitForm={submitForm}
+          isNew={true} />
       }
     />
   );

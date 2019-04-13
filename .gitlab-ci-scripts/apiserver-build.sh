@@ -1,4 +1,5 @@
 #!/bin/bash -ex
 
-cd ApiServer/
-ls
+cd ApiServer/ &&\
+yarn &&\
+yarn build

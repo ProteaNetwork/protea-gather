@@ -1,8 +1,19 @@
-import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
-import { getAllCommunitiesAction, saveCommunity, getCommunityMetaAction, createCommunityAction, getCommunityAction, joinCommunityAction } from "./actions";
+import { fork, take, call, put, select, all, delay, takeLatest } from "redux-saga/effects";
+import { 
+  getAllCommunitiesAction, 
+  saveCommunity, 
+  getCommunityMetaAction,
+  createCommunityAction, 
+  getCommunityAction, 
+  joinCommunityAction,
+  updateCommunityAction,
+} from "./actions";
 import { ethers } from "ethers";
-import { getCommunityMeta as getCommunityMetaApi } from "api/api";
-import { createCommunity as createCommunityApi } from "api/api";
+import { 
+  getCommunityMeta as getCommunityMetaApi,
+  createCommunity as createCommunityApi,
+  updateCommunity as updateCommunityApi
+ } from "api/api";
 
 // Ethers standard event filter type is missing the blocktags
 import { BlockTag } from 'ethers/providers/abstract-provider';
@@ -15,6 +26,9 @@ import { setRemainingTxCountAction, setTxContextAction } from "domain/transactio
 import { increaseMembership } from "domain/membershipManagement/saga";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
+import { getType } from "typesafe-actions";
+
+
 
 export declare type EventFilter = {
   address?: string;
@@ -61,6 +75,17 @@ export function* createCommunityInDB(community: ICommunity){
     return (yield call(createCommunityApi, community, apiKey));
   }
   catch(error){
+    yield put(createCommunityAction.failure(error.message));
+    return false;
+  }
+}
+
+export function* updateCommunityInDB(community: ICommunity){
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  try {
+    return (yield call(updateCommunityApi, community, apiKey));
+  }
+  catch(error) {
     yield put(createCommunityAction.failure(error.message));
     return false;
   }
@@ -155,6 +180,24 @@ export function* getCommunityListener(){
   }
 }
 
+export function* updateCommunity(community: ICommunity) {
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  try {
+    yield call(updateCommunityApi, community, apiKey);
+    yield put(updateCommunityAction.success());
+    yield call(forwardTo, `/communities/${community.tbcAddress}`);
+  } catch (error) {
+    yield put(updateCommunityAction.failure(error.message));
+  }
+}
+
+export function* updateCommunityListener(){
+  while(true){
+    const action = yield take(getType(updateCommunityAction.request));
+    yield fork(updateCommunity, action.payload);
+  }
+}
+
 export function* getCommunityMetaListener() {
   while(true){
     const requestData = (yield take(getCommunityMetaAction.request)).payload;
@@ -167,6 +210,6 @@ export default function* root() {
   yield fork(getCommunityMetaListener);
   yield fork(createCommunity);
   yield fork(getCommunityListener);
-
+  yield fork(updateCommunityListener);
   yield fork(joinCommunity);
 }

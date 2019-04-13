@@ -21,7 +21,7 @@ export const CommunitySchema = new Schema({
   tbcAddress: { type: String, required: true, indexed: true },
   eventManagerAddress: { type: String, required: false },
   membershipManagerAddress: { type: String, required: false },
-  bannerImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
+  bannerImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment, required: false},
   name: { type: String, required: false },
   tokenSymbol: { type: String, required: false },
   description: { type: String, required: false },
@@ -49,7 +49,3 @@ export const CommunitySchema = new Schema({
       },
     },
   });
-
-// CommunitySchema.virtual('fullName').get(function() {
-//   return (this.firstName && this.lastName) ? this.firstName + ' ' + this.lastName : this.ethAddress;
-// });

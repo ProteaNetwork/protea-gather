@@ -1,4 +1,4 @@
 #!/bin/bash -ex
 
-cd Frontend/
+cd WebApp/
 ls

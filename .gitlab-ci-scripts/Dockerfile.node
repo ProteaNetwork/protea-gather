@@ -1,0 +1,4 @@
+FROM node:latest
+
+RUN set -xe && apt-get update && apt-get -yq -o dir::cache::archives="apt-cache" install bash git openssh-server
+

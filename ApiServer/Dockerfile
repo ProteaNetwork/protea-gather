@@ -2,9 +2,20 @@
 FROM node:carbon AS builder
 
 # Initialize working directory
-RUN mkdir -p /app
-WORKDIR /app
-ADD . /app
+RUN mkdir -p /app/ApiServer
+RUN mkdir -p /app/Blockchain/build
+RUN mkdir /temp
+
+ADD ./ApiServer/ /app
+ADD ./Blockchain/ /temp
+
+WORKDIR /temp
+RUN yarn
+RUN yarn build
+RUN cp -r /temp/build/. /app/Blockchain/build
+RUN rm -rf /temp
+
+WORKDIR /app/ApiServer
 
 # Install necessary dependancies
 RUN yarn
