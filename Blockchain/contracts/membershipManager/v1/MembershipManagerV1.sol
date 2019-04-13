@@ -94,6 +94,7 @@ contract MembershipManagerV1 is AdminManaged {
 
     /// @dev    Used to register a utility for access to the membership manager
     /// @param _utility         :address The utility in question
+    // Rough gas usage 44,950 
     function addUtility(address _utility) external onlyAdmin{
         registeredUtility_[_utility].active = true;
         emit UtilityAdded(_utility);
@@ -134,6 +135,7 @@ contract MembershipManagerV1 is AdminManaged {
     /// @param _utility         :address    The utility in question
     /// @param _id              :uint8      The registered reputation increment
     /// @param _rewardAmount    :uint256    The amount that the event adds to a users reputation
+    // Rough gas usage 45,824 
     function setReputationRewardEvent(address _utility, uint8 _id, uint256 _rewardAmount) external onlySystemAdmin{
         reputationRewards_[_utility][_id] = _rewardAmount;
         emit ReputationRewardSet(_utility, _id, _rewardAmount);
@@ -151,6 +153,7 @@ contract MembershipManagerV1 is AdminManaged {
     /// @param _daiValue        :uint256    The value in DAI of tokens to extract
     /// @param _member          :address    The member address 
     /// @return bool            Returns a bool for requires to validate
+    // Rough gas usage 102,245
     function stakeMembership(uint256 _daiValue, address _member) external notDisabled() returns(bool) {
         uint256 requiredTokens = ITokenManager(tokenManager_).colateralToTokenSelling(_daiValue);
         require(ITokenManager(tokenManager_).transferFrom(_member, address(this), requiredTokens), "Transfer was not complete");

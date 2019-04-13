@@ -56,7 +56,7 @@ function MemberCard(props: OwnProps) {
           {
             !profileImage && <section className={classes.media}>
               <Blockies
-                seed={ethAddress}
+                seed={ethAddress ? ethAddress : "0x"}
                 size={105}
                 scale={4}
                 color={colors.proteaBranding.orange}

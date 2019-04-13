@@ -37,10 +37,11 @@ Contract deployments on test nets are to use our internal test account
 https://rinkeby.etherscan.io/address/0x0f17d2198dbb9d7a50557284f7ee10dfa5e0628a
 
 ### yarn deploy:rinkeby
-The current contracts as of 11/04/2019 are deployed on Rinkeby at the following address, with the following markets. 
+The current contracts as of 14/04/2019 are deployed on Rinkeby at the following address, with the following markets. 
 
-PseudoDai:              0x080654F69f7EdEb74BaaBcA37de5819744A49535
-Community Factory:      0xB55f81Cd94F07d9c5C476AAb6b0beCCd2DB24833
-Basic Linear Factory:   0xf81A79DC18A9df50002F2628f7e8931c5DA64A02
-Membership Mgr Fact:    0xc06Bc518A3227E1bF89Dee75C19e4A3c7a198181
-Event Manager Factory:  0xb621Ce801A370d29b42615394376394C6fa760E1
+#### Rinkeby
+PseudoDai:              0xD2F77f6B90fc8f0040d1f99C999891CafeCdB1D6
+Community Factory:      0xD5E6D7cE0B1A2B52F28387A126236c32aa1E2599
+Basic Linear Factory:   0x80fa2b7ED4c090e7585D93070fBD67225734eeA8
+Membership Mgr Fact:    0x5aCD469be0Fbb2479CEAa2A7Ac403d1fDD1bfcb6
+Event Manager Factory:  0xbFefc9ac48ec83961E29027B46bff7d3a3255Cc4

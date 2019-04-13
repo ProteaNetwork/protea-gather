@@ -59,9 +59,7 @@ export function* withdrawMembership(communityData: {tbcAddress:string, daiValue:
     // Unstake
     yield put(setTxContextAction(`Withdrawing ${communityData.daiValue} Dai worth of tokens from membership` ));
     yield put(setRemainingTxCountAction(2));
-    const membersTokens = yield retry(5, 2000, getAvailableStake, communityData.membershipManagerAddress);
-    const daiValue = yield retry(5, 2000, getDaiValueBurn, communityData.tbcAddress, membersTokens);
-    yield retry(5, 2000, withdrawMembershipStake, daiValue, communityData.membershipManagerAddress)
+    yield retry(5, 2000, withdrawMembershipStake, ethers.utils.parseUnits(`${communityData.daiValue}`, 18), communityData.membershipManagerAddress)
 
     yield put(setTxContextAction(`Exchanging community tokens for Dai` ));
     yield put(setRemainingTxCountAction(1));

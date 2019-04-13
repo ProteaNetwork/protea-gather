@@ -2505,6 +2505,151 @@ describe('Event Manager', () => {
         })
     })
 
+    describe("Stress tests", () => {
+        it("Allows RSVP's on 5th event with max attendee limit set", async ()=>{
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .createEvent(
+                        eventManagerSettings.eventData[0].name,
+                        eventManagerSettings.eventData[0].maxAttendees,
+                        communityCreatorAccount.wallet.address,
+                        eventManagerSettings.eventData[0].requiredDai
+                    )
+            )
+            
+            let eventData = await eventManagerInstance
+                .from(communityCreatorAccount)
+                .getEvent(0);
+
+            assert.equal(eventData[0], eventManagerSettings.eventData[0].name, "Event not created successfully")
+
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .createEvent(
+                        `${eventManagerSettings.eventData[0].name}1`,
+                        eventManagerSettings.eventData[0].maxAttendees,
+                        communityCreatorAccount.wallet.address,
+                        eventManagerSettings.eventData[0].requiredDai
+                    )
+            )
+
+            eventData = await eventManagerInstance
+                .from(communityCreatorAccount)
+                .getEvent(1);
+
+            assert.equal(eventData[0], `${eventManagerSettings.eventData[0].name}1`, "Event not created successfully")
+
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .createEvent(
+                        `${eventManagerSettings.eventData[0].name}2`,
+                        eventManagerSettings.eventData[0].maxAttendees,
+                        communityCreatorAccount.wallet.address,
+                        eventManagerSettings.eventData[0].requiredDai
+                    )
+            )
+
+            eventData = await eventManagerInstance
+                .from(communityCreatorAccount)
+                .getEvent(2);
+
+            assert.equal(eventData[0], `${eventManagerSettings.eventData[0].name}2`, "Event not created successfully")
+
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .createEvent(
+                        `${eventManagerSettings.eventData[0].name}3`,
+                        eventManagerSettings.eventData[0].maxAttendees,
+                        communityCreatorAccount.wallet.address,
+                        eventManagerSettings.eventData[0].requiredDai
+                    )
+            )
+
+            eventData = await eventManagerInstance
+                .from(communityCreatorAccount)
+                .getEvent(3);
+
+            assert.equal(eventData[0], `${eventManagerSettings.eventData[0].name}3`, "Event not created successfully")
+
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .createEvent(
+                        `${eventManagerSettings.eventData[0].name}4`,
+                        eventManagerSettings.eventData[0].maxAttendees,
+                        communityCreatorAccount.wallet.address,
+                        eventManagerSettings.eventData[0].requiredDai
+                    )
+            )
+
+            eventData = await eventManagerInstance
+                .from(communityCreatorAccount)
+                .getEvent(4);
+
+            assert.equal(eventData[0], `${eventManagerSettings.eventData[0].name}4`, "Event not created successfully")
+
+            await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .createEvent(
+                        `${eventManagerSettings.eventData[0].name}5`,
+                        eventManagerSettings.eventData[0].maxAttendees,
+                        communityCreatorAccount.wallet.address,
+                        eventManagerSettings.eventData[0].requiredDai
+                    )
+            )
+
+            eventData = await eventManagerInstance
+                .from(communityCreatorAccount)
+                .getEvent(5);
+
+            assert.equal(eventData[0], `${eventManagerSettings.eventData[0].name}5`, "Event not created successfully")
+
+            // Changing participant limit
+
+            const receipt = await (
+                await eventManagerInstance
+                    .from(communityCreatorAccount)
+                    .changeParticipantLimit(
+                        5,
+                        6
+                    )
+            ).wait()
+            let testRsvpAccount = devnetAccounts[7];
+            await pseudoDaiInstance.from(testRsvpAccount.wallet.address).mint();
+
+            let tokensForDai = await tokenManagerInstance
+                .from(testRsvpAccount.wallet.address)
+                .colateralToTokenBuying(ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18));
+
+            await pseudoDaiInstance.from(testRsvpAccount.wallet.address)
+                .approve(
+                    tokenManagerInstance.contract.address,
+                    ethers.utils.parseUnits(`${defaultDaiPurchase}`, 18)
+                );
+            await (await tokenManagerInstance
+                .from(testRsvpAccount.wallet.address)
+                .mint(
+                    testRsvpAccount.wallet.address, 
+                    tokensForDai
+            )).wait();
+
+         
+            await (await membershipManagerInstance.from(testRsvpAccount).stakeMembership(membershipSettings.testingStakeValue, testRsvpAccount.wallet.address)).wait();
+
+            await (
+                await eventManagerInstance
+                    .from(userAccount)
+                    .rsvp(5)
+            ).wait()
+        
+        })
+    })
+
     describe("Meta data", () =>{
         it("Returns the event data", async () => {
             await (

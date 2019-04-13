@@ -59,6 +59,7 @@ contract CommunityFactoryV1 is BaseCommunityFactory{
     /// @param _contributionRate        :uint256 Percentage of incoming DAI to be diverted to the community account, from 0 to 100
     /// @return uint256                 Index of the deployed ecosystem
     /// @dev                            Also sets a super admin for changing factories at a later stage, unused at present
+    // Rough gas usage 5,169,665 
     /// @author Ryan
     function createCommunity(
         string calldata _communityName,

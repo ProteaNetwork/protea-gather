@@ -86,6 +86,7 @@ interface OwnProps extends WithStyles<typeof styles> {
   slideIndex: number;
   daiTxAmount: number;
   balances: any;
+  onCreateEvent(): void;
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
   handleDaiValueChange(event: any): void;
@@ -114,158 +115,167 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     balances,
     onIncreaseMembership,
     onWithdrawMembership,
-    activeEvents
+    activeEvents,
+    onCreateEvent
   } = props;
   return (
     <Fragment>
-      <AppBar position="static" >
-        <div className={classes.infoBar}>
-          <Typography variant='h1' className={classes.texts}>{`${community.name}`}</Typography>
-        </div>
-        <Tabs
-          value={slideIndex}
-          onChange={handleChange}
-          variant="fullWidth" >
-          <Tab label="ABOUT" />
-          <Tab label="EVENTS" />
-          <Tab label="MEMBERS" />
-          <Tab label="STATS" />
-        </Tabs>
-      </AppBar>
-      <SwipeableViews
-        index={slideIndex}
-        onChangeIndex={handleChangeIndex}>
-        <section>
-          <section className={classes.bannerImg}>
-            {
-              community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
-              </img>)
-            }
-            {
-              !community.bannerImage && (
-              <Blockies
-                seed={community.description}
-                size={125}
-                scale={5}
-                color={colors.proteaBranding.orange}
-                bgColor={colors.white}
-                spotColor={colors.proteaBranding.pink}
-              />
-              )
-            }
-          </section>
-          <section className={classes.infoBar}>
-            <div>
-              <Typography className={classes.texts}>Community Token: {community.tokenSymbol}</Typography>
-              <Typography className={classes.texts}>Available Stake: {parseFloat(`${community.availableStake}`).toFixed(2)}DAI</Typography>
-            </div>
-            <div>
-              <Typography className={classes.texts}>Contribution Rate: {community.contributionRate}%</Typography>
-              <Typography className={classes.texts}>
-                {community.isMember ? `Joined: ${dayjs(community.memberSince).format('YYYY-MM-DD')}` : `Join today!`}
-              </Typography>
-            </div>
-          </section>
-          <section className={classes.buttonArea}>
-            {!community.isMember && <Button
-              className={classes.buttons}
-              onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-              size="large">
-              {`JOIN for ${daiTxAmount}Dai`}
-            </Button>}
-            {community.isMember && <Button
-              className={classes.buttons}
-              onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-              size="large">
-              {`Increase stake by ${daiTxAmount}Dai`}
-            </Button>}
-            {community.isMember && <Button
-              className={classes.buttons}
-              onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-              size="large">
-              {`Withdraw stake by ${daiTxAmount}Dai`}
-            </Button>}
-            {community.isAdmin && <Button
-              className={classes.buttons}
-              size="large">
-              CREATE EVENT
-            </Button>}
-          </section>
-          <section className={classes.puchasingSection}>
-            <Input type="number" inputProps={{ min: "1", max: `${parseFloat(`${balances.daiBalance}`).toFixed(2)}`, step: "1" }} onChange={(event) => handleDaiValueChange(event)} value={daiTxAmount} />
-            <Typography className={classes.texts} component="p" variant="subtitle1">
-              Please set the value here
-            </Typography>
-
-          </section>
-          <section className={classes.infoBar}>
-            <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
-            <Typography className={classes.texts}>{community.description}</Typography>
-          </section>
-        </section>
-        <section className={classes.eventsSection}>
-          {upcomingEvents.length === 0 ?
+      {
+        community && (
+          <Fragment>
+            <AppBar position="static" >
             <div className={classes.infoBar}>
-              <Typography className={classes.texts}>No upcoming events</Typography>
+              <Typography variant='h1' className={classes.texts}>{`${community.name ? community.name : ''}`}</Typography>
             </div>
-          :
-            <CarouselEvents
-              // @ts-ignore
-              label="UPCOMING EVENTS"
-              // @ts-ignore
-              events={upcomingEvents} >
-            </CarouselEvents>
-          }
-            <div>
-            {activeEvents.length === 0 ?
-              <section className={classes.infoBar}>
-                <Typography className={classes.texts}>No active events</Typography>
+            <Tabs
+              value={slideIndex}
+              onChange={handleChange}
+              variant="fullWidth" >
+              <Tab label="ABOUT" />
+              <Tab label="EVENTS" />
+              <Tab label="MEMBERS" />
+              <Tab label="STATS" />
+            </Tabs>
+          </AppBar>
+          <SwipeableViews
+            index={slideIndex}
+            onChangeIndex={handleChangeIndex}>
+            <section>
+              <section className={classes.bannerImg}>
+                {
+                  community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
+                  </img>)
+                }
+                {
+                  !community.bannerImage && (
+                  <Blockies
+                    seed={community.tbcAddress ? community.tbcAddress : "0x"}
+                    size={125}
+                    scale={5}
+                    color={colors.proteaBranding.orange}
+                    bgColor={colors.white}
+                    spotColor={colors.proteaBranding.pink}
+                  />
+                  )
+                }
               </section>
-            :
-              <CarouselEvents
-                // @ts-ignore
-                label="ACTIVE EVENTS"
-                // @ts-ignore
-                events={activeEvents} >
-              </CarouselEvents>
-            }
-            </div>
-          <div>
-            {pastEvents.length === 0 ?
-              <div className={classes.infoBar}>
-                <Typography className={classes.texts}>No past events</Typography>
+              <section className={classes.infoBar}>
+                <div>
+                  <Typography className={classes.texts}>Community Token: {community.tokenSymbol ? community.tokenSymbol : ''}</Typography>
+                  <Typography className={classes.texts}>Available Stake: {parseFloat(`${community.availableStake ? community.availableStake : 0}`).toFixed(2)}DAI</Typography>
+                </div>
+                <div>
+                  <Typography className={classes.texts}>Contribution Rate: {community.contributionRate ? community.contributionRate : 0}%</Typography>
+                  <Typography className={classes.texts}>
+                    {community.isMember ? `Joined: ${dayjs(community.memberSince).format('YYYY-MM-DD')}` : `Join today!`}
+                  </Typography>
+                </div>
+              </section>
+              <section className={classes.buttonArea}>
+                {!community.isMember && <Button
+                  className={classes.buttons}
+                  onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+                  size="large">
+                  {`JOIN for ${daiTxAmount}Dai`}
+                </Button>}
+                {community.isMember && <Button
+                  className={classes.buttons}
+                  onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+                  size="large">
+                  {`Increase stake by ${daiTxAmount}Dai`}
+                </Button>}
+                {community.isMember && <Button
+                  className={classes.buttons}
+                  onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
+                  size="large">
+                  {`Withdraw stake by ${daiTxAmount}Dai`}
+                </Button>}
+                {community.isAdmin && <Button
+                  onClick={() => onCreateEvent()}
+                  className={classes.buttons}
+                  size="large">
+                  CREATE EVENT
+                </Button>}
+              </section>
+              <section className={classes.puchasingSection}>
+                <Input type="number" inputProps={{ min: "1", max: `${parseFloat(`${balances.daiBalance}`).toFixed(2)}`, step: "1" }} onChange={(event) => handleDaiValueChange(event)} value={daiTxAmount} />
+                <Typography className={classes.texts} component="p" variant="subtitle1">
+                  Please set the value here
+                </Typography>
+
+              </section>
+              <section className={classes.infoBar}>
+                <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>
+                <Typography className={classes.texts}>{community.description}</Typography>
+              </section>
+            </section>
+            <section className={classes.eventsSection}>
+              {upcomingEvents.length === 0 ?
+                <div className={classes.infoBar}>
+                  <Typography className={classes.texts}>No upcoming events</Typography>
+                </div>
+              :
+                <CarouselEvents
+                  // @ts-ignore
+                  label="UPCOMING EVENTS"
+                  // @ts-ignore
+                  events={upcomingEvents} >
+                </CarouselEvents>
+              }
+                <div>
+                {activeEvents.length === 0 ?
+                  <section className={classes.infoBar}>
+                    <Typography className={classes.texts}>No active events</Typography>
+                  </section>
+                :
+                  <CarouselEvents
+                    // @ts-ignore
+                    label="ACTIVE EVENTS"
+                    // @ts-ignore
+                    events={activeEvents} >
+                  </CarouselEvents>
+                }
+                </div>
+              <div>
+                {pastEvents.length === 0 ?
+                  <div className={classes.infoBar}>
+                    <Typography className={classes.texts}>No past events</Typography>
+                  </div>
+                :
+                  <CarouselEvents
+                    // @ts-ignore
+                    label="PAST EVENTS"
+                    // @ts-ignore
+                    events={pastEvents} >
+                  </CarouselEvents>
+                }
               </div>
-            :
-              <CarouselEvents
-                // @ts-ignore
-                label="PAST EVENTS"
-                // @ts-ignore
-                events={pastEvents} >
-              </CarouselEvents>
-            }
-          </div>
-        </section>
-        <section>
-          {community.memberList.length === 0 &&
+            </section>
+            <section>
+              {community.memberList && community.memberList.length === 0 &&
+                  <div className={classes.infoBar}>
+                    <Typography className={classes.texts}>No members yet!</Typography>
+                  </div>
+              }
+              {
+                community.memberList && community.memberList.length > 0 &&
+                (community.memberList.map((member: IMember) => <MembersTab key={member.ethAddress} stateMessage={""} member={member}/>
+                  ))
+                }
+            </section>
+            <section>
               <div className={classes.infoBar}>
-                <Typography className={classes.texts}>No past events</Typography>
+                <Typography>Stats information is not yet available</Typography>
               </div>
-          }
-          {
-             community.memberList.length > 0 &&
-             (community.memberList.map((member: IMember) => <MembersTab key={member.ethAddress} stateMessage={""} member={member}/>
-              ))
-            }
-        </section>
-        <section>
-          <div className={classes.infoBar}>
-            <Typography>Stats information is not yet available</Typography>
-          </div>
-          <div>
-            {/** TODO add the buttons for buying and selling inside community */}
-          </div>
-        </section>
-      </SwipeableViews>
+              <div>
+                {/** TODO add the buttons for buying and selling inside community */}
+              </div>
+            </section>
+          </SwipeableViews>
+        </Fragment>
+        )
+      }
+
     </Fragment>
   );
 };

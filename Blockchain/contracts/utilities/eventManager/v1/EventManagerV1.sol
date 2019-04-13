@@ -50,7 +50,7 @@ contract EventManagerV1 is BaseUtility {
 
     modifier onlyRsvpAvailable(uint256 _index) {
         uint24 currentAttending = uint24(events_[_index].currentAttendees.length);
-        require((events_[_index].maxAttendees == 0 || (currentAttending + 1) >= events_[_index].maxAttendees), "RSVP not available");
+        require((events_[_index].maxAttendees == 0 || currentAttending < events_[_index].maxAttendees), "RSVP not available");
         _;
     }
 
@@ -225,7 +225,8 @@ contract EventManagerV1 is BaseUtility {
         onlyStarted(_index)
         onlyOrganiser(_index)
     {
-        for(uint256 i = 0; i < _attendees.length; i++){
+        uint256 arrayLength = _attendees.length;
+        for(uint256 i = 0; i < arrayLength; i++){
             if(memberState_[_index][_attendees[i]] == 1){
                 memberState_[_index][_attendees[i]] = 99;
                 events_[_index].totalAttended = events_[_index].totalAttended +1;
@@ -339,7 +340,8 @@ contract EventManagerV1 is BaseUtility {
     function removeFromList(address _target, address[] memory _addressList) internal pure returns(address[] memory) {
         uint256 offset = 0;
         address[] memory newList = new address[](_addressList.length-1);
-        for (uint256 i = 0; i < _addressList.length; i++){
+        uint256 arrayLength = _addressList.length;
+        for (uint256 i = 0; i < arrayLength; i++){
             if(_addressList[i] != _target){
                 newList[i - offset]  = _addressList[i];
             }else{

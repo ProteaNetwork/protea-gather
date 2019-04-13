@@ -16,6 +16,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { withdrawMembershipAction, increaseMembershipAction } from 'domain/membershipManagement/actions';
 import ViewCommunity from 'components/ViewCommunity';
 import { Button } from '@material-ui/core';
+import { forwardTo } from 'utils/history';
 
 interface RouteParams {
   tbcAddress: string; // must be type string since route params
@@ -60,14 +61,20 @@ class ViewCommunityContainer extends React.Component<Props>  {
     this.setState({daiTxAmount: event.target.value})
   }
 
+  onCreateEvent = () => {
+    forwardTo(`/events/${this.props.community.eventManagerAddress ? this.props.community.eventManagerAddress : '0x'}/create`)
+  }
+
   render() {
     const { community, events, balances, onIncreaseMembership, onWithdrawMembership, onJoinCommunity} = this.props;
+                  // href={}
     return (
     <Fragment>
       <ViewCommunity
         slideIndex={this.state.slideIndex}
         handleChange={this.handleChange}
         balances={balances}
+        onCreateEvent={this.onCreateEvent}
         handleChangeIndex={this.handleChangeIndex}
         handleDaiValueChange={this.handleDaiValueChange}
         onIncreaseMembership={onIncreaseMembership}

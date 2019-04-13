@@ -89,7 +89,7 @@ function EventCard(props: OwnProps) {
               label={`${name}`}
               className={classes.chip}
               avatar={<Blockies
-                seed={eventId}
+                seed={eventId ? eventId : "0x"}
                 size={13}
                 scale={2}
                 color={colors.proteaBranding.orange}

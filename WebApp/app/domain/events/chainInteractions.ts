@@ -277,7 +277,6 @@ export async function rsvpTx(eventId: string) {
     const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
-
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
 
 

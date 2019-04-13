@@ -76,7 +76,7 @@ function CommunityCard(props: Props) {
           {
             !bannerImage && <section className={classes.media}>
               <Blockies
-                seed={tbcAddress}
+                seed={tbcAddress ? tbcAddress : "0x"}
                 size={105}
                 scale={4}
                 color={colors.proteaBranding.orange}
