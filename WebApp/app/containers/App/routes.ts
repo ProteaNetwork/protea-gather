@@ -10,6 +10,7 @@ import DiscoverEventsContainer from 'containers/DiscoverEventsContainer';
 import DiscoverCommunitiesContainer from 'containers/DiscoverCommunitiesContainer';
 import ProfileContainer from 'containers/ProfileContainer';
 import UpdateCommunityContainer from 'containers/UpdateCommunityContainer';
+import UpdateEventContainer from 'containers/UpdateEventContainer';
 
 export interface appRoute {
   name: string;
@@ -65,14 +66,21 @@ const routes: appRoute[] = [
   },
   {
     name: 'Create Event',
-    path: '/events/:eventManagerAddress?/create/',
+    path: '/events/:eventManagerAddress/create/',
     component: CreateEventContainer,
     isProtected: true,
     isNavRequired: false,
   },
   {
+    name: 'Update Event',
+    path: '/events/:eventId/update/',
+    component: UpdateEventContainer,
+    isProtected: true,
+    isNavRequired: false,
+  },
+  {
     name: 'View Event',
-    path: '/events/:eventId?',
+    path: '/events/:eventId',
     component: ViewEventContainer,
     isProtected: true,
     isNavRequired: false,

@@ -31,9 +31,16 @@ export class EventController {
     return await this.eventService.createEvent(bodyData, bannerImage);
   }
 
-  @Put()
+  @Put(':eventId/update')
   @UseGuards(AuthGuard('jwt'))
-  async updateEvent(@Body() bodyData: EventDTO){
-
+  @UseInterceptors(FileInterceptorHelper(
+    {
+      name: 'bannerImage',
+      maxCount: 1,
+      type: FileOptions.PICTURE
+    }
+  ))
+  async updateEvent(@Body() bodyData, @UploadedFile() bannerImage){
+    return await this.eventService.updateEvent(bodyData, bannerImage);
   }
 }
