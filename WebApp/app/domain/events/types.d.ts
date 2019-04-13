@@ -22,7 +22,7 @@ interface IEvent{
   name: string;
   bannerImage: string;
   description: string;
-  date: Date;
+  eventDate: Date;
   memberState: Number;
 }
 

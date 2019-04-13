@@ -1,26 +1,47 @@
-import { saveCommunity } from "domain/communities/actions";
+import { ethers } from "ethers";
 import { take, fork, call, put, all, select, delay } from "@redux-saga/core/effects";
 
+import { saveCommunity } from "domain/communities/actions";
 import { ICommunity } from "domain/communities/types";
-import { saveEvent, getEventMetaAction, checkStatus, statusUpdated, createEventAction, startEventAction, endEventAction, cancelEventAction, changeEventLimitAction, manualConfirmAttendeesAction, rsvpAction, cancelRsvpAction, confirmAttendanceAction, claimGiftAction, getEventAction } from "./actions";
+import {
+  saveEvent,
+  getEventMetaAction,
+  checkStatus,
+  statusUpdated,
+  createEventAction,
+  startEventAction,
+  endEventAction,
+  cancelEventAction,
+  changeEventLimitAction,
+  manualConfirmAttendeesAction,
+  rsvpAction,
+  cancelRsvpAction,
+  confirmAttendanceAction, 
+  claimGiftAction, 
+  getEventAction, 
+  updateEventAction
+} from "./actions";
 import { IEvent } from "./types";
-import { getEventMeta as getEventMetaApi } from "api/api";
+import { 
+  getEventMeta as getEventMetaApi,
+  createEvent as createEventApi,
+  updateEvent as updateEventApi,
+} from "api/api";
 import { getEventsTx, checkMemberStateOnChain, publishEventToChain, getEvent, changeEventLimitTx, rsvpTx, cancelRsvpTx, startEventTx, confirmAttendanceTx, endEventTx, claimGiftTx, cancelEventTx, manualConfirmAttendeesTx } from "./chainInteractions";
 import { setTxContextAction, setRemainingTxCountAction } from "domain/transactionManagement/actions";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
 
-import { createEvent as createEventApi } from "api/api";
-import { ethers } from "ethers";
 import { getLockedCommitmentTx, getTotalRemainingInUtilityTx } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
+import { getType } from "typesafe-actions";
 
 
-export function* checkMemberState(eventId: string, membershipManagerAddress: string){
+export function* checkMemberState(eventId: string, membershipManagerAddress: string) {
   let memberState = yield call(checkMemberStateOnChain, eventId);
-  let stakedTokens = memberState > 0 ? yield call(getLockedCommitmentTx, membershipManagerAddress, eventId): 0;
+  let stakedTokens = memberState > 0 ? yield call(getLockedCommitmentTx, membershipManagerAddress, eventId) : 0;
   let totalTokensStaked = yield call(getTotalRemainingInUtilityTx, membershipManagerAddress, eventId);
-  yield put(statusUpdated({eventId: eventId, memberState: memberState, stakedTokens:stakedTokens, totalTokensStaked: totalTokensStaked}));
+  yield put(statusUpdated({ eventId: eventId, memberState: memberState, stakedTokens: stakedTokens, totalTokensStaked: totalTokensStaked }));
 }
 
 export function* populateCommunityEvents(community: ICommunity) {
@@ -30,54 +51,54 @@ export function* populateCommunityEvents(community: ICommunity) {
     return event;
   })
   yield all(events.map(event => (put(saveEvent(event)))));
-  yield all(events.map((event: IEvent) => (put(checkStatus({eventId: event.eventId, membershipManagerAddress: event.membershipManagerAddress})))));
+  yield all(events.map((event: IEvent) => (put(checkStatus({ eventId: event.eventId, membershipManagerAddress: event.membershipManagerAddress })))));
   yield all(events.map(event => (put(getEventMetaAction.request(event.eventId)))));
 }
 
-export function* getEventMeta(requestData){
-  try{
+export function* getEventMeta(requestData) {
+  try {
     const eventMeta = yield call(getEventMetaApi, requestData);
     yield put(getEventMetaAction.success(eventMeta.data));
   }
-  catch(error){
+  catch (error) {
     yield put(getEventMetaAction.failure(error));
   }
 }
 
 export function* populateCommunityEventsListener() {
-  while(true){
+  while (true) {
     const community: ICommunity = (yield take(saveCommunity)).payload;
     yield fork(populateCommunityEvents, community);
   }
 }
 
-export function* resolveEvent(eventId: string, membershipManagerAddress: string){
+export function* resolveEvent(eventId: string, membershipManagerAddress: string) {
   let eventData = yield call(getEvent, eventId);
   eventData.membershipManagerAddress = membershipManagerAddress;
   yield put(saveEvent(eventData));
-  yield put(checkStatus({eventId: eventId, membershipManagerAddress: membershipManagerAddress}));
+  yield put(checkStatus({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   yield put(getEventMetaAction.request(eventId));
 }
 
 // CRUD
-export function* createEventInDb(event: IEvent){
+export function* createEventInDb(event: IEvent) {
   const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
-  try{
+  try {
     return (yield call(createEventApi, event, apiKey));
   }
-  catch(error){
+  catch (error) {
     yield put(createEventAction.failure(error.message));
     return false;
   }
 }
 
-export function* createEvent(){
-  while(true){
+export function* createEvent() {
+  while (true) {
     let newEvent: IEvent = (yield take(createEventAction.request)).payload;
 
-    yield put(setTxContextAction(`Publishing your event to the chain` ));
+    yield put(setTxContextAction(`Publishing your event to the chain`));
     yield put(setRemainingTxCountAction(1));
-    try{
+    try {
       newEvent = {
         ...newEvent,
         ...(yield retry(
@@ -98,14 +119,14 @@ export function* createEvent(){
       yield put(createEventAction.success());
       yield call(forwardTo, `/events/${newEvent.eventId}`);
     }
-    catch(error){
+    catch (error) {
       yield put(createEventAction.failure(error.message))
     }
   }
 }
 
-export function* startEvent(eventId: string, membershipManagerAddress: string){
-  try{
+export function* startEvent(eventId: string, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Starting the event`));
     yield put(setRemainingTxCountAction(1));
 
@@ -113,15 +134,15 @@ export function* startEvent(eventId: string, membershipManagerAddress: string){
 
     yield put(startEventAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(startEventAction.failure(e));
   }
 }
 
-export function* endEvent(eventId: string, membershipManagerAddress: string){
-  try{
+export function* endEvent(eventId: string, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Ending the event`));
     yield put(setRemainingTxCountAction(1));
 
@@ -129,15 +150,15 @@ export function* endEvent(eventId: string, membershipManagerAddress: string){
 
     yield put(endEventAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(endEventAction.failure(e));
   }
 }
 
-export function* cancelEvent(eventId: string, membershipManagerAddress: string){
-  try{
+export function* cancelEvent(eventId: string, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Cancelling event`));
     yield put(setRemainingTxCountAction(1));
 
@@ -145,15 +166,15 @@ export function* cancelEvent(eventId: string, membershipManagerAddress: string){
 
     yield put(cancelEventAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(cancelEventAction.failure(e));
   }
 }
 
-export function* changeEventLimit(eventId: string, limit: number, membershipManagerAddress: string){
-  try{
+export function* changeEventLimit(eventId: string, limit: number, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Setting new max participant limit`));
     yield put(setRemainingTxCountAction(1));
 
@@ -161,15 +182,15 @@ export function* changeEventLimit(eventId: string, limit: number, membershipMana
 
     yield put(changeEventLimitAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(changeEventLimitAction.failure(e));
   }
 }
 
-export function* manualConfirmAttendees(eventId: string, attendees: string[], membershipManagerAddress: string){
-  try{
+export function* manualConfirmAttendees(eventId: string, attendees: string[], membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Confirming your list of attendees`));
     yield put(setRemainingTxCountAction(1));
 
@@ -177,16 +198,16 @@ export function* manualConfirmAttendees(eventId: string, attendees: string[], me
 
     yield put(manualConfirmAttendeesAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(manualConfirmAttendeesAction.failure(e));
   }
 }
 
 
-export function* rsvp(eventId: string, membershipManagerAddress: string){
-  try{
+export function* rsvp(eventId: string, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`RSVPing to the event`));
     yield put(setRemainingTxCountAction(1));
 
@@ -194,15 +215,15 @@ export function* rsvp(eventId: string, membershipManagerAddress: string){
 
     yield put(rsvpAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(rsvpAction.failure(e));
   }
 }
 
-export function* cancelRsvp(eventId: string, membershipManagerAddress: string){
-  try{
+export function* cancelRsvp(eventId: string, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Cancelling RSVP`));
     yield put(setRemainingTxCountAction(1));
 
@@ -210,15 +231,15 @@ export function* cancelRsvp(eventId: string, membershipManagerAddress: string){
 
     yield put(cancelRsvpAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(cancelRsvpAction.failure(e));
   }
 }
 
-export function* confirmAttendance(eventId: string, membershipManagerAddress: string){
-  try{
+export function* confirmAttendance(eventId: string, membershipManagerAddress: string) {
+  try {
     yield put(setTxContextAction(`Confirming attendance to event`));
     yield put(setRemainingTxCountAction(1));
 
@@ -226,18 +247,18 @@ export function* confirmAttendance(eventId: string, membershipManagerAddress: st
 
     yield put(confirmAttendanceAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(confirmAttendanceAction.failure(e));
   }
 }
 
-export function* claimGift(eventId: string, membershipManagerAddress: string, eventState: number){
-  try{
-    if(eventState == 3){
+export function* claimGift(eventId: string, membershipManagerAddress: string, eventState: number) {
+  try {
+    if (eventState == 3) {
       yield put(setTxContextAction(`Claiming gift of tokens for attending`));
-    }else if(eventState == 4){
+    } else if (eventState == 4) {
       yield put(setTxContextAction(`Returning staked tokens`));
     }
 
@@ -247,95 +268,113 @@ export function* claimGift(eventId: string, membershipManagerAddress: string, ev
 
     yield put(claimGiftAction.success());
     yield delay(5000);
-    yield put(getEventAction({eventId: eventId, membershipManagerAddress:membershipManagerAddress}));
+    yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
-  catch(e){
+  catch (e) {
     yield put(claimGiftAction.failure(e));
   }
 }
 
 // Listeners
-export function* getEventListener(){
-  while(true){
+export function* getEventListener() {
+  while (true) {
     const eventData = (yield take(getEventAction)).payload;
     yield fork(resolveEvent, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* getEventMetaListener(){
-  while(true){
+export function* getEventMetaListener() {
+  while (true) {
     const requestData = (yield take(getEventMetaAction.request)).payload;
     yield fork(getEventMeta, requestData);
   }
 }
 
-export function* checkMemberStateListener(){
-  while(true){
+export function* checkMemberStateListener() {
+  while (true) {
     const eventData = (yield take(checkStatus)).payload;
     yield fork(checkMemberState, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* startEventListener(){
-  while(true){
+export function* startEventListener() {
+  while (true) {
     const eventData = (yield take(startEventAction.request)).payload;
     yield fork(startEvent, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* endEventListener(){
-  while(true){
+export function* endEventListener() {
+  while (true) {
     const eventData = (yield take(endEventAction.request)).payload;
     yield fork(endEvent, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* cancelEventListener(){
-  while(true){
+export function* cancelEventListener() {
+  while (true) {
     const eventData = (yield take(cancelEventAction.request)).payload;
     yield fork(cancelEvent, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* changeEventLimitListener(){
-  while(true){
+export function* changeEventLimitListener() {
+  while (true) {
     const eventData = (yield take(changeEventLimitAction.request)).payload;
     yield fork(changeEventLimit, eventData.eventId, eventData.limit, eventData.membershipManagerAddress);
   }
 }
 
-export function* manualConfirmAttendeeListener(){
-  while(true){
+export function* manualConfirmAttendeeListener() {
+  while (true) {
     const eventData = (yield take(manualConfirmAttendeesAction.request)).payload;
     yield fork(manualConfirmAttendees, eventData.eventId, eventData.attendees, eventData.membershipManagerAddress);
   }
 }
 
-export function* rsvpListener(){
-  while(true){
+export function* rsvpListener() {
+  while (true) {
     const eventData = (yield take(rsvpAction.request)).payload;
     yield fork(rsvp, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* cancelRsvpListener(){
-  while(true){
+export function* cancelRsvpListener() {
+  while (true) {
     const eventData = (yield take(cancelRsvpAction.request)).payload;
     yield fork(cancelRsvp, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* confirmAttendanceListener(){
-  while(true){
+export function* confirmAttendanceListener() {
+  while (true) {
     const eventData = (yield take(confirmAttendanceAction.request)).payload;
     yield fork(confirmAttendance, eventData.eventId, eventData.membershipManagerAddress);
   }
 }
 
-export function* claimGiftListener(){
-  while(true){
+export function* claimGiftListener() {
+  while (true) {
     const eventData = (yield take(claimGiftAction.request)).payload;
     yield fork(claimGift, eventData.eventId, eventData.membershipManagerAddress, eventData.state);
+  }
+}
+
+export function* updateEvent(event: IEvent) {
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  try {
+    yield call(updateEventApi, event, apiKey);
+    yield put(updateEventAction.success());
+    yield call(forwardTo, `/events/${event.eventId}`);
+  } catch (error) {
+    yield put(updateEventAction.failure(error.message));
+  }
+}
+
+export function* updateEvenListener() {
+  while (true) {
+    const action = yield take(getType(updateEventAction.request));
+    yield fork(updateEvent, action.payload);
   }
 }
 
@@ -345,6 +384,7 @@ export default function* root() {
   yield fork(getEventMetaListener);
   yield fork(getEventListener);
   yield fork(createEvent);
+  yield fork(updateEvenListener);
 
   yield fork(startEventListener);
   yield fork(endEventListener);

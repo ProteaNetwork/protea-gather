@@ -5,16 +5,17 @@
  */
 
 import React from 'react';
-import { Theme, createStyles, withStyles, WithStyles, Typography, FormControl, Button, Paper, CircularProgress } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, Typography, FormControl, Button, Paper, CircularProgress, Grid } from '@material-ui/core';
 import { Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import UploadImageField from 'components/UploadImageField';
 import { colors } from 'theme';
+import dayjs from 'dayjs';
 
 const styles = (theme: Theme) =>
   createStyles({
     // JSS in CSS goes here
-    background:{
+    background: {
       display: "block",
       backgroundColor: colors.proteaBranding.black,
       height: "100%",
@@ -30,7 +31,7 @@ const styles = (theme: Theme) =>
       color: colors.white,
       margin: "15px 0"
     },
-    subHeading:{
+    subHeading: {
       color: colors.white,
       margin: "15px 0"
     },
@@ -39,7 +40,7 @@ const styles = (theme: Theme) =>
       flexDirection: 'column',
       padding: '20px'
     },
-    publishButton:{
+    publishButton: {
       margin: "0 auto",
       display: 'block'
     },
@@ -47,41 +48,66 @@ const styles = (theme: Theme) =>
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
+  isNew: boolean;
   submitForm(data): void;
 }
 
-const CreateEventForm: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { submitForm, classes } = props;
+const EventForm: React.SFC<OwnProps> = (props: OwnProps) => {
+  const { submitForm, classes, isNew } = props;
   return (
     <div className={classes.background}>
       <Paper square={true} className={classes.paperRoot} elevation={0}>
         <Form className={classes.formRoot}>
           <Typography className={classes.heading} component="h1" variant="h1">
-            Create an event
+            {(isNew) ? "Create an event" : "Update event metadata"}
           </Typography>
           <FormControl>
             <Typography className={classes.subHeading} component="h4" variant="h4">
               Event banner
             </Typography>
-            <Field component={UploadImageField} name="bannerImage"  />
+            <Field component={UploadImageField} name="bannerImage" />
           </FormControl>
           <FormControl>
-            <Field name="name" label="Name:" component={TextField}/>
-          </FormControl>
-          <FormControl>
-            <Field name="maxAttendees" label="Maximum attendees (0 for unlimited):" type="number" component={TextField}/>
-          </FormControl>
-          <FormControl>
-            <Field name="requiredDai" label="Required Dai deposit:" type="number" component={TextField}/>
+            <Field name="name" label="Name:" component={TextField} disabled={!isNew} />
           </FormControl>
           <FormControl>
             <Field
+              name="maxAttendees"
+              label="Maximum attendees (0 for unlimited):"
+              type="number"
               component={TextField}
-              label="Event date:"
-              type="datetime-local"
-              name="eventDate"
-            />
+              InputProps={{
+                inputProps: {
+                  min: 0,
+                  step: 1,
+                }
+              }} />
           </FormControl>
+          <FormControl>
+            <Field name="requiredDai" label="Required Dai deposit:" type="number" component={TextField} disabled={!isNew} />
+          </FormControl>
+          <Grid container>
+            <Grid item xs={7}>
+              <Field
+                component={TextField}
+                InputProps={{
+                  inputProps: {
+                    min: dayjs().format('YYYY-MM-DD')
+                  }
+                }}
+                label="Event date:"
+                type="date"
+                name="eventDate" />
+            </Grid>
+            <Grid item xs={5}>
+              <Field
+                component={TextField}
+                label="Event time:"
+                type="time"
+                name="eventTime"
+                fullWidth />
+            </Grid>
+          </Grid>
           <FormControl>
             <Field
               component={TextField}
@@ -92,10 +118,9 @@ const CreateEventForm: React.SFC<OwnProps> = (props: OwnProps) => {
               rowsMax="12"
             />
           </FormControl>
-          <Field name="eventManagerAddress" type="hidden" />
           <div>
             <Button className={classes.publishButton} onClick={submitForm}>
-              Publish event
+              {(isNew) ? "Publish event" : "Update event"}
             </Button>
           </div>
         </Form>
@@ -104,4 +129,4 @@ const CreateEventForm: React.SFC<OwnProps> = (props: OwnProps) => {
   );
 };
 
-export default withStyles(styles, { withTheme: true })(CreateEventForm);
+export default withStyles(styles, { withTheme: true })(EventForm);

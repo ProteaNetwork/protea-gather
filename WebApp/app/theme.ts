@@ -111,10 +111,10 @@ const theme = createMuiTheme({
       root:{
         color: colors.controls.labelColor,
         "&$focused": {
-          color: colors.controls.labelColor
+          color: colors.white
         },
         '&$disabled':{
-          color: colors.white,
+          color: colors.controls.labelColor,
         }
       }
     },

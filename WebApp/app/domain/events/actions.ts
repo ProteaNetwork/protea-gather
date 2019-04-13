@@ -4,7 +4,7 @@
  *
  */
 
-import { action, createStandardAction, createAsyncAction } from 'typesafe-actions';
+import { createStandardAction, createAsyncAction } from 'typesafe-actions';
 import { IEvent } from './types';
 
 import ActionTypes from './constants';
@@ -27,6 +27,12 @@ export const createEventAction = createAsyncAction(
   ActionTypes.EVENT_CREATE_TX_REQUEST,
   ActionTypes.EVENT_CREATE_TX_SUCCESS,
   ActionTypes.EVENT_CREATE_TX_FAILURE,
+)<IEvent, void, string>();
+
+export const updateEventAction = createAsyncAction(
+  ActionTypes.UPDATE_EVENT_REQUEST,
+  ActionTypes.UPDATE_EVENT_SUCCESS,
+  ActionTypes.UPDATE_EVENT_FAILURE,
 )<IEvent, void, string>();
 
 export const startEventAction = createAsyncAction(
