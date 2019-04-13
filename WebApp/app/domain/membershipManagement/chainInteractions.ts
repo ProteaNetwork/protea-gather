@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 
 import { BigNumber } from "ethers/utils";
 import { BlockTag } from 'ethers/providers/abstract-provider';
-import { blockchainResources } from "blockchainResources";
+import { blockchainResources, getBlockchainObjects } from "blockchainResources";
 import { getDaiValueBurn } from "domain/communities/chainInteractions";
 
 export declare type EventFilter = {
@@ -19,12 +19,8 @@ export declare type EventFilter = {
 // Blockchain interactions
 // View/Read
 export async function getTotalRemainingInUtilityTx(membershipManagerAddress: string, eventId: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
-    const signerAddress = await signer.getAddress();
+    const {web3, provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.bigNumberify(eventId.split('-')[1]);
@@ -60,11 +56,8 @@ export async function getMembersTx(membershipManagerAddress: string){
 }
 
 export async function getLockedCommitmentTx(membershipManagerAddress:string, eventId: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const signerAddress = await signer.getAddress();
 
     const eventManagerAddress = eventId.split('-')[0];
@@ -82,10 +75,8 @@ export async function getLockedCommitmentTx(membershipManagerAddress:string, eve
 }
 
 export async function checkAdminState(membershipManagerAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const signerAddress = await signer.getAddress();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
 
@@ -100,10 +91,8 @@ export async function checkAdminState(membershipManagerAddress: string){
 }
 
 export async function getAvailableStake(membershipManagerAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
@@ -118,10 +107,8 @@ export async function getAvailableStake(membershipManagerAddress: string){
 }
 
 export async function checkUserStateOnChain(membershipManagerAddress: string, tbcAddress: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
@@ -146,10 +133,8 @@ export async function checkUserStateOnChain(membershipManagerAddress: string, tb
 // Write/Publish
 // Staking functions
 export async function increaseMembershipStake(daiValue: BigNumber, membershipManagerAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
@@ -175,10 +160,8 @@ export async function increaseMembershipStake(daiValue: BigNumber, membershipMan
 }
 
 export async function withdrawMembershipStake(daiValue: BigNumber, membershipManagerAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
@@ -203,10 +186,8 @@ export async function withdrawMembershipStake(daiValue: BigNumber, membershipMan
 
 
 export async function registerUtility(utilityAddress: string, membershipManagerAddress: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
 
     const txReceipt = await(await membershipManagerContract.addUtility(utilityAddress)).wait();
@@ -229,10 +210,8 @@ export async function registerUtility(utilityAddress: string, membershipManagerA
 
 
 export async function setReputationReward(utilityAddress: string, membershipManagerAddress: string, rewardId: BigNumber, rewardAmount: BigNumber) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
 
     const txReceipt = await(await membershipManagerContract.setReputationRewardEvent(utilityAddress, rewardId, rewardAmount)).wait();

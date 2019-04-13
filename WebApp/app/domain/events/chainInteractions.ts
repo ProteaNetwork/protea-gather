@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 // Ethers standard event filter type is missing the blocktags
 import { BlockTag } from 'ethers/providers/abstract-provider';
 import { BigNumber } from "ethers/utils";
-import { blockchainResources } from "blockchainResources";
+import { blockchainResources, getBlockchainObjects } from "blockchainResources";
 
 export declare type EventFilter = {
   address?: string;
@@ -17,15 +17,11 @@ export declare type EventFilter = {
 
 // View
 export async function getEventConfirmedAttendees(eventId: string): Promise<string[]>{
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.bigNumberify(eventId.split('-')[1]);
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
-
 
     const filterMemberAttended:EventFilter = eventManagerContract.filters.MemberAttended(eventIndex, null);
     filterMemberAttended.fromBlock = blockchainResources.publishedBlock;
@@ -44,14 +40,11 @@ export async function getEventConfirmedAttendees(eventId: string): Promise<strin
 
 
 export async function getEvent(eventId: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   const eventManagerAddress = eventId.split('-')[0];
   const eventIndex = eventId.split('-')[1];
 
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
 
     const eventData = await eventManagerContract.getEvent(eventIndex);
@@ -82,11 +75,8 @@ export async function getEvent(eventId: string){
 }
 
 export async function getEventsTx(eventManagerAddress: string){
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManager = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
 
     const eventCreatedFilter: EventFilter = eventManager.filters.EventCreated(null);
@@ -121,11 +111,8 @@ export async function getEventsTx(eventManagerAddress: string){
 }
 
 export async function checkMemberStateOnChain(eventId: string){
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = eventId.split('-')[1];
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
@@ -142,10 +129,8 @@ export async function checkMemberStateOnChain(eventId: string){
 
 // Write/Publish
 export async function publishEventToChain(eventManagerAddress: string, name: string, maxAttendees: BigNumber, requiredDai: BigNumber) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
@@ -171,11 +156,8 @@ export async function publishEventToChain(eventManagerAddress: string, name: str
 // Controls
 
 export async function startEventTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
-    const signerAddress = await signer.getAddress();
+    const {web3, provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
@@ -198,11 +180,8 @@ export async function startEventTx(eventId: string) {
 }
 
 export async function endEventTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
-    const signerAddress = await signer.getAddress();
+    const {web3, provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
@@ -225,11 +204,8 @@ export async function endEventTx(eventId: string) {
 }
 
 export async function cancelEventTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
-    const signerAddress = await signer.getAddress();
+    const {web3, provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
@@ -253,11 +229,8 @@ export async function cancelEventTx(eventId: string) {
 
 
 export async function changeEventLimitTx(eventId: string, limit: number) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const limitBn = ethers.utils.bigNumberify(limit);
     const signerAddress = await signer.getAddress();
 
@@ -276,11 +249,8 @@ export async function changeEventLimitTx(eventId: string, limit: number) {
 
 
 export async function manualConfirmAttendeesTx(eventId: string, attendees: string[]) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
@@ -303,11 +273,8 @@ export async function manualConfirmAttendeesTx(eventId: string, attendees: strin
 
 
 export async function rsvpTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
@@ -329,11 +296,8 @@ export async function rsvpTx(eventId: string) {
 }
 
 export async function cancelRsvpTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
@@ -355,11 +319,8 @@ export async function cancelRsvpTx(eventId: string) {
 }
 
 export async function confirmAttendanceTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
@@ -381,11 +342,9 @@ export async function confirmAttendanceTx(eventId: string) {
 }
 
 export async function claimGiftTx(eventId: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const signerAddress = await signer.getAddress();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
