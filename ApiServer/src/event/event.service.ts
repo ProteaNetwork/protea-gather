@@ -32,13 +32,26 @@ export class EventService {
     return eventDoc.toObject();
   }
 
-  async updateEvent(eventData: EventDTO): Promise<EventDocument>{
-    const doc = await this.eventRepository.findOne({tbcAddress: eventData.eventId});
-    Object.keys(eventData).forEach(key => {
-      doc[key] = eventData[key];
-    });
+  async updateEvent(eventData: EventDTO, bannerImage): Promise<EventDocument>{
+    let eventDoc = await this.eventRepository.findOne({eventId: eventData.eventId});
+    if (eventDoc) {
+      Object.keys(eventData).forEach(key => {
+        eventDoc[key] = eventData[key];
+      });
+    } else {
+      eventDoc = await new this.eventRepository(eventData);
+    } 
 
-    doc.save();
-    return doc.toObject();
+    if (bannerImage) {
+      this.attachmentService.delete(eventDoc.bannerImage);
+      const attachment = await this.attachmentService.create({
+        filename: `${eventDoc.eventId}-${bannerImage.originalname}`,
+        contentType: bannerImage.mimetype
+      }, bannerImage);
+      eventDoc.bannerImage = attachment;
+    }
+
+    eventDoc.save();
+    return eventDoc.toObject();
   }
 }

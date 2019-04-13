@@ -27,14 +27,18 @@ export function getEventMeta(eventId: string): Promise<any> {
 }
 
 // Creation
-export async function createCommunity(community: ICommunity, apiToken: string): Promise<any> {
+export function createCommunity(community: ICommunity, apiToken: string): Promise<any> {
   return apiRequest('POST', apiUrlBuilder.createCommunity, formDataHelper(community), undefined, true, apiToken)
 }
 
-export async function updateCommunity(community: ICommunity, apiToken: string): Promise<any> {
+export function updateCommunity(community: ICommunity, apiToken: string): Promise<any> {
   return apiRequest('PUT', apiUrlBuilder.updateCommunity(community.tbcAddress), formDataHelper(community), undefined, true, apiToken)
 }
 
-export async function createEvent(event: IEvent, apiToken: string): Promise<any> {
+export function createEvent(event: IEvent, apiToken: string): Promise<any> {
   return apiRequest('POST', apiUrlBuilder.createEvent, formDataHelper(event), undefined, true, apiToken)
+}
+
+export function updateEvent(event: IEvent, apiToken: string): Promise<any> {
+  return apiRequest('PUT', apiUrlBuilder.updateEvent(event.eventId), formDataHelper(event), undefined, true, apiToken)
 }

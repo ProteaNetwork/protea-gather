@@ -13,6 +13,7 @@ const apiUrlBuilder = {
   createCommunity: generateUri(`community`),
   updateCommunity: (tbcAddress: string) => generateUri(`community/${tbcAddress}/update`),
   createEvent: generateUri(`event`),
+  updateEvent: (eventId: string) => generateUri(`event/${eventId}/update`),
 };
 
 export default apiUrlBuilder;
