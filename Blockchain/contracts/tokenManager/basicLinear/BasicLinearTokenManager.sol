@@ -46,6 +46,7 @@ contract BasicLinearTokenManager is BaseTokenManager {
     /// @param _to          :address Address to mint tokens to
     /// @param _numTokens   :uint256 The number of tokens you want to mint
     /// @dev                We have modified the minting function to divert a portion of the purchase tokens
+    // Rough gas usage 153,440 
     function mint(address _to, uint256 _numTokens) external returns(bool) {
         uint256 priceForTokens = priceToMint(_numTokens);
         require(

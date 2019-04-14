@@ -15,7 +15,7 @@ export function* refreshBalances(){
     yield put(setRemainingTxCountAction(1));
     yield put(setTxContextAction(`Setting up with pseudo dai`));
     yield call(mintDai);
-    yield put(setPendingState(true));
+    yield put(setPendingState(false));
     yield put(setRemainingTxCountAction(0));
     newBalances = yield call(checkBalancesOnChain);
 

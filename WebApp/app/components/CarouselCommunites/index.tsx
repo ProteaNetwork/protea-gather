@@ -34,7 +34,7 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   innerCarousel: {
     marginTop: 20,
     paddingTop: "10px",
-    paddingBottom: "10px",
+    paddingBottom: 40,
     '&> *':{
       outline: 'none'
     },
@@ -135,10 +135,9 @@ function CarouselCommunites(props: OwnProps) {
       return 3;
     }
 
-    if (isWidthUp('md', width)) {
+    if (isWidthUp('sm', width)) {
       return 2;
     }
-
     return 1;
   };
 

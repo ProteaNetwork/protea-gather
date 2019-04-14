@@ -12,7 +12,7 @@ import apiUrlBuilder from 'api/apiUrlBuilder';
 import { colors } from 'theme';
 import Blockies from 'react-blockies';
 
-const styles = ({ palette }: Theme) => createStyles({
+const styles = ({ palette, breakpoints, spacing }: Theme) => createStyles({
   card: {
     width: 400,
     height: 'auto',
@@ -23,10 +23,14 @@ const styles = ({ palette }: Theme) => createStyles({
   },
   media: {
     width: '100%',
-    height: 300,
+    height: 200,
+    // 200px
     overflow: 'hidden',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
+    [breakpoints.up("sm")]: {
+      height: 300
+    },
     '& canvas':{
       objectPosition: "center",
       objectFit: "cover",
@@ -72,7 +76,7 @@ function CommunityCard(props: Props) {
           {
             !bannerImage && <section className={classes.media}>
               <Blockies
-                seed={tbcAddress}
+                seed={tbcAddress ? tbcAddress : "0x"}
                 size={105}
                 scale={4}
                 color={colors.proteaBranding.orange}
@@ -87,7 +91,7 @@ function CommunityCard(props: Props) {
               {name}
             </Typography>
             <Typography color="inherit">
-              Available Stake: {availableStake} DAI
+              Available Stake: {parseFloat(`${availableStake}`).toFixed(2)} DAI
             </Typography>
           </CardContent>
         </CardActionArea>

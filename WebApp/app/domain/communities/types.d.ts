@@ -1,6 +1,7 @@
 import { ActionType } from 'typesafe-actions';
 import * as actions from './actions';
 import { ApplicationRootState } from 'types';
+import { IMember } from 'domain/membershipManagement/types';
 
 interface ICommunity{
   tbcAddress: string;
@@ -18,7 +19,8 @@ interface ICommunity{
   memberSince: Date;
   liquidTokens: number;
   isAdmin: boolean;
-  comLogo: string
+  comLogo: string;
+  memberList: IMember[];
 }
 
 /* --- STATE --- */

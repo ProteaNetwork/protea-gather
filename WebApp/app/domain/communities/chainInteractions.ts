@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 
 // Ethers standard event filter type is missing the blocktags
 import { BlockTag } from 'ethers/providers/abstract-provider';
-import { blockchainResources } from "blockchainResources";
+import { blockchainResources, getBlockchainObjects } from "blockchainResources";
 import { BigNumber } from "ethers/utils";
 
 export declare type EventFilter = {
@@ -20,12 +20,10 @@ export declare type EventFilter = {
 
 // View/Read
 export async function checkTransferApprovalState(tbcAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
   try{
-    const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const signerAddress = await signer.getAddress();
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
 
     const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);
     return approval.gt(ethers.utils.parseUnits("2", 18))
@@ -36,10 +34,8 @@ export async function checkTransferApprovalState(tbcAddress: string){
 }
 
 export async function checkUserStateOnChain(membershipManagerAddress: string) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
@@ -61,11 +57,9 @@ export async function checkUserStateOnChain(membershipManagerAddress: string) {
 }
 
 export async function getCommunitiesFromChain() {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
   try{
-    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, CommunityFactoryABI.abi, provider)).connect(signer);
 
     const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, null);
     filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
@@ -86,12 +80,9 @@ export async function getCommunitiesFromChain() {
 }
 
 export async function getCommunityFromChain(tbcAddress: string) {
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
-    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, CommunityFactoryABI.abi, provider)).connect(signer);
 
     const filterCommunitiesCreated:EventFilter = communityFactory.filters.CommunityCreated(null, null, tbcAddress);
     filterCommunitiesCreated.fromBlock = blockchainResources.publishedBlock;
@@ -108,11 +99,8 @@ export async function getCommunityFromChain(tbcAddress: string) {
 }
 
 export async function getDaiValueMint(tbcAddress: string, tokenVolume: BigNumber){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     return (await tbcContract.priceToMint(tokenVolume));
   }
@@ -122,11 +110,8 @@ export async function getDaiValueMint(tbcAddress: string, tokenVolume: BigNumber
 }
 
 export async function getDaiValueBurn(tbcAddress: string, tokenVolume: BigNumber){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     return (await tbcContract.rewardForBurn(tokenVolume));
   }
@@ -136,11 +121,8 @@ export async function getDaiValueBurn(tbcAddress: string, tokenVolume: BigNumber
 }
 
 export async function getTokenVolumeBuy(tbcAddress: string, daiValue: BigNumber){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const tokenVolume = await tbcContract.colateralToTokenBuying(daiValue);
     return tokenVolume;
@@ -151,11 +133,8 @@ export async function getTokenVolumeBuy(tbcAddress: string, daiValue: BigNumber)
 }
 
 export async function getTokenVolumeSell(tbcAddress: string, daiValue: BigNumber){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const tokenVolume = await tbcContract.colateralToTokenSelling(daiValue);
     return tokenVolume;
@@ -166,12 +145,9 @@ export async function getTokenVolumeSell(tbcAddress: string, daiValue: BigNumber
 }
 
 export async function getTokenBalance(tbcAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
-
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const signerAddress = await signer.getAddress();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const tokenVolume = await tbcContract.balanceOf(signerAddress);
     return tokenVolume;
@@ -183,12 +159,9 @@ export async function getTokenBalance(tbcAddress: string){
 
 // Write/Publish
 export async function publishCommunityToChain(name: string, tokenSymbol: string, gradientDenominator: number, contributionRate: number) {
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-
   try{
-    const communityFactory = (await new ethers.Contract(`${process.env.COMMUNITY_FACTORY_ADDRESS}`, CommunityFactoryABI.abi, provider)).connect(signer);
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, CommunityFactoryABI.abi, provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     const txReceipt = await(await communityFactory.createCommunity(name, tokenSymbol, signerAddress, gradientDenominator, contributionRate)).wait();
@@ -209,14 +182,12 @@ export async function publishCommunityToChain(name: string, tokenSymbol: string,
 }
 
 export async function updateTransferApproval(unlock: boolean, tbcAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
 
   const targetValue = unlock ? ethers.constants.MaxUint256 : ethers.constants.Zero
 
   try{
-    const daiContract = (await new ethers.Contract(`${process.env.DAI_ADDRESS}`, DaiContractAbi.abi, provider)).connect(signer);
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await daiContract.approve(tbcAddress, targetValue)).wait();
     // TODO: check event to confirm
     return true;
@@ -228,12 +199,10 @@ export async function updateTransferApproval(unlock: boolean, tbcAddress: string
 
 // Mint & Burn functions
 export async function mintTokens(tokenVolume: BigNumber, tbcAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
 
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const signerAddress = await signer.getAddress();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await tbcContract.mint(signerAddress, tokenVolume)).wait()
     const mintTransferEvents = (await(txReceipt.events.filter(
@@ -249,12 +218,10 @@ export async function mintTokens(tokenVolume: BigNumber, tbcAddress: string){
 }
 
 export async function burnTokens(tokenVolume: BigNumber, tbcAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
-  const signerAddress = await signer.getAddress();
 
   try{
+    const {web3, provider, signer} = await getBlockchainObjects();
+    const signerAddress = await signer.getAddress();
     const tbcContract = (await new ethers.Contract(tbcAddress, TbcContractAbi.abi, provider)).connect(signer);
     const txReceipt = await(await tbcContract.burn(tokenVolume)).wait()
     const burntTransferEvents = (await(txReceipt.events.filter(

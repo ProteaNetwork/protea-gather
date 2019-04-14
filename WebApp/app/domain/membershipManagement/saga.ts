@@ -1,19 +1,19 @@
 import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
-import { checkStatus, increaseMembershipAction, withdrawMembershipAction } from "./actions";
+import { checkStatus, increaseMembershipAction, withdrawMembershipAction, getMembersAction } from "./actions";
 import { getCommunityMeta as getCommunityMetaApi } from "api/api";
 import { createCommunity as createCommunityApi } from "api/api";
 
 // Ethers standard event filter type is missing the blocktags
 import { ICommunity } from "./types";
 import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "domain/communities/chainInteractions";
-import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState } from "./chainInteractions";
-import { statusUpdated, getCommunityAction } from "domain/communities/actions";
+import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState, getMembersTx } from "./chainInteractions";
+import { statusUpdated, getCommunityAction, setMemberList } from "domain/communities/actions";
 import { ethers } from "ethers";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { retry } from "redux-saga/effects";
 
 // Meta
-export function* checkIfUserIsMember(membershipManagerAddress: string, tbcAddress: string){
+export function* checkMemberStates(membershipManagerAddress: string, tbcAddress: string){
   const memberData = yield call(checkUserStateOnChain, membershipManagerAddress, tbcAddress);
   const approvalState = yield call(checkTransferApprovalState, tbcAddress);
   const liquidTokens =  ethers.utils.formatUnits(yield call(getTokenBalance, tbcAddress), 18);
@@ -59,9 +59,7 @@ export function* withdrawMembership(communityData: {tbcAddress:string, daiValue:
     // Unstake
     yield put(setTxContextAction(`Withdrawing ${communityData.daiValue} Dai worth of tokens from membership` ));
     yield put(setRemainingTxCountAction(2));
-    const membersTokens = yield retry(5, 2000, getAvailableStake, communityData.membershipManagerAddress);
-    const daiValue = yield retry(5, 2000, getDaiValueBurn, communityData.tbcAddress, membersTokens);
-    yield retry(5, 2000, withdrawMembershipStake, daiValue, communityData.membershipManagerAddress)
+    yield retry(5, 2000, withdrawMembershipStake, ethers.utils.parseUnits(`${communityData.daiValue}`, 18), communityData.membershipManagerAddress)
 
     yield put(setTxContextAction(`Exchanging community tokens for Dai` ));
     yield put(setRemainingTxCountAction(1));
@@ -110,16 +108,28 @@ export function* withdrawMembershipListener(){
   }
 }
 
-// Listeners
-export function* checkIfUserIsMemberListener(){
+export function* getCommunityMembers(tbcAddress: string, membershipManagerAddress: string){
+  const memberList = yield call(getMembersTx, membershipManagerAddress);
+  yield put(setMemberList({tbcAddress: tbcAddress, memberList: memberList}));
+}
+
+export function* checkMemberStatusListener(){
   while(true){
     const communityData = (yield take(checkStatus)).payload;
-    yield fork(checkIfUserIsMember, communityData.membershipManagerAddress, communityData.tbcAddress);
+    yield fork(checkMemberStates, communityData.membershipManagerAddress, communityData.tbcAddress);
+  }
+}
+
+export function* getCommunityMembersListener(){
+  while(true){
+    const communityData = (yield take(getMembersAction)).payload;
+    yield fork(getCommunityMembers, communityData.tbcAddress, communityData.membershipManagerAddress);
   }
 }
 
 export default function* root() {
-  yield fork(checkIfUserIsMemberListener);
+  yield fork(checkMemberStatusListener);
   yield fork(increaseMembershipListener);
   yield fork(withdrawMembershipListener);
+  yield fork(getCommunityMembersListener);
 }

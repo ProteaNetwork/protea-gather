@@ -9,7 +9,7 @@ import { combineReducers } from 'redux';
 import ActionTypes from './constants';
 import { DomainState, DomainActions, ICommunity } from './types';
 import { getType } from 'typesafe-actions';
-import { getCommunityMetaAction, saveCommunity, statusUpdated, createCommunityAction } from './actions';
+import { getCommunityMetaAction, saveCommunity, statusUpdated, createCommunityAction, setMemberList } from './actions';
 
 export const initialState: DomainState = {
 
@@ -34,6 +34,14 @@ function communitiesReducer(state: DomainState = initialState, action: DomainAct
         }
       }
     case getType(statusUpdated):
+      return {
+        ...state,
+        [action.payload.tbcAddress]: {
+          ...state[action.payload.tbcAddress],
+          ...action.payload,
+        }
+      }
+    case getType(setMemberList):
       return {
         ...state,
         [action.payload.tbcAddress]: {

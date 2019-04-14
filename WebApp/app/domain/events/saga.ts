@@ -16,13 +16,13 @@ import {
   manualConfirmAttendeesAction,
   rsvpAction,
   cancelRsvpAction,
-  confirmAttendanceAction, 
-  claimGiftAction, 
-  getEventAction, 
+  confirmAttendanceAction,
+  claimGiftAction,
+  getEventAction,
   updateEventAction
 } from "./actions";
 import { IEvent } from "./types";
-import { 
+import {
   getEventMeta as getEventMetaApi,
   createEvent as createEventApi,
   updateEvent as updateEventApi,
@@ -210,7 +210,6 @@ export function* rsvp(eventId: string, membershipManagerAddress: string) {
   try {
     yield put(setTxContextAction(`RSVPing to the event`));
     yield put(setRemainingTxCountAction(1));
-
     yield retry(5, 2000, rsvpTx, eventId);
 
     yield put(rsvpAction.success());
@@ -397,3 +396,7 @@ export default function* root() {
   yield fork(claimGiftListener);
 }
 
+
+
+// memberhsi 0x1202687EA1422c8ECf63bf4b366001BA1f0cf860
+// event "0x853409477090D89e8291997d167dA0cFb665f962-4"

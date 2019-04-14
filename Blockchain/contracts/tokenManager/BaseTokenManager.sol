@@ -60,6 +60,7 @@ contract BaseTokenManager is AdminManaged {
     /// @param _spender     :address The account that will receive the funds.
     /// @param _value       :uint256 The value of funds accessed.
     /// @return             :boolean Indicating the action was successful.
+    // Rough gas usage 47,234
     function approve(
         address _spender, 
         uint256 _value

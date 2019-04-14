@@ -1,9 +1,9 @@
 // import React from 'react';
-// import { shallow } from 'enzyme';
+// import { mount } from 'enzyme';
 
-// import AttendeesCarousel from '../index';
+// import NetworkState from '../index';
 
-describe('<AttendeesCarousel />', () => {
+describe('<NetworkState />', () => {
   it('Expect to have unit tests specified', () => {
     expect(true).toEqual(false);
   });

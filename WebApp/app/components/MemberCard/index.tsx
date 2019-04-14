@@ -1,12 +1,15 @@
 /**
  *
- * AttendeeCard
+ * MemberCard
  *
  */
 
 import { Card, CardContent, CardMedia, Theme, Typography } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import React, { Fragment } from 'react';
+import apiUrlBuilder from 'api/apiUrlBuilder';
+import Blockies from 'react-blockies';
+import { colors } from 'theme';
 
 const styles = ({ palette, spacing }: Theme) => createStyles({
   card: {
@@ -33,24 +36,39 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
 
 interface OwnProps {
   classes: any;
-  picture: string;
-  userName: string;
+  profileImage: string;
+  name: string;
+  ethAddress: string;
 }
 
-function AttendeeCard(props: OwnProps) {
-  const { classes, picture, userName } = props;
+function MemberCard(props: OwnProps) {
+  const { classes, ethAddress, profileImage, name } = props;
 
   return (
     <Fragment>
-
         <Card className={classes.card}>
-          <CardMedia
+          {
+            profileImage && <CardMedia
             className={classes.media}
-            image= {picture}
-            title= {userName} />
+            image={apiUrlBuilder.attachmentStream(profileImage)}
+            title={name} />
+          }
+          {
+            !profileImage && <section className={classes.media}>
+              <Blockies
+                seed={ethAddress ? ethAddress : "0x"}
+                size={105}
+                scale={4}
+                color={colors.proteaBranding.orange}
+                bgColor={colors.white}
+                spotColor={colors.proteaBranding.pink}
+
+              />
+            </section>
+          }
           <CardContent className={classes.cardContent}>
             <Typography className={classes.header} variant="h5" component="h2" gutterBottom>
-              {userName}
+              {name ? name : ethAddress}
             </Typography>
           </CardContent>
         </Card>
@@ -59,4 +77,4 @@ function AttendeeCard(props: OwnProps) {
   );
 }
 
-export default withStyles(styles)(AttendeeCard);
+export default withStyles(styles)(MemberCard);

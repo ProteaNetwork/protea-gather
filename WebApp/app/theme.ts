@@ -53,7 +53,7 @@ const theme = createMuiTheme({
         boxShadow: '4px 4px 8px 0px rgba(0,0,0,0.2)',
         '&:hover':{
           color: colors.proteaBranding.pink,
-          backgroundColor: '#FFFFFF'
+          backgroundColor: '#FFFFFF !important'
         }
       },
       text: {
@@ -134,6 +134,16 @@ const theme = createMuiTheme({
           backgroundColor: colors.proteaBranding.pink
         }
       }
+    },
+    MuiTab:{
+      root:{
+        backgroundColor: colors.proteaBranding.blackBg,
+        "&$selected":{
+          backgroundColor: colors.proteaBranding.orange
+
+        }
+      },
+
     }
   }
 

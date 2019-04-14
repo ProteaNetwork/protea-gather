@@ -91,6 +91,14 @@ const Dashboard: React.FunctionComponent<OwnProps> = (props: OwnProps) =>{
           }
         </Fragment> */}
         <Fragment>
+          <CarouselCommunites
+            // @ts-ignore
+            label="My Communities"
+            // @ts-ignore
+            communities={myCommunities} >
+          </CarouselCommunites>
+        </Fragment>
+        <Fragment>
           <CarouselEvents
             // @ts-ignore
             label="My upcoming events"
@@ -105,15 +113,6 @@ const Dashboard: React.FunctionComponent<OwnProps> = (props: OwnProps) =>{
             // @ts-ignore
             events={discoverEvents} >
           </CarouselEvents>
-        </Fragment>
-        <Fragment>
-          <CarouselCommunites
-            // @ts-ignore
-            label="My Communities"
-            // @ts-ignore
-            communities={myCommunities} >
-
-          </CarouselCommunites>
         </Fragment>
       </section>
     </Fragment>

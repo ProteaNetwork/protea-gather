@@ -13,6 +13,8 @@ export const getAllCommunitiesAction = createStandardAction(ActionTypes.GET_ALL_
 
 export const saveCommunity = createStandardAction(ActionTypes.SAVE_COMMUNITY)<ICommunity>();
 
+export const setMemberList = createStandardAction(ActionTypes.SET_MEMBER_LIST)<{tbcAddress: string, memberList: string[]}>();
+
 export const statusUpdated = createStandardAction(ActionTypes.STATUS_UPDATED)<{
   tbcAddress: string,
   transfersUnlocked: boolean,

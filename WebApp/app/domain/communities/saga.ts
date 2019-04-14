@@ -1,15 +1,15 @@
 import { fork, take, call, put, select, all, delay, takeLatest } from "redux-saga/effects";
-import { 
-  getAllCommunitiesAction, 
-  saveCommunity, 
+import {
+  getAllCommunitiesAction,
+  saveCommunity,
   getCommunityMetaAction,
-  createCommunityAction, 
-  getCommunityAction, 
+  createCommunityAction,
+  getCommunityAction,
   joinCommunityAction,
   updateCommunityAction,
 } from "./actions";
 import { ethers } from "ethers";
-import { 
+import {
   getCommunityMeta as getCommunityMetaApi,
   createCommunity as createCommunityApi,
   updateCommunity as updateCommunityApi
@@ -21,9 +21,8 @@ import { ICommunity } from "./types";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
 import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "./chainInteractions";
-import { checkStatus } from "domain/membershipManagement/actions";
+import { checkStatus, getMembersAction } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
-import { increaseMembership } from "domain/membershipManagement/saga";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
@@ -64,6 +63,7 @@ export function* fetchCommunity(tbcAddress){
 export function* resolveCommunity(community){
   yield put(saveCommunity(community));
   yield put(checkStatus({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
+  yield put(getMembersAction({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
   yield put(getCommunityMetaAction.request(community.tbcAddress));
 }
 
