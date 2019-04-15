@@ -67,7 +67,6 @@ class ViewCommunityContainer extends React.Component<Props>  {
 
   render() {
     const { community, events, balances, onIncreaseMembership, onWithdrawMembership, onJoinCommunity} = this.props;
-                  // href={}
     return (
     <Fragment>
       <ViewCommunity

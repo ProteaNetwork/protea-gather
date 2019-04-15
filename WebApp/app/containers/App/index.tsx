@@ -82,6 +82,8 @@ interface StateProps {
   txPending: boolean;
   txRemaining: number;
   txContext: string;
+  networkReady: boolean;
+  networkId: number;
 }
 
 interface DispatchProps {
@@ -90,7 +92,7 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 const App: React.SFC<Props> = (props: Props) => {
-  const { isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext } = props;
+  const { networkReady, networkId, isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext } = props;
   return (
     <AppWrapper
       onLogout={onLogout}
@@ -99,7 +101,10 @@ const App: React.SFC<Props> = (props: Props) => {
       daiBalance={1}
       ethAddress={ethAddress}
       profileImage={profileImage}
-      navLinks={routes.filter(r => r.isNavRequired)}>
+      navLinks={routes.filter(r => r.isNavRequired)}
+      networkId={networkId}
+      networkReady={networkReady}
+      >
       <TxLoadingModal pendingTx={txPending} txRemaining={txRemaining} txContext={txContext}></TxLoadingModal>
       <Switch>
         {routes.map(r => {

@@ -19,6 +19,7 @@ import React, { Fragment } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import ReactSVG from 'react-svg';
 import { colors } from 'theme';
+import NetworkState from 'components/NetworkState';
 
 const styles = theme => createStyles({
   root: {
@@ -119,6 +120,8 @@ interface Props extends WithStyles<typeof styles> {
   profileImage: string;
   ethAddress: string;
   navLinks: appRoute[];
+  networkId: number;
+  networkReady: boolean;
 }
 
 class AppWrapper extends React.Component<Props> {
@@ -135,7 +138,7 @@ class AppWrapper extends React.Component<Props> {
   };
 
   public render() {
-    const { classes, isLoggedIn, children, displayName, daiBalance, profileImage, onLogout, navLinks, ethAddress } = this.props;
+    const { networkId, networkReady, classes, isLoggedIn, children, displayName, daiBalance, profileImage, onLogout, navLinks, ethAddress } = this.props;
     return (
       <div className={classes.root}>
       {isLoggedIn && (
@@ -197,6 +200,7 @@ class AppWrapper extends React.Component<Props> {
         <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
           {children}
         </main>
+        <NetworkState networkId={networkId} ready={networkReady}></NetworkState>
       </div>
     );
   }
