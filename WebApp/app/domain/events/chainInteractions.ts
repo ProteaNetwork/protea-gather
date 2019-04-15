@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import { BlockTag } from 'ethers/providers/abstract-provider';
 import { BigNumber } from "ethers/utils";
 import { blockchainResources, getBlockchainObjects } from "blockchainResources";
+import { IMember } from "domain/membershipManagement/types.js";
 
 export declare type EventFilter = {
   address?: string;
@@ -48,9 +49,8 @@ export async function getEvent(eventId: string){
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
 
     const eventData = await eventManagerContract.getEvent(eventIndex);
-    const attendees = await eventManagerContract.getRSVPdAttendees(eventIndex);
+    const attendees: IMember[] = (await eventManagerContract.getRSVPdAttendees(eventIndex)).map(ethAddress => ({ethAddress: ethAddress, profileImage:"", name: ""}));
     const organizer = await eventManagerContract.getOrganiser(eventIndex);
-
     let confirmedAttendees:string[] = [];
     if(eventData[3] > 1){
       confirmedAttendees = await getEventConfirmedAttendees(eventId);
@@ -77,14 +77,14 @@ export async function getEvent(eventId: string){
 export async function getEventsTx(eventManagerAddress: string){
   try{
     const {web3, provider, signer} = await getBlockchainObjects();
-    const eventManager = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
 
-    const eventCreatedFilter: EventFilter = eventManager.filters.EventCreated(null);
+    const eventCreatedFilter: EventFilter = eventManagerContract.filters.EventCreated(null);
     eventCreatedFilter.fromBlock = blockchainResources.publishedBlock;
     let events = await Promise.all((await provider.getLogs(eventCreatedFilter)).map(async event => {
-      const parsedLog = (eventManager.interface.parseLog(event));
-      const eventData = await eventManager.getEvent(parsedLog.values.index);
-      const attendees = await eventManager.getRSVPdAttendees(parsedLog.values.index);
+      const parsedLog = (eventManagerContract.interface.parseLog(event));
+      const eventData = await eventManagerContract.getEvent(parsedLog.values.index);
+      const attendees: IMember[] = (await eventManagerContract.getRSVPdAttendees(parsedLog.values.index)).map(ethAddress => ({ethAddress: ethAddress, profileImage:"", name: ""}));
       let confirmedAttendees:string[] = [];
       if(eventData[3] > 1){
         confirmedAttendees = await getEventConfirmedAttendees(`${eventManagerAddress}-${parsedLog.values.index}`);

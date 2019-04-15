@@ -2,6 +2,7 @@ import jwtDecode from 'jwt-decode';
 import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 import { makeSelectTxPending, makeSelectTxRemaining, makeSelectTxContext } from 'domain/transactionManagement/selectors';
+import { blockchainResources } from 'blockchainResources';
 
 
 /**
@@ -27,6 +28,9 @@ const selectProfileImage = (state: ApplicationRootState) => state.userProfile.pr
 
 const selectDisplayName = (state: ApplicationRootState) => state.userProfile.displayName;
 
+const selectNetworkState = () => blockchainResources.approvedNetwork;
+
+const selectNetworkId = () => blockchainResources.networkId;
 
 /**
  * Default selector used by App
@@ -47,18 +51,28 @@ const makeSelectEthAddress = createSelector(selectEthAddress, substate => {
   return substate;
 })
 
+const makeSelectNetworkState = createSelector(selectNetworkState, substate => {
+  return substate;
+})
+
+
+const makeSelectNetworkId = createSelector(selectNetworkId, substate => {
+  return substate;
+})
 
 // Root
 const selectApp = createSelector(
-  makeSelectEthAddress, makeSelectIsLoggedIn, makeSelectProfileImage, makeSelectDisplayName, makeSelectTxPending, makeSelectTxRemaining, makeSelectTxContext,
-  (ethAddress, isLoggedIn, profileImage, displayName, txPending, txRemaining, txContext) => ({
+  makeSelectEthAddress, makeSelectIsLoggedIn, makeSelectProfileImage, makeSelectDisplayName, makeSelectTxPending, makeSelectTxRemaining, makeSelectTxContext, makeSelectNetworkState, makeSelectNetworkId,
+  (ethAddress, isLoggedIn, profileImage, displayName, txPending, txRemaining, txContext, networkReady, networkId) => ({
     ethAddress: ethAddress,
     isLoggedIn: isLoggedIn,
     profileImage: profileImage,
     displayName: displayName,
     txPending: txPending,
     txRemaining: txRemaining,
-    txContext: txContext
+    txContext: txContext,
+    networkReady: networkReady,
+    networkId: networkId
   }
 ))
 

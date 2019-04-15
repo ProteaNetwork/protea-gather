@@ -53,7 +53,7 @@ const MembersTab: React.SFC<OwnProps> = (props: OwnProps) => {
           <img  className={classes.profileImage} src={apiUrlBuilder.attachmentStream(member.profileImage)} />
           :
           <Blockies className={classes.profileImage}
-                  seed={member.ethAddress}
+                  seed={member.ethAddress ? member.ethAddress : "0x"}
                   size={30}
                   scale={4}
                   color={colors.proteaBranding.orange}
@@ -68,7 +68,7 @@ const MembersTab: React.SFC<OwnProps> = (props: OwnProps) => {
         </Typography>
         {
           stateMessage &&
-          <Typography variant="h5" component="h3">
+          <Typography variant="subtitle1" component="h3">
             {stateMessage}
           </Typography>
         }

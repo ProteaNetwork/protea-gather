@@ -144,6 +144,11 @@ const theme = createMuiTheme({
         }
       },
 
+    },
+    MuiLink:{
+      root:{
+        textDecoration: "none"
+      }
     }
   }
 

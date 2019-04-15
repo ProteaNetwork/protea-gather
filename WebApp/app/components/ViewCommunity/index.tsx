@@ -10,7 +10,6 @@ import { Button, Typography, Tabs, Tab, AppBar, Input } from '@material-ui/core'
 import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
 import CarouselEvents from 'components/CarouselEvents';
-import MembersCarousel from 'components/MembersCarousel';
 import { IEvent } from 'domain/events/types';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import Blockies from 'react-blockies';
@@ -176,7 +175,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   className={classes.buttons}
                   onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
                   size="large">
-                  {`JOIN for ${daiTxAmount}Dai`}
+                  {`Join for ${daiTxAmount}Dai`}
                 </Button>}
                 {community.isMember && <Button
                   className={classes.buttons}

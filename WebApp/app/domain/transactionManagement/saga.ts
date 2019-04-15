@@ -33,6 +33,7 @@ export function* toggleTXPendingFlag(action) {
       success: take(action.type.replace('TX_REQUEST', 'TX_SUCCESS')),
       failure: take(action.type.replace('TX_REQUEST', 'TX_FAILURE'))
     })
+    yield put(setRemainingTxCountAction(0));
     yield put(setTxContextAction(`Updating data from the chain`));
     // TODO: Automatic update of previously looked up event & community
     yield delay(5000);
