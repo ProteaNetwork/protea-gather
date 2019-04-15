@@ -16,10 +16,10 @@ import Blockies from 'react-blockies';
 import { colors } from 'theme';
 
 // import styled from 'styles/styled-components';
-const styles = ({ palette, spacing }: Theme) => createStyles({
+const styles = ({ palette, spacing, breakpoints }: Theme) => createStyles({
   card: {
     width: 400,
-    height: 370,
+    height: 'auto',
   },
   cardContent: {
     backgroundColor: colors.proteaBranding.blackBg,
@@ -27,10 +27,16 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
   },
   media: {
     width: '100%',
-    height: 300,
+    height: 200,
     overflow: 'hidden',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
+    [breakpoints.up("xs")]: {
+      height: 150
+    },
+    [breakpoints.up("sm")]: {
+      height: 300
+    },
     '& canvas':{
       objectPosition: "center",
       objectFit: "cover",
@@ -67,26 +73,27 @@ export interface OwnProps {
   bannerImage: string;
   comLogo: string;
   displayCommunityName: boolean;
+  communityName: string;
 }
 
 
 function EventCard(props: OwnProps) {
-  const { classes, name, eventId, bannerImage, comLogo, displayCommunityName = true } = props;
+  const { classes, name, communityName, eventId, bannerImage, comLogo, displayCommunityName = true } = props;
   return (
     <Card className={classes.card}>
       <Link to={`/events/${eventId}`} className={classes.link} >
         <CardActionArea>
           {displayCommunityName &&
             (comLogo && <Chip
-              avatar={<Avatar alt={name} src={apiUrlBuilder.attachmentStream(comLogo)} />}
-              label={`${name}`}
+              avatar={<Avatar alt={communityName} src={apiUrlBuilder.attachmentStream(comLogo)} />}
+              label={`${communityName}`}
               className={classes.chip}
               />
             )
             ||
             displayCommunityName && !comLogo &&
             <Chip
-              label={`${name}`}
+              label={`${communityName}`}
               className={classes.chip}
               avatar={<Blockies
                 seed={eventId ? eventId : "0x"}

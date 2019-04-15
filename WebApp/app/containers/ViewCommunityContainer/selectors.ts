@@ -1,6 +1,7 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 import { ICommunity } from 'domain/communities/types';
+import { selectBalances } from 'domain/transactionManagement/selectors';
 
 /**
  * Direct selector to the viewCommunityContainer state domain
@@ -37,15 +38,6 @@ export const makeSelectEvents = () => createSelector(
       key.indexOf(community.eventManagerAddress) > -1).map(foundEventKey => events[foundEventKey])
   }
 
-);
-
-export const selectBalances = createSelector(
-  selectEthBalance,
-  selectDaiBalance,
-  (ethBalance,daiBalance) => ({
-    ethBalance: ethBalance,
-    daiBalance: daiBalance
-  })
 );
 
 /**

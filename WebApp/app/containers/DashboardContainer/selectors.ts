@@ -1,8 +1,6 @@
-import { createSelector, createStructuredSelector } from 'reselect';
-import { ApplicationRootState } from 'types';
-import { initialState } from './reducer';
+import { createStructuredSelector } from 'reselect';
 import { selectMyCommunties } from '../../domain/communities/selectors';
-import selectEventDomainRoot, { selectMyUpcomingEvents, selectMyPastEvents, selectMyActiveEvents, selectMyHostedEvents } from 'domain/events/selectors';
+import selectEventDomainRoot, { selectMyUpcomingEvents, selectMyPastEvents, selectMyActiveEvents, selectMyHostedEvents, selectDiscoverEvents } from 'domain/events/selectors';
 import { IEvent } from 'domain/events/types';
 import { makeSelectEthAddress } from 'containers/App/selectors';
 import { ICommunity } from 'domain/communities/types';
@@ -14,13 +12,6 @@ import { ICommunity } from 'domain/communities/types';
 /**
  * Other specific selectors
  */
-const selectDiscoverEvents = createSelector(selectMyCommunties, selectEventDomainRoot, makeSelectEthAddress,
-  (myCommunities, allEvents, ethAddress): IEvent[] => {
-    const eventManagers = (Object.values(myCommunities)).map((com: ICommunity)=> com.eventManagerAddress);
-    const eventsArray: IEvent[] = Object.values(allEvents);
-    return eventsArray.filter((evt: IEvent) => eventManagers.includes(evt.eventManagerAddress)).filter((event: IEvent) => (event.memberState == 0 && event.organizer.toLowerCase() != ethAddress.toLowerCase()));
-  }
-)
 
 /**
  * Default selector used by DashboardContainer
@@ -36,4 +27,3 @@ const selectDashboardContainer = createStructuredSelector({
 });
 
 export default selectDashboardContainer;
-// export { selectDashboardContainerDomain };

@@ -7,6 +7,8 @@ import { DomainState as CommunitiesState} from '../domain/communities/types';
 import { DomainState as MembershipManagementState} from '../domain/membershipManagement/types';
 import { DomainState as TransactionManagementState} from '../domain/transactionManagement/types';
 import { ContainerState as DashboardState } from '../containers/DashboardContainer/types';
+import { ContainerState as EventsPageContainerState } from '../containers/EventsPageContainer/types';
+import { ContainerState as CommunitiesPageContainerState } from '../containers/CommunitiesPageContainer/types';
 
 export interface LifeStore extends Store<{}> {
   injectedReducers?: any;
@@ -38,4 +40,6 @@ export interface ApplicationRootState {
 
   // Pages
   readonly dashboard: DashboardState;
+  readonly eventPage: EventsPageContainerState;
+  readonly communitiesPage: CommunitiesPageContainerState;
 }
