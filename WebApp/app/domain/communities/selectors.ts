@@ -20,6 +20,13 @@ export const selectMyCommunties = createSelector(selectCommunitiesDomain,
   }
 )
 
+export const selectDiscoverCommunties = createSelector(selectCommunitiesDomain,
+  (allCommunities) => {
+    return (Object.values(allCommunities).filter((com: ICommunity) => !com.isMember));
+  }
+)
+
+
 /**
  * Default selector used by ComumnitiesDomain
  */

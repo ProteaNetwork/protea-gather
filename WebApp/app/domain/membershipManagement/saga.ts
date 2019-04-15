@@ -4,7 +4,6 @@ import { getCommunityMeta as getCommunityMetaApi } from "api/api";
 import { createCommunity as createCommunityApi } from "api/api";
 
 // Ethers standard event filter type is missing the blocktags
-import { ICommunity } from "./types";
 import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "domain/communities/chainInteractions";
 import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState, getMembersTx } from "./chainInteractions";
 import { statusUpdated, getCommunityAction, setMemberList } from "domain/communities/actions";

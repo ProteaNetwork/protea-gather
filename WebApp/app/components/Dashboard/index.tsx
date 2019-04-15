@@ -1,4 +1,4 @@
-import { Fab, Paper, Theme, Typography, WithStyles, withWidth } from '@material-ui/core';
+import { Fab, Paper, Theme, Typography, WithStyles, withWidth, Button } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import { isWidthUp } from '@material-ui/core/withWidth';
@@ -115,6 +115,11 @@ const Dashboard: React.FunctionComponent<OwnProps> = (props: OwnProps) =>{
           </CarouselEvents>
         </Fragment>
       </section>
+      {/* <section>
+        <Button>
+
+        </Button>
+      </section> */}
     </Fragment>
   );
 }

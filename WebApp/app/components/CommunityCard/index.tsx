@@ -28,6 +28,9 @@ const styles = ({ palette, breakpoints, spacing }: Theme) => createStyles({
     overflow: 'hidden',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
+    [breakpoints.up("xs")]: {
+      height: 150
+    },
     [breakpoints.up("sm")]: {
       height: 300
     },
