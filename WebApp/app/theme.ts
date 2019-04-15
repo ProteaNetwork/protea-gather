@@ -135,14 +135,23 @@ const theme = createMuiTheme({
         }
       }
     },
+    MuiTabs:{
+      flexContainer:{
+
+      }
+    },
     MuiTab:{
       root:{
         backgroundColor: colors.proteaBranding.blackBg,
+        opacity: 1,
         "&$selected":{
-          backgroundColor: colors.proteaBranding.orange
+          // backgroundColor: colors.proteaBranding.orange
 
         }
       },
+      fullWidth:{
+        flexBasis: "100%"
+      }
 
     },
     MuiLink:{

@@ -4,8 +4,8 @@ import { initialState } from './reducer';
 import { selectMyCommunties } from '../../domain/communities/selectors';
 import selectEventDomainRoot, { selectMyUpcomingEvents, selectMyPastEvents, selectMyActiveEvents, selectMyHostedEvents } from 'domain/events/selectors';
 import { IEvent } from 'domain/events/types';
-import { ICommunity } from 'domain/membershipManagement/types';
 import { makeSelectEthAddress } from 'containers/App/selectors';
+import { ICommunity } from 'domain/communities/types';
 
 /**
  * Direct selector to the dashboardContainer state domain

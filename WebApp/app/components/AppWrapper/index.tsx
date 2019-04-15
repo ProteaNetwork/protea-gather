@@ -9,7 +9,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -21,7 +21,7 @@ import ReactSVG from 'react-svg';
 import { colors } from 'theme';
 import NetworkState from 'components/NetworkState';
 
-const styles = theme => createStyles({
+const styles = ({ palette, breakpoints, spacing, zIndex, mixins}: Theme) => createStyles({
   root: {
     display: 'flex',
     maxHeight: '100%',
@@ -43,7 +43,7 @@ const styles = theme => createStyles({
     }
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: zIndex.drawer + 1,
   },
   menuButton: {
     marginLeft: 12,
@@ -66,7 +66,7 @@ const styles = theme => createStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    ...theme.mixins.toolbar,
+    ...mixins.toolbar,
   },
   content: {
     flexGrow: 1,
@@ -76,7 +76,13 @@ const styles = theme => createStyles({
   },
   contentLoggedIn: {
     // padding: `${56 + theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`
-    paddingTop:"60px"
+    [breakpoints.up("xs")]: {
+      paddingTop: "55px"
+    },
+    [breakpoints.up("sm")]: {
+      paddingTop: "60px"
+    },
+
   },
   link: {
     textDecoration: 'none',
@@ -98,8 +104,8 @@ const styles = theme => createStyles({
     height: 60,
   },
   userInformation: {
-    paddingLeft: theme.spacing.unit * 3,
-    paddingBottom: theme.spacing.unit * 3,
+    paddingLeft: spacing.unit * 3,
+    paddingBottom: spacing.unit * 3,
   },
   paperRoot:{
     backgroundColor: colors.proteaBranding.blackBg,

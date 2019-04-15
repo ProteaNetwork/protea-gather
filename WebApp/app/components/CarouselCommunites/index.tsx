@@ -17,6 +17,7 @@ import { colors } from 'theme';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import CommunityCard from 'components/CommunityCard';
 import { ICommunity } from 'domain/communities/types';
+import { Link } from 'react-router-dom';
 
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
@@ -76,6 +77,9 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
       },
     },
   },
+  link:{
+    textDecoration: "none"
+  }
 });
 
 interface OwnProps {
@@ -161,7 +165,9 @@ function CarouselCommunites(props: OwnProps) {
   };
   return (
     <Fragment>
-      <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
+      <Link className={classes.link} to={`/discover/communities/`}>
+        <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
+      </Link>
       <Slider {...carouselSettings}>
         {
           communities && communities.map(c => (

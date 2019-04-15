@@ -7,10 +7,10 @@ import ViewCommunityContainer from 'containers/ViewCommunityContainer';
 import CreateEventContainer from 'containers/CreateEventContainer';
 import ViewEventContainer from 'containers/ViewEventContainer';
 import DiscoverEventsContainer from 'containers/DiscoverEventsContainer';
-import DiscoverCommunitiesContainer from 'containers/DiscoverCommunitiesContainer';
 import ProfileContainer from 'containers/ProfileContainer';
 import UpdateCommunityContainer from 'containers/UpdateCommunityContainer';
 import UpdateEventContainer from 'containers/UpdateEventContainer';
+import CommunitiesPageContainer from 'containers/CommunitiesPageContainer';
 
 export interface appRoute {
   name: string;
@@ -49,18 +49,18 @@ const routes: appRoute[] = [
     component: ViewCommunityContainer,
     isProtected: true,
     isNavRequired: false,
-  }, 
+  },
   {
     name: 'UpdateCommunity',
     path: '/communities/:tbcAddress/update',
     component: UpdateCommunityContainer,
     isProtected: true,
     isNavRequired: false,
-  }, 
+  },
   {
     name: 'Communities',
-    path: '/communities/',
-    component: DiscoverCommunitiesContainer,
+    path: '/discover/communities/',
+    component: CommunitiesPageContainer,
     isProtected: true,
     isNavRequired: true,
   },

@@ -7,7 +7,7 @@
     "build:webapp": "yarn wsrun -p WebApp build",
     "build:apiserver": "yarn wsrun -p ApiServer build",
     "build:blockchain": "cd Blockchain && yarn build && cd ..",
-    "start:db":"docker start apidb",
+    "start:db": "docker start apidb",
     "start:dev": "yarn wsrun start:dev --parallel",
     "test:webapp": "cd Webapp && yarn test:watch",
     "clean": "rm -rf ./node_modules && rm -rf ./*/node_modules"
@@ -22,7 +22,9 @@
       "ApiServer",
       "WebApp"
     ],
-    "nohoist": ["**/*"]
+    "nohoist": [
+      "**/*"
+    ]
   },
   "devDependencies": {
     "chalk": "^2.0.1",
@@ -47,5 +49,7 @@
   "engines": {
     "node": ">=8.0",
     "yarn": ">=1.9.4"
+  },
+  "dependencies": {
   }
 }
