@@ -36,12 +36,14 @@ spec:
               value: "3000"
             # - name: API_HOST # This is set in GitLab CI
             #   value: "api-$CI_BUILD_REF_NAME.protea.io:3001/api/"
-            - name: NETWORK
-              value: "rinkeby"
-            - name: DAI_ADDRESS
-              value: "0x080654F69f7EdEb74BaaBcA37de5819744A49535"
-            - name: COMMUNITY_FACTORY_ADDRESS
-              value: "0xB55f81Cd94F07d9c5C476AAb6b0beCCd2DB24833"
+            - name: MAINNET_DAI_ADDRESS
+              value: "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
+            - name: RINKEBY_DAI_ADDRESS
+              value: "0xD2F77f6B90fc8f0040d1f99C999891CafeCdB1D6"
+            - name: MAINNET_COMMUNITY_FACTORY_ADDRESS
+              value: ""
+            - name: RINKEBY_COMMUNITY_FACTORY_ADDRESS
+              value: "0xD5E6D7cE0B1A2B52F28387A126236c32aa1E2599"
       imagePullSecrets:
         - name: gitlab-registry-protea
 ---
@@ -144,8 +146,10 @@ spec:
               value: "http://localhost:8545" # TODO: update
             - name: INFURA_API_KEY
               value: "5b87341803ab415295dc6dd54b4239e6"
-            - name: COMMUNITY_FACTORY
-              value: "0xB55f81Cd94F07d9c5C476AAb6b0beCCd2DB24833"
+            - name: RINKEBY_COMMUNITY_FACTORY
+              value: "0xD5E6D7cE0B1A2B52F28387A126236c32aa1E2599"
+            - name: MAINNET_COMMUNITY_FACTORY
+              value: ""
             - name: APPLICATION_WALLET_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
