@@ -124,7 +124,6 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
                 {
                   myCommunities && (<Fragment>
                     {myCommunities
-                      .filter(community => (filter == "" || community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0))
                       .map((community: ICommunity) => <CommunityCard
                         availableStake={community.availableStake}
                         bannerImage={community.bannerImage}
@@ -157,7 +156,6 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
                 {
                   discoverCommunities && (<Fragment>
                     {discoverCommunities
-                      .filter(community => (filter == "" || community.name.indexOf(filter) >= 0))
                       .map((community: ICommunity) => <CommunityCard
                         availableStake={community.availableStake}
                         bannerImage={community.bannerImage}

@@ -1,9 +1,9 @@
 // import React from 'react';
 // import { mount } from 'enzyme';
 
-// import { DiscoverEventsContainer } from '../index';
+// import { EventsPageContainer } from '../index';
 
-describe('<DiscoverEventsContainer />', () => {
+describe('<EventsPageContainer />', () => {
   it('Expect to have unit tests specified', () => {
     expect(true).toEqual(false);
   });

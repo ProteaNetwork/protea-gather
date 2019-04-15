@@ -50,9 +50,8 @@ export function* populateCommunityEvents(community: ICommunity) {
     event.membershipManagerAddress = community.membershipManagerAddress
     return event;
   })
-  yield all(events.map(event => (put(saveEvent(event)))));
-  yield all(events.map((event: IEvent) => (put(checkStatus({ eventId: event.eventId, membershipManagerAddress: event.membershipManagerAddress })))));
-  yield all(events.map(event => (put(getEventMetaAction.request(event.eventId)))));
+
+  yield all(events.map(event => fork(resolveEvent, event.eventId, event.membershipManagerAddress)))
 }
 
 export function* getEventMeta(requestData) {
@@ -75,6 +74,8 @@ export function* populateCommunityEventsListener() {
 export function* resolveEvent(eventId: string, membershipManagerAddress: string) {
   let eventData = yield call(getEvent, eventId);
   eventData.membershipManagerAddress = membershipManagerAddress;
+  eventData.communityName =  yield select((state: ApplicationRootState) => state.communities[eventData.tbcAddress].name);
+  eventData.comLogo =  yield select((state: ApplicationRootState) => state.communities[eventData.tbcAddress].comLogo);
   yield put(saveEvent(eventData));
   yield put(checkStatus({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   yield put(getEventMetaAction.request(eventId));

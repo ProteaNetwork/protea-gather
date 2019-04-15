@@ -51,6 +51,8 @@ export async function getEvent(eventId: string){
     const eventData = await eventManagerContract.getEvent(eventIndex);
     const attendees: IMember[] = (await eventManagerContract.getRSVPdAttendees(eventIndex)).map(ethAddress => ({ethAddress: ethAddress, profileImage:"", name: ""}));
     const organizer = await eventManagerContract.getOrganiser(eventIndex);
+    const tbcAddress = await eventManagerContract.tokenManager();
+
     let confirmedAttendees:string[] = [];
     if(eventData[3] > 1){
       confirmedAttendees = await getEventConfirmedAttendees(eventId);
@@ -65,6 +67,7 @@ export async function getEvent(eventId: string){
       confirmedAttendees: confirmedAttendees,
       eventId: eventId,
       eventManagerAddress: eventManagerAddress,
+      tbcAddress: tbcAddress,
       organizer: organizer
     }
   }
@@ -112,7 +115,7 @@ export async function getEventsTx(eventManagerAddress: string){
 
 export async function checkMemberStateOnChain(eventId: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = eventId.split('-')[1];
     const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
@@ -124,6 +127,17 @@ export async function checkMemberStateOnChain(eventId: string){
     throw e;
   }
 
+}
+
+export async function getCommunityAddressTx(eventManagerAddress: string){
+  try{
+    const {provider, signer} = await getBlockchainObjects();
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    return (await eventManagerContract.tokenManager());
+  }
+  catch(e){
+    throw e;
+  }
 }
 
 

@@ -15,6 +15,7 @@ import Slider, { Settings as SliderSettings } from 'react-slick';
 import { compose } from 'redux';
 import { colors } from 'theme';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 
 const styles = ({ spacing, breakpoints }: Theme) => createStyles({
@@ -168,7 +169,9 @@ function CarouselEvents(props: OwnProps) {
   };
   return (
     <Fragment>
-      <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
+      <Link style={{textDecoration: 'none', outline: 'none'}} to={`/discover/events`}>
+        <Typography className={classes.label} component="h2" variant="h2">{label}</Typography>
+      </Link>
       <Slider {...carouselSettings}>
         {
           events && events.map(e => (

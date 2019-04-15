@@ -6,7 +6,7 @@ import CreateCommunityContainer from 'containers/CreateCommunityContainer';
 import ViewCommunityContainer from 'containers/ViewCommunityContainer';
 import CreateEventContainer from 'containers/CreateEventContainer';
 import ViewEventContainer from 'containers/ViewEventContainer';
-import DiscoverEventsContainer from 'containers/DiscoverEventsContainer';
+import EventsPageContainer from 'containers/EventsPageContainer';
 import ProfileContainer from 'containers/ProfileContainer';
 import UpdateCommunityContainer from 'containers/UpdateCommunityContainer';
 import UpdateEventContainer from 'containers/UpdateEventContainer';
@@ -87,8 +87,8 @@ const routes: appRoute[] = [
   },
   {
     name: 'Events',
-    path: '/events/',
-    component: DiscoverEventsContainer,
+    path: '/discover/events/',
+    component: EventsPageContainer,
     isProtected: true,
     isNavRequired: true,
   },

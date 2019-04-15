@@ -1,46 +1,40 @@
 import { createSelector, createStructuredSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
-import { ICommunity } from 'domain/communities/types';
 import { selectMyCommunties, selectDiscoverCommunties } from 'domain/communities/selectors';
+import { selectBalances } from 'domain/transactionManagement/selectors';
 
 /**
  * Direct selector to the CommunitiesPageContainer state domain
  */
-const selectCommunitiesDomain = (state: ApplicationRootState) => state.communities;
-const selectEventsDomain = (state: ApplicationRootState) => state.events;
 
-const selectEthBalance = (state: ApplicationRootState) => state.transactionManagement.ethBalance;
-const selectDaiBalance = (state: ApplicationRootState) => state.transactionManagement.daiBalance;
+const selectMyCommunitiesFilter = (state: ApplicationRootState) => state.communitiesPage.filter ? state.communitiesPage.filter : "";
 
 /**
  * Other specific selectors
  */
 
+const makeSelectFilter = createSelector(selectMyCommunitiesFilter, (filter)=>{
+  return filter;
+})
 
-export const makeSelectCommunity = () => createSelector(
-  selectCommunitiesDomain,
-  // state: redux store
-  // props: connected component's props
-  (state, props) => props.match.params.tbcAddress,
-  (communities, tbcAddress) => communities[tbcAddress]
-);
+const makeSelectMyCommunities = createSelector(selectMyCommunitiesFilter, selectMyCommunties,
+  (filter, communities) => {
+  return communities.filter(community => (filter == "" || community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0))
+})
 
-export const selectBalances = createSelector(
-  selectEthBalance,
-  selectDaiBalance,
-  (ethBalance,daiBalance) => ({
-    ethBalance: ethBalance,
-    daiBalance: daiBalance
-  })
-);
+const makeSelectDiscoverCommunities = createSelector(selectMyCommunitiesFilter, selectDiscoverCommunties,
+  (filter, communities) => {
+  return communities.filter(community => (filter == "" || community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0))
+})
 
 /**
  * Default selector used by ViewCommunityContainer
  */
 
 const selectCommunitiesPage = createStructuredSelector({
-  myCommunities: selectMyCommunties,
-  discoverCommunities: selectDiscoverCommunties,
+  filter: makeSelectFilter,
+  myCommunities: makeSelectMyCommunities,
+  discoverCommunities: makeSelectDiscoverCommunities,
   balances: selectBalances
 });
 

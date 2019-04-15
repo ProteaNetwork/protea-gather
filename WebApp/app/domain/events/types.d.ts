@@ -8,6 +8,10 @@ interface IEvent{
 
   eventManagerAddress: string;
   membershipManagerAddress: string;
+  tbcAddress: string;
+
+  communityName: string;
+  comLogo: string;
 
   organizer: string;
 
