@@ -28,6 +28,10 @@ services:
       args: 
         - API_HOST=$API_HOST # Passed from pipeline env
         - API_SCHEMA=$API_SCHEMA # Passed from pipeline env
+        - MAINNET_DAI_ADDRESS=$MAINNET_DAI_ADDRESS # Passed from pipeline env
+        - RINKEBY_DAI_ADDRESS=$RINKEBY_DAI_ADDRESS # Passed from pipeline env
+        - MAINNET_COMMUNITY_FACTORY_ADDRESS=$MAINNET_COMMUNITY_FACTORY_ADDRESS # Passed from pipeline env
+        - RINKEBY_COMMUNITY_FACTORY_ADDRESS=$RINKEBY_COMMUNITY_FACTORY_ADDRESS # Passed from pipeline env
         - NODE_OPTIONS=--max-old-space-size=4096
     depends_on:
       - apiserver
