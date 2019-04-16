@@ -63,7 +63,7 @@ export const manualConfirmAttendeesAction = createAsyncAction(
   ActionTypes.MANUAL_CONFIRM_ATTEND_TX_REQUEST,
   ActionTypes.MANUAL_CONFIRM_ATTEND_TX_SUCCESS,
   ActionTypes.MANUAL_CONFIRM_ATTEND_TX_FAILURE,
-)<{eventId: string, attendees: string[]}, void, string>();
+)<{eventId: string, attendees: string[], membershipManagerAddress: string}, void, string>();
 
 export const rsvpAction = createAsyncAction(
   ActionTypes.RSVP_TX_REQUEST,

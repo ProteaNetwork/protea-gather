@@ -5,7 +5,7 @@
  */
 
 import React, { Fragment } from 'react';
-import { Theme, createStyles, withStyles, WithStyles, AppBar, Typography, Tabs, Tab, Button, Input } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, AppBar, Typography, Tabs, Tab, Button, Input, InputBase, Fab } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { IEvent } from 'domain/events/types';
 import { ICommunity } from 'domain/communities/types';
@@ -13,15 +13,52 @@ import { colors } from 'theme';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import dayjs from 'dayjs';
 import Blockies from 'react-blockies';
-import CarouselEvents from 'components/CarouselEvents';
 import { IMember } from 'domain/membershipManagement/types';
 import MembersTab from 'components/MembersTab';
+import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
+import MembersActionTab from 'components/MembersActionTab';
+import { Save } from '@material-ui/icons';
+import classNames from 'classnames';
 
-const styles = ({ spacing }: Theme) => createStyles({
+const styles = ({ spacing, shape }: Theme) => createStyles({
   root: {
     backgroundColor: colors.proteaBranding.orange,
     width: 500,
+  },
+  filteringSection:{
+    padding: 20
+  },
+  search: {
+    position: 'relative',
+
+    borderRadius: shape.borderRadius,
+    backgroundColor: colors.white,
+    '&:hover': {
+      // backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+  },
+  searchIcon: {
+    width: spacing.unit * 9,
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+    width: '100%',
+  },
+  inputInput: {
+    paddingTop: spacing.unit,
+    paddingRight: spacing.unit,
+    paddingBottom: spacing.unit,
+    paddingLeft: spacing.unit * 10,
+    width: '100%',
   },
   infoBar: {
     backgroundColor: colors.proteaBranding.blackBg,
@@ -103,16 +140,43 @@ const styles = ({ spacing }: Theme) => createStyles({
         }
       }
     },
+  },
+  confirmMembersFab:{
+    display: 'block',
+    position: 'fixed',
+    bottom: 15,
+    right: 0,
+    transform: 'translate(-50%,-50%)',
+    zIndex: 999,
+    color: colors.white,
+    backgroundColor: colors.proteaBranding.pink,
+    opacity: 0,
+    visibility: "hidden",
+    transitionDuration: "400ms",
+    "&.active":{
+      visibility: "visible",
+      opacity: 1
+    },
+    "&:hover":{
+      backgroundColor: colors.proteaBranding.pink,
+    }
   }
+
 });
 
 interface OwnProps extends WithStyles<typeof styles> {
   event: IEvent;
+  attendees: IMember[];
   community: ICommunity;
-  balances: any;
+  balances: {ethBalance: number, daiBalance: number, ethAddress: string};
   slideIndex: number;
+  filter: string;
+  confirmingList: string[];
   handleChange(event: any, value: any): void;
   handleChangeIndex(index: any): void;
+  handleNameChange(name: any): void;
+  handleTogglePendingApproval(address: string): void;
+
   onChangeLimit(eventId: string, limit: number, membershipManagerAddress: string): void;
   onStartEvent(eventId: string, membershipManagerAddress: string): void;
   onEndEvent(eventId: string, membershipManagerAddress: string): void;
@@ -147,7 +211,13 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
       slideIndex,
       handleChange,
       handleChangeIndex,
+      handleNameChange,
+      attendees,
+      filter,
+      handleTogglePendingApproval,
+      confirmingList
     } = props;
+
     return <Fragment>
       {
         event && <Fragment>
@@ -337,11 +407,24 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
               </section>
             </section>
             <section className={classes.memberSection}>
+              <section className={classes.filteringSection}>
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon />
+                  </div>
+                  <InputBase
+                    placeholder="Search Attendees"
+                    classes={{root: classes.inputRoot, input: classes.inputInput }}
+                    value={filter}
+                    onChange={(event) => handleNameChange(event.target.value)}
+                  />
+                </div>
+              </section>
               {
-                (event.attendees && event.attendees.length > 0) &&
+                (event.organizer != balances.ethAddress && attendees && attendees.length > 0) &&
                 <Fragment>
                   {
-                    (event.attendees.map((member: IMember) => {
+                    (attendees.map((member: IMember) => {
                       return (member.ethAddress && <MembersTab
                         key={member.ethAddress}
                         stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd"}
@@ -350,8 +433,30 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                   }
                 </Fragment>
               }
+              {
+                (event.organizer == balances.ethAddress && event.state == 2 && attendees && attendees.length > 0) &&
+                <Fragment>
+                  {
+                    confirmingList && (attendees.map((member: IMember) => {
+                      return (member.ethAddress && event.organizer != member.ethAddress && <MembersActionTab
+                        key={member.ethAddress}
+                        confirmed={event.confirmedAttendees.indexOf(member.ethAddress) >= 0}
+                        highlighted={(confirmingList.indexOf(member.ethAddress) >= 0 && (event.confirmedAttendees.indexOf(member.ethAddress) < 0))}
+                        action={() => handleTogglePendingApproval(member.ethAddress)}
+                        stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "Click to manually confirm"}
+                        member={member}/>)
+                    }))
+                  }
+
+                </Fragment>
+              }
             </section>
           </SwipeableViews>
+          {event.organizer == balances.ethAddress  && event.state == 2 &&
+            <Fab onClick={() => onManualConfirmAttendees(event.eventId, confirmingList, event.membershipManagerAddress)} className={classNames(classes.confirmMembersFab, {"active": confirmingList.length > 0})}>
+              <Save />
+            </Fab>
+          }
         </Fragment>
       }
     </Fragment>

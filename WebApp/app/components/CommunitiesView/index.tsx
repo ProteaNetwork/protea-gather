@@ -60,8 +60,10 @@ const styles = (theme: Theme) =>
       display: 'flex',
       flexDirection: "row",
       justifyContent: "space-between",
+      flexWrap: "wrap",
       "& > *":{
-        maxWidth: "calc(50% - 10px)"
+        maxWidth: "calc(50% - 10px)",
+        marginBottom: 20
       }
     }
   });

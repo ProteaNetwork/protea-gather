@@ -1,6 +1,6 @@
 /**
  *
- * MembersTab
+ * MembersActionTab
  *
  */
 
@@ -10,6 +10,8 @@ import { IMember } from 'domain/membershipManagement/types';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import Blockies from 'react-blockies';
 import { colors } from 'theme';
+import classNames from 'classnames';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -19,7 +21,27 @@ const styles = (theme: Theme) =>
       flexDirection: 'row',
       margin: "5px 0",
       backgroundColor: colors.proteaBranding.blackBg,
-      color: colors.white
+      color: colors.white,
+      cursor: "pointer",
+      position: "relative",
+      "&:after":{
+        content: "''",
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        transitionDuration: "200ms",
+        top: 0,
+        left: 0,
+        zIndex: 999
+      },
+      "&.confirmed":{
+        cursor: "default",
+      },
+      "&.highlighted":{
+        "&:after":{
+          backgroundColor: fade(colors.proteaBranding.pink, 0.5)
+        }
+      }
     },
     profileImage:{
       display: 'block',
@@ -36,18 +58,26 @@ const styles = (theme: Theme) =>
         textOverflow: 'ellipsis',
         color: colors.white,
       }
-    }
+    },
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
   member: IMember;
   stateMessage: string;
+  confirmed: boolean;
+  highlighted: boolean;
+  action(): void;
 }
 
-const MembersTab: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { member, classes, stateMessage} = props;
+const MembersActionTab: React.SFC<OwnProps> = (props: OwnProps) => {
+  const { confirmed, action, member, classes, stateMessage, highlighted} = props;
+  const actionManage = () => {
+    !confirmed ? action() : undefined;
+  }
   return <Fragment>
-    <section className={classes.root}>
+    <section className={classNames(classes.root, {
+      "confirmed": confirmed , "highlighted": highlighted
+    })} onClick={() => actionManage()}>
       <div>
         {
           member.profileImage ?
@@ -79,4 +109,4 @@ const MembersTab: React.SFC<OwnProps> = (props: OwnProps) => {
   </Fragment>;
 };
 
-export default withStyles(styles, { withTheme: true })(MembersTab);
+export default withStyles(styles, { withTheme: true })(MembersActionTab);

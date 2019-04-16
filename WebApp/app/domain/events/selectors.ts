@@ -10,7 +10,7 @@ import { ICommunity } from 'domain/communities/types';
  * Direct selector to the EventsDomain
  */
 
-const selectEventsDomain = (state: ApplicationRootState) => {
+export const selectEventsDomain = (state: ApplicationRootState) => {
   return state ? state.events : {};
 };
 

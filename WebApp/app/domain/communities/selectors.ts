@@ -7,7 +7,7 @@ import { ICommunity } from './types';
  * Direct selector to the communitiesDomain
  */
 
-const selectCommunitiesDomain = (state: ApplicationRootState) => {
+export const selectCommunitiesDomain = (state: ApplicationRootState) => {
   return state ? state.communities : {};
 };
 

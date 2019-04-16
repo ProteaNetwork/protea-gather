@@ -33,7 +33,7 @@ export const selectBalances = createSelector(
   selectEthBalance,
   selectDaiBalance,
   selectEthAddress,
-  (ethBalance, daiBalance, ethAddress) => ({
+  (ethBalance, daiBalance, ethAddress): {ethBalance: number, daiBalance: number, ethAddress: string} => ({
     ethBalance: ethBalance,
     daiBalance: daiBalance,
     ethAddress: ethAddress

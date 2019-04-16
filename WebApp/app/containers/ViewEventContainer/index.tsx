@@ -14,12 +14,13 @@ import { IEvent } from 'domain/events/types';
 import { RouteComponentProps } from 'react-router-dom';
 import { joinCommunityAction, getCommunityAction } from 'domain/communities/actions';
 import { increaseMembershipAction } from 'domain/membershipManagement/actions';
-import { Button } from '@material-ui/core';
 import { startEventAction, endEventAction, cancelEventAction, cancelRsvpAction, rsvpAction, confirmAttendanceAction, claimGiftAction, changeEventLimitAction, manualConfirmAttendeesAction, getEventAction } from 'domain/events/actions';
 import { refreshBalancesAction } from 'domain/transactionManagement/actions';
-import { endEventTx } from 'domain/events/chainInteractions';
 import ViewEvent from 'components/ViewEvent';
-
+import { IMember } from 'domain/membershipManagement/types';
+import { setFilter } from './actions';
+import reducer from './reducer';
+import injectReducer from 'utils/injectReducer';
 
 interface RouteParams {
   eventId: string;
@@ -28,11 +29,14 @@ interface RouteParams {
 interface OwnProps extends RouteComponentProps<RouteParams>, React.Props<RouteParams> {
   community: ICommunity; // must be type string since route params
   event: IEvent;
-  balances: any;
+  attendees: IMember[];
+  balances: {ethBalance: number, daiBalance: number, ethAddress: string};
+  filter: string;
 }
 
 interface DispatchProps {
   refreshBalances():void;
+  setFilter(filter: string): void;
   getCommunity(tbcAddress: string):void;
   getEvent(eventId: string, membershipManagerAddress: string):void;
   onStartEvent(eventId: string, membershipManagerAddress: string): void;
@@ -53,8 +57,9 @@ interface StateProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 class ViewEventContainer extends React.Component<Props> {
-  state = {
+  state: {slideIndex: number, confirmingList: string[]} = {
     slideIndex: 0,
+    confirmingList: []
   };
 
   componentDidMount(){
@@ -71,8 +76,20 @@ class ViewEventContainer extends React.Component<Props> {
     this.setState({ slideIndex: index });
   };
 
+  handleTogglePendingApproval = (address:string) =>{
+    let newState = this.state.confirmingList.filter(address => this.props.event.confirmedAttendees.indexOf(address) < 0);
+    if(this.state.confirmingList.indexOf(address) >= 0){
+      newState = this.state.confirmingList.filter(pendingAddress => address != pendingAddress);
+      this.setState({confirmingList: newState});
+    }else{
+      newState = this.state.confirmingList;
+      newState.push(address);
+      this.setState({confirmingList: newState})
+    }
+  }
+
   render() {
-    const { community, event, balances, onIncreaseMembership, onJoinCommunity, onStartEvent, onCancelEvent, onEndEvent, onManualConfirmAttendees, onChangeLimit, onCancelRSVP, onClaimGift, onConfirmAttendance, onRSVP} = this.props;
+    const { attendees, setFilter, filter, community, event, balances, onIncreaseMembership, onJoinCommunity, onStartEvent, onCancelEvent, onEndEvent, onManualConfirmAttendees, onChangeLimit, onCancelRSVP, onClaimGift, onConfirmAttendance, onRSVP} = this.props;
     return <Fragment>
 
       <ViewEvent
@@ -80,7 +97,14 @@ class ViewEventContainer extends React.Component<Props> {
           community={community}
           event={event}
           balances={balances}
+          attendees={attendees}
 
+          confirmingList={this.state.confirmingList}
+          handleTogglePendingApproval={this.handleTogglePendingApproval}
+
+          filter={filter}
+
+          handleNameChange={setFilter}
           handleChange={this.handleChange}
           handleChangeIndex={this.handleChangeIndex}
 
@@ -98,8 +122,6 @@ class ViewEventContainer extends React.Component<Props> {
           onClaimGift={onClaimGift}
 
           onManualConfirmAttendees={onManualConfirmAttendees}
-
-
         >
 
       </ViewEvent>
@@ -111,6 +133,9 @@ const mapStateToProps = selectViewEventContainer;
 
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
   return {
+    setFilter: (filter: string) =>{
+      dispatch(setFilter(filter))
+    },
     refreshBalances: () =>  {
       dispatch(refreshBalancesAction())
     },
@@ -145,7 +170,8 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
     onManualConfirmAttendees: (eventId: string, attendees: string[], membershipManagerAddress: string) => {
       dispatch(manualConfirmAttendeesAction.request({
         eventId: eventId,
-        attendees: attendees
+        attendees: attendees,
+        membershipManagerAddress: membershipManagerAddress
       }));
     },
     getEvent: (eventId: string, membershipManagerAddress: string) => {
@@ -171,9 +197,19 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
   };
 };
 
+// Remember to add the key to ./app/types/index.d.ts ApplicationRootState
+// <OwnProps> restricts access to the HOC's other props. This component must not do anything with reducer hoc
+const withReducer = injectReducer<OwnProps>({
+  key: 'viewEventPage',
+  reducer: reducer,
+});
+
 const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps,
 );
 
-export default compose(withConnect)(ViewEventContainer);
+export default compose(
+  withReducer,
+  withConnect
+)(ViewEventContainer);
