@@ -3,12 +3,14 @@ import { ApplicationRootState } from 'types';
 import { ICommunity } from 'domain/communities/types';
 import { IEvent } from 'domain/events/types';
 import { selectBalances } from 'domain/transactionManagement/selectors';
+import { selectCommunitiesDomain } from 'domain/communities/selectors';
+import { selectEventsDomain } from 'domain/events/selectors';
 
 /**
  * Direct selector to the viewEventContainer state domain
  */
-const selectEventsDomain = (state: ApplicationRootState) => state.events;
-const selectCommunitiesDomain = (state: ApplicationRootState) => state.communities;
+
+const selectAttendeeFilter = (state: ApplicationRootState) => state.viewEventPage.filter ? state.viewEventPage.filter : "";
 
 
 /**
@@ -31,7 +33,12 @@ export const makeSelectEvent = () => createSelector(
   (events, eventId) => events[eventId]
 );
 
-
+export const makeSelectFilterAttendees = createSelector(
+  makeSelectEvent(), selectAttendeeFilter,
+  (event, filter) => {
+    return event.attendees.filter(attendee => (filter == "" || attendee.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || attendee.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0);
+  }
+)
 
 /**
  * Default selector used by ViewEventContainer
@@ -40,6 +47,7 @@ export const makeSelectEvent = () => createSelector(
 const selectViewEventContainer = createStructuredSelector({
   community: makeSelectCommunity(),
   event: makeSelectEvent(),
+  attendees: makeSelectFilterAttendees,
   balances: selectBalances
 });
 

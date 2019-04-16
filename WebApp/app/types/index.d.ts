@@ -8,6 +8,7 @@ import { DomainState as MembershipManagementState} from '../domain/membershipMan
 import { DomainState as TransactionManagementState} from '../domain/transactionManagement/types';
 import { ContainerState as DashboardState } from '../containers/DashboardContainer/types';
 import { ContainerState as EventsPageContainerState } from '../containers/EventsPageContainer/types';
+import { ContainerState as ViewEventPageContainerState } from '../containers/ViewEventContainer/types';
 import { ContainerState as CommunitiesPageContainerState } from '../containers/CommunitiesPageContainer/types';
 
 export interface LifeStore extends Store<{}> {
@@ -41,5 +42,6 @@ export interface ApplicationRootState {
   // Pages
   readonly dashboard: DashboardState;
   readonly eventPage: EventsPageContainerState;
+  readonly viewEventPage: ViewEventPageContainerState;
   readonly communitiesPage: CommunitiesPageContainerState;
 }
