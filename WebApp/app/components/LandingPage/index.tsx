@@ -41,6 +41,10 @@ const styles = () => createStyles({
     "& svg":{
       width: "100%"
     },
+  },
+  error:{
+    textAlign: "center",
+    padding: "0 40px"
   }
 });
 
@@ -58,7 +62,7 @@ const LandingPage: React.SFC<Props> = ({ onConnectClick, isWalletUnlocked, error
         <ReactSVG className={classes.proteaTitle} src="protea_white_text.svg" />
         <Button className={classes.button} onClick={onConnectClick} disabled={!isWalletUnlocked}>Connect</Button>
         <Button className={classes.button}>Discover</Button>
-        <Typography variant="subtitle1">{errorMessage}</Typography>
+        <Typography className={classes.error} variant="subtitle1">{errorMessage}</Typography>
       </main>
     </Fragment>
   );

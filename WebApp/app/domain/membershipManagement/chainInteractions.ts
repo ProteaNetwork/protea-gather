@@ -37,9 +37,7 @@ export async function getTotalRemainingInUtilityTx(membershipManagerAddress: str
 }
 
 export async function getMembersTx(membershipManagerAddress: string){
-  const { web3 } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-  const signer = await provider.getSigner();
+  const {web3, provider, signer} = await getBlockchainObjects();
   try{
     const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
     const filterMembershipStaked:EventFilter = membershipManagerContract.filters.MembershipStaked(null, null);

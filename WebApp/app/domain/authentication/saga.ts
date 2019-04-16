@@ -11,20 +11,14 @@ import * as authenticationActions from './actions';
 import ActionTypes from './constants';
 import { refreshBalances } from 'domain/transactionManagement/saga';
 import { refreshBalancesAction } from 'domain/transactionManagement/actions';
+import { initBlockchainResources, blockchainResources, getBlockchainObjects } from 'blockchainResources';
 
 export function* getPermit() {
-  const { web3, ethereum } = window as any;
-  const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-
-  const signer = yield provider.getSigner();
-  const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
-  if(accountArray.code && accountArray.code == 4001){
-    throw("Connection rejected");
-  }
+  const {signer, signerAddress} = yield call(getBlockchainObjects)
 
   try {
     // console.log('getting new permit');
-    const permitResponse = yield call(getPermitApi, accountArray[0]);
+    const permitResponse = yield call(getPermitApi, signerAddress);
     const signedPermit = yield signer.signMessage(permitResponse.data.permit);
     yield put(authenticationActions.saveAccessPermit(signedPermit));
     return signedPermit;
@@ -37,6 +31,7 @@ export function* getPermit() {
 export function* getAccessToken(signedPermit, ethAddress) {
   try {
     const apiToken = yield call(login, signedPermit, ethAddress);
+    alert("getting token")
     yield put(authenticationActions.saveAccessToken(apiToken.data));
     return apiToken.data;
   } catch (error) {
@@ -105,21 +100,17 @@ export function* loginFlow() {
 }
 
 export function* connectWallet() {
-  let { ethereum, web3 } = window as any;
+  let { web3 } = window as any;
+  const {ethAddress, ethereum } = yield call(getBlockchainObjects);
   if (ethereum) {
     try {
-      const accountArray = yield call(ethereum.send,'eth_requestAccounts');
-      if(accountArray.code && accountArray.code == 4001){
-        throw("Connection rejected");
-      }
-
-      yield put(authenticationActions.setEthAddress({ethAddress : accountArray[0]}));
+      yield put(authenticationActions.setEthAddress({ethAddress : ethAddress}));
       yield put(authenticationActions.connectWallet.success());
     } catch (error) {
       yield put(authenticationActions.connectWallet.failure(error.message));
     }
   } else if (web3) {
-    web3 = new Web3(web3.currentProvider);
+    web3 = new ethers.providers.Web3Provider(ethereum);
     yield put(authenticationActions.connectWallet.success());
   } else {
     yield put(authenticationActions.connectWallet.failure('Non-Ethereum browser detected. You should consider trying MetaMask!'));
@@ -128,23 +119,24 @@ export function* connectWallet() {
 
 // Exported for testing purposes
 export const addressChangeEventChannel = eventChannel(emit => {
-  const { ethereum } = window as any;
-  ethereum.on('accountsChanged', () => {
-    emit('Wallet Address changed');
-  });
+  try{
+    const { ethereum } = window as any;
+    ethereum.on('accountsChanged', () => {
+      emit('Wallet Address changed');
+    });
+  }
+  catch(e){
+    emit("Error")
+  }
   return () => { };
 });
 
 export function* addressChangeListener() {
   while (true) {
     const newAddress = yield take(addressChangeEventChannel);
-    const { ethereum } = window as any;
-    const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
-    if(accountArray.code && accountArray.code == 4001){
-      throw("Connection rejected");
-    }
     yield put(authenticationActions.setEthAddress({ethAddress : newAddress}));
     yield put(authenticationActions.logOut());
+    yield fork(connectWallet)
   }
 }
 
