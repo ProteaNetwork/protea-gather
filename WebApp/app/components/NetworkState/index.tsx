@@ -49,6 +49,8 @@ const NetworkState: React.SFC<OwnProps> = (props: OwnProps) => {
     networkName = "Mainnet"
   }else if(networkId == 4){
     networkName = 'Rinkeby'
+  }else{
+    networkName =  'Not connected'
   }
   return <div className={classes.root}>
 
