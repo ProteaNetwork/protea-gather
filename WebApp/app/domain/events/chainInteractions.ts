@@ -1,4 +1,4 @@
-import * as EventManagerABI from "../../../../Blockchain/build/EventManagerV1.json";
+import { abi as EventManagerABI } from "../../../../Blockchain/build/EventManagerV1.json";
 
 import { ethers } from "ethers";
 
@@ -19,10 +19,10 @@ export declare type EventFilter = {
 // View
 export async function getEventConfirmedAttendees(eventId: string): Promise<string[]>{
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.bigNumberify(eventId.split('-')[1]);
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
     const filterMemberAttended:EventFilter = eventManagerContract.filters.MemberAttended(eventIndex, null);
     filterMemberAttended.fromBlock = blockchainResources.publishedBlock;
@@ -45,8 +45,8 @@ export async function getEvent(eventId: string){
   const eventIndex = eventId.split('-')[1];
 
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
     const eventData = await eventManagerContract.getEvent(eventIndex);
     const attendees: IMember[] = (await eventManagerContract.getRSVPdAttendees(eventIndex)).map(ethAddress => ({ethAddress: ethAddress, profileImage:"", name: ""}));
@@ -79,8 +79,8 @@ export async function getEvent(eventId: string){
 
 export async function getEventsTx(eventManagerAddress: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
     const eventCreatedFilter: EventFilter = eventManagerContract.filters.EventCreated(null);
     eventCreatedFilter.fromBlock = blockchainResources.publishedBlock;
@@ -118,7 +118,7 @@ export async function checkMemberStateOnChain(eventId: string){
     const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = eventId.split('-')[1];
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     return (await eventManagerContract.getUserState(signerAddress, eventIndex));
@@ -132,7 +132,7 @@ export async function checkMemberStateOnChain(eventId: string){
 export async function getCommunityAddressTx(eventManagerAddress: string){
   try{
     const {provider, signer} = await getBlockchainObjects();
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
     return (await eventManagerContract.tokenManager());
   }
   catch(e){
@@ -144,8 +144,8 @@ export async function getCommunityAddressTx(eventManagerAddress: string){
 // Write/Publish
 export async function publishEventToChain(eventManagerAddress: string, name: string, maxAttendees: BigNumber, requiredDai: BigNumber) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     const txReceipt = await(await eventManagerContract.createEvent(name, maxAttendees, signerAddress, requiredDai)).wait();
@@ -171,12 +171,12 @@ export async function publishEventToChain(eventManagerAddress: string, name: str
 
 export async function startEventTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.startEvent(eventIndex)).wait();
@@ -195,12 +195,12 @@ export async function startEventTx(eventId: string) {
 
 export async function endEventTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.endEvent(eventIndex)).wait();
@@ -219,12 +219,12 @@ export async function endEventTx(eventId: string) {
 
 export async function cancelEventTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.cancelEvent(eventIndex)).wait();
@@ -244,14 +244,13 @@ export async function cancelEventTx(eventId: string) {
 
 export async function changeEventLimitTx(eventId: string, limit: number) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const limitBn = ethers.utils.bigNumberify(limit);
-    const signerAddress = await signer.getAddress();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
     const txReceipt = await(await eventManagerContract.changeParticipantLimit(eventIndex, limitBn)).wait();
     return;
   }
@@ -264,11 +263,11 @@ export async function changeEventLimitTx(eventId: string, limit: number) {
 
 export async function manualConfirmAttendeesTx(eventId: string, attendees: string[]) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.organiserConfirmAttendance(eventIndex, attendees)).wait();
@@ -288,10 +287,10 @@ export async function manualConfirmAttendeesTx(eventId: string, attendees: strin
 
 export async function rsvpTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.rsvp(eventIndex)).wait();
@@ -310,11 +309,11 @@ export async function rsvpTx(eventId: string) {
 
 export async function cancelRsvpTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.cancelRsvp(eventIndex)).wait();
@@ -333,11 +332,11 @@ export async function cancelRsvpTx(eventId: string) {
 
 export async function confirmAttendanceTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
 
     const txReceipt = await(await eventManagerContract.confirmAttendance(eventIndex)).wait();
@@ -356,12 +355,12 @@ export async function confirmAttendanceTx(eventId: string) {
 
 export async function claimGiftTx(eventId: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const signerAddress = await signer.getAddress();
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.parseUnits(eventId.split('-')[1], 0);
 
-    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, EventManagerABI.abi, provider)).connect(signer);
+    const eventManagerContract = (await new ethers.Contract(eventManagerAddress, JSON.stringify(EventManagerABI), provider)).connect(signer);
 
     const txReceipt = await(await eventManagerContract.claimGift(signerAddress, eventIndex)).wait();
     // TODO: Error handling

@@ -37,7 +37,7 @@ export class AuthService {
       this.config.get('serverWallet').mnemonic,
     );
     const returnMessage = await serverAccountWallet.signMessage(
-      `${this.config.get('jwt').permitSalt} - ${ethAddress}`,
+      `${this.config.get('jwt').permitSalt} - ${ethAddress.toLowerCase()}`,
     );
     return { permit: returnMessage };
   }
@@ -57,6 +57,7 @@ export class AuthService {
   }
 
   async login(signedPermit: string, ethAddress: string): Promise<LoginResponse> {
+
     const isSignatureValid = await this.validateUserSignature(signedPermit, ethAddress);
     if (!isSignatureValid) {
       throw new UnauthorizedException('Invalid message signature');

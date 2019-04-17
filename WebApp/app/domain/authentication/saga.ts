@@ -1,25 +1,21 @@
-import { ethers } from 'ethers';
 import jwtDecode from 'jwt-decode';
 import { eventChannel } from 'redux-saga';
 import { call, cancel, delay, fork, put, race, select, take } from 'redux-saga/effects';
 import { ApplicationRootState } from 'types';
 import { forwardTo } from 'utils/history';
-import Web3 from 'web3';
 import { getPermit as getPermitApi, login } from '../../api/api';
 import * as userProfileActions from '../userProfile/actions';
 import * as authenticationActions from './actions';
 import ActionTypes from './constants';
-import { refreshBalances } from 'domain/transactionManagement/saga';
 import { refreshBalancesAction } from 'domain/transactionManagement/actions';
-import { initBlockchainResources, blockchainResources, getBlockchainObjects } from 'blockchainResources';
+import { getBlockchainObjects, signMessage } from 'blockchainResources';
 
 export function* getPermit() {
-  const {signer, signerAddress} = yield call(getBlockchainObjects)
-
+  const {signerAddress} = yield call(getBlockchainObjects)
   try {
     // console.log('getting new permit');
     const permitResponse = yield call(getPermitApi, signerAddress);
-    const signedPermit = yield signer.signMessage(permitResponse.data.permit);
+    const signedPermit = yield call(signMessage, permitResponse.data.permit);
     yield put(authenticationActions.saveAccessPermit(signedPermit));
     return signedPermit;
   } catch (error) {
@@ -31,7 +27,6 @@ export function* getPermit() {
 export function* getAccessToken(signedPermit, ethAddress) {
   try {
     const apiToken = yield call(login, signedPermit, ethAddress);
-    alert("getting token")
     yield put(authenticationActions.saveAccessToken(apiToken.data));
     return apiToken.data;
   } catch (error) {
@@ -48,11 +43,8 @@ export function* refreshTokenPoller() {
   while (true) {
     const signedMessage = yield select((state: ApplicationRootState) => state.authentication.signedPermit);
     const apiToken = yield select((state: ApplicationRootState) => state.authentication.accessToken);
-    const { ethereum } = window as any;
-    const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
-    if(accountArray.code && accountArray.code == 4001){
-      throw("Connection rejected");
-    }
+
+    const {signerAddress} = yield call(getBlockchainObjects);
 
     let delayDuration;
     let decodedToken;
@@ -60,7 +52,7 @@ export function* refreshTokenPoller() {
       decodedToken = yield call(jwtDecode, apiToken);
     } catch (error) {
       // console.log(`Unable to decode token. Refreshing...`);
-      const newToken = yield call(getAccessToken, signedMessage, accountArray[0]);
+      const newToken = yield call(getAccessToken, signedMessage, signerAddress);
       decodedToken = yield call(jwtDecode, newToken);
     }
 
@@ -68,7 +60,7 @@ export function* refreshTokenPoller() {
     // Only refresh the token when it is nearing expiry.
     if ((Date.now() / 1000) + (delayDuration + 1) > decodedToken.exp) {
       // console.log(`Token is expiring soon. Refreshing...`);
-      yield call(getAccessToken, signedMessage, accountArray[0]);
+      yield call(getAccessToken, signedMessage, signerAddress);
       // console.log(`access token updated`);
     } else {
       // console.log(`token not refreshed, going to sleep for ${delayDuration}`);
@@ -79,15 +71,11 @@ export function* refreshTokenPoller() {
 
 export function* loginFlow() {
   while (yield take(ActionTypes.AUTH_REQUEST)) {
-    const { ethereum } = window as any;
-
     try {
       const response = yield call(getPermit);
-      const accountArray = yield call(ethereum.send, 'eth_requestAccounts');
-      if(accountArray.code && accountArray.code == 4001){
-        throw("Connection rejected");
-      }
-      yield call(getAccessToken, response, accountArray[0]);
+      const {signerAddress} = yield call(getBlockchainObjects);
+
+      yield call(getAccessToken, response, signerAddress);
       yield put(userProfileActions.getUserProfile.request());
       yield fork(refreshTokenPoller);
       yield put(refreshBalancesAction());
@@ -100,18 +88,14 @@ export function* loginFlow() {
 }
 
 export function* connectWallet() {
-  let { web3 } = window as any;
-  const {ethAddress, ethereum } = yield call(getBlockchainObjects);
-  if (ethereum) {
+  const {ethAddress, provider } = yield call(getBlockchainObjects);
+  if (provider) {
     try {
       yield put(authenticationActions.setEthAddress({ethAddress : ethAddress}));
       yield put(authenticationActions.connectWallet.success());
     } catch (error) {
       yield put(authenticationActions.connectWallet.failure(error.message));
     }
-  } else if (web3) {
-    web3 = new ethers.providers.Web3Provider(ethereum);
-    yield put(authenticationActions.connectWallet.success());
   } else {
     yield put(authenticationActions.connectWallet.failure('Non-Ethereum browser detected. You should consider trying MetaMask!'));
   }
