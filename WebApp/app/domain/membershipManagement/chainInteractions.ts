@@ -1,7 +1,4 @@
-import * as CommunityFactoryABI from "../../../../Blockchain/build/CommunityFactoryV1.json";
-import * as MembershipManagerAbi from "../../../../Blockchain/build/MembershipManagerV1.json";
-import * as DaiContractAbi from "../../../../Blockchain/build/PseudoDaiToken.json";
-import * as TbcContractAbi from "../../../../Blockchain/build/BasicLinearTokenManager.json";
+import { abi as MembershipManagerAbi} from "../../../../Blockchain/build/MembershipManagerV1.json";
 import { ethers } from "ethers";
 
 import { BigNumber } from "ethers/utils";
@@ -21,11 +18,11 @@ export declare type EventFilter = {
 // View/Read
 export async function getTotalRemainingInUtilityTx(membershipManagerAddress: string, eventId: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.bigNumberify(eventId.split('-')[1]);
-    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
 
     const totalUtilityStake = await membershipManagerContract.getUtilityStake(eventManagerAddress, eventIndex);
 
@@ -37,9 +34,9 @@ export async function getTotalRemainingInUtilityTx(membershipManagerAddress: str
 }
 
 export async function getMembersTx(membershipManagerAddress: string){
-  const {web3, provider, signer} = await getBlockchainObjects();
+  const {provider, signer} = await getBlockchainObjects();
   try{
-    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const filterMembershipStaked:EventFilter = membershipManagerContract.filters.MembershipStaked(null, null);
     filterMembershipStaked.fromBlock = blockchainResources.publishedBlock;
 
@@ -68,12 +65,12 @@ export async function getMembersTx(membershipManagerAddress: string){
 
 export async function getLockedCommitmentTx(membershipManagerAddress:string, eventId: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const signerAddress = await signer.getAddress();
 
     const eventManagerAddress = eventId.split('-')[0];
     const eventIndex = ethers.utils.bigNumberify(eventId.split('-')[1]);
-    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
 
     const utilityStake = await membershipManagerContract.getMemberUtilityStake(eventManagerAddress, signerAddress, eventIndex);
 
@@ -87,9 +84,9 @@ export async function getLockedCommitmentTx(membershipManagerAddress:string, eve
 
 export async function checkAdminState(membershipManagerAddress: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
+    const {provider, signer} = await getBlockchainObjects();
     const signerAddress = await signer.getAddress();
-    const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
 
     const isAdmin = await membershipManager.isAdmin(signerAddress);
 
@@ -103,8 +100,8 @@ export async function checkAdminState(membershipManagerAddress: string){
 
 export async function getAvailableStake(membershipManagerAddress: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     const memberstate = await membershipManager.getMembershipStatus(signerAddress);
@@ -119,8 +116,8 @@ export async function getAvailableStake(membershipManagerAddress: string){
 
 export async function checkUserStateOnChain(membershipManagerAddress: string, tbcAddress: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     const memberstate = await membershipManager.getMembershipStatus(signerAddress);
@@ -144,8 +141,8 @@ export async function checkUserStateOnChain(membershipManagerAddress: string, tb
 // Staking functions
 export async function increaseMembershipStake(daiValue: BigNumber, membershipManagerAddress: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     for(let i = 0; i < 5; i++){
@@ -171,8 +168,8 @@ export async function increaseMembershipStake(daiValue: BigNumber, membershipMan
 
 export async function withdrawMembershipStake(daiValue: BigNumber, membershipManagerAddress: string){
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const membershipManager = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     for(let i = 0; i < 5; i++){
@@ -197,8 +194,8 @@ export async function withdrawMembershipStake(daiValue: BigNumber, membershipMan
 
 export async function registerUtility(utilityAddress: string, membershipManagerAddress: string) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
 
     const txReceipt = await(await membershipManagerContract.addUtility(utilityAddress)).wait();
     // TODO: Error handling
@@ -221,8 +218,8 @@ export async function registerUtility(utilityAddress: string, membershipManagerA
 
 export async function setReputationReward(utilityAddress: string, membershipManagerAddress: string, rewardId: BigNumber, rewardAmount: BigNumber) {
   try{
-    const {web3, provider, signer} = await getBlockchainObjects();
-    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, MembershipManagerAbi.abi, provider)).connect(signer);
+    const {provider, signer} = await getBlockchainObjects();
+    const membershipManagerContract = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
 
     const txReceipt = await(await membershipManagerContract.setReputationRewardEvent(utilityAddress, rewardId, rewardAmount)).wait();
     const reputationRewardSetEvent = membershipManagerContract.interface.parseLog(await(txReceipt.events.filter(

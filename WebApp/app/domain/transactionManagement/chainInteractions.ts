@@ -1,4 +1,4 @@
-import * as DaiContractAbi from "../../../../Blockchain/build/PseudoDaiToken.json";
+import {abi as DaiContractAbi} from "../../../../Blockchain/build/PseudoDaiToken.json";
 
 import { ethers } from "ethers";
 
@@ -26,7 +26,7 @@ export async function findENSaddress(accountAddress: string){
 export async function checkBalancesOnChain() {
   try{
     const { provider, signer} = await getBlockchainObjects();
-    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, JSON.stringify(DaiContractAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
     const daiBalance = parseFloat(ethers.utils.formatUnits((await daiContract.balanceOf(signerAddress)), 18));
@@ -46,7 +46,7 @@ export async function checkBalancesOnChain() {
 export async function mintDai(){
   try{
     const { provider, signer} = await getBlockchainObjects();
-    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi.abi, provider)).connect(signer);
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, JSON.stringify(DaiContractAbi), provider)).connect(signer);
 
     const txReceipt = await(await daiContract.mint()).wait();
     return;
