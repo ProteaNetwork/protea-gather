@@ -39,6 +39,7 @@ export function* toggleTXPendingFlag(action) {
     yield delay(5000);
     yield put(getAllCommunitiesAction());
     yield delay(2000);
+    yield put(setTxContextAction(``));
 
     yield put(refreshBalancesAction())
   } catch (error) {

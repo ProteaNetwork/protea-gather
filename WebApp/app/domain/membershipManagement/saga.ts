@@ -1,12 +1,10 @@
 import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
 import { checkStatus, increaseMembershipAction, withdrawMembershipAction, getMembersAction } from "./actions";
-import { getCommunityMeta as getCommunityMetaApi } from "api/api";
-import { createCommunity as createCommunityApi } from "api/api";
 
 // Ethers standard event filter type is missing the blocktags
 import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn, getTokenVolumeSell } from "domain/communities/chainInteractions";
 import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState, getMembersTx } from "./chainInteractions";
-import { statusUpdated, getCommunityAction, setMemberList } from "domain/communities/actions";
+import { statusUpdated, setMemberList } from "domain/communities/actions";
 import { ethers } from "ethers";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { retry } from "redux-saga/effects";
@@ -32,20 +30,27 @@ export function* checkMemberStates(membershipManagerAddress: string, tbcAddress:
 // CRUD
 export function* increaseMembership(communityData: {tbcAddress:string, daiValue: number, membershipManagerAddress: string}){
   try{
+    const daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);
+    console.log(ethers.utils.formatUnits(daiValueBN, 18))
     const liquidTokenBalanceBN = yield call(getTokenBalance, communityData.tbcAddress);
+    const liquidTokensValuationBN = yield call(getDaiValueBurn, communityData.tbcAddress, liquidTokenBalanceBN);
     let mintedVolume: BigNumber = ethers.utils.bigNumberify(0);
-    const tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
-
+    // This is the volume after contribution
+    let tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, daiValueBN);
     if(liquidTokenBalanceBN.eq(0)){
       // If no tokens have been minted
       yield put(setRemainingTxCountAction(2));
       yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
-    }else if(liquidTokenBalanceBN.lt(tokenVolume)){
+    }else if(liquidTokensValuationBN.lt(daiValueBN)){
       // A mint occured externally to this user, price has changed so mint whats needed
+      const remainingToPuchaseDaiBN = daiValueBN.sub(liquidTokensValuationBN);
+      tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, remainingToPuchaseDaiBN);
       yield put(setRemainingTxCountAction(2));
-      yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
-      mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume.sub(liquidTokenBalanceBN), communityData.tbcAddress);
+      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN,18)).toFixed(2)} Dai worth of community tokens.`));
+
+      yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
+      mintedVolume = yield call(getTokenBalance, communityData.tbcAddress);
     }else if(liquidTokenBalanceBN.gte(tokenVolume)){
       // Theres enough for the mint
       mintedVolume = tokenVolume;
@@ -69,9 +74,10 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
 
 export function* withdrawMembership(communityData: {tbcAddress:string, daiValue: number, membershipManagerAddress: string}){
   try{
+    const daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);
 
     const liquidTokenBalanceBN = yield call(getTokenBalance, communityData.tbcAddress);
-    const tokenVolume = yield retry(5, 2000, getTokenVolumeSell, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
+    const tokenVolume = yield retry(5, 2000, getTokenVolumeSell, communityData.tbcAddress, daiValueBN);
 
     let withdrawTokenVolume: BigNumber = ethers.utils.bigNumberify(0);
     if(liquidTokenBalanceBN.eq(0)){
@@ -83,9 +89,11 @@ export function* withdrawMembership(communityData: {tbcAddress:string, daiValue:
     }else if(liquidTokenBalanceBN.lt(tokenVolume)){
       // If theres not enough liquid tokens to sell for the DAI request then run again
       // TODO: calculate how much dai to actually withdraw for the target amount
+
+      const daiFromMembershipNeededBN = yield call(getDaiValueBurn, communityData.tbcAddress, tokenVolume.sub(liquidTokenBalanceBN));
       yield put(setTxContextAction(`Withdrawing ${communityData.daiValue} Dai worth of tokens from membership` ));
       yield put(setRemainingTxCountAction(2));
-      yield retry(5, 2000, withdrawMembershipStake, ethers.utils.parseUnits(`${communityData.daiValue}`, 18), communityData.membershipManagerAddress)
+      yield retry(5, 2000, withdrawMembershipStake, daiFromMembershipNeededBN, communityData.membershipManagerAddress)
       withdrawTokenVolume = yield call(getTokenBalance, communityData.tbcAddress);
     }else if(liquidTokenBalanceBN.gte(tokenVolume)){
       withdrawTokenVolume = tokenVolume;
