@@ -6,14 +6,10 @@
 
 import React, { Fragment } from 'react';
 import { Theme, createStyles, withStyles, WithStyles, Typography, Tab, Tabs, AppBar } from '@material-ui/core';
-import { ICommunity } from 'domain/communities/types';
 import SwipeableViews from 'react-swipeable-views';
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import InputBase from '@material-ui/core/InputBase';
 import { colors } from 'theme';
-import CommunityCard from 'components/CommunityCard';
 import { IEvent } from 'domain/events/types';
 import EventCard from 'components/EventCard';
 import EventActionCard from 'components/EventActionCard';

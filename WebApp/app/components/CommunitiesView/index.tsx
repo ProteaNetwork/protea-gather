@@ -5,15 +5,15 @@
  */
 
 import React, { Fragment } from 'react';
-import { Theme, createStyles, withStyles, WithStyles, Typography, Tab, Tabs, AppBar } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, Typography, Tab, Tabs, AppBar, Fab } from '@material-ui/core';
 import { ICommunity } from 'domain/communities/types';
 import SwipeableViews from 'react-swipeable-views';
-import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import { fade } from '@material-ui/core/styles/colorManipulator';
 import InputBase from '@material-ui/core/InputBase';
 import { colors } from 'theme';
 import CommunityCard from 'components/CommunityCard';
+import { Add } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -65,6 +65,23 @@ const styles = (theme: Theme) =>
         maxWidth: "calc(50% - 10px)",
         marginBottom: 20
       }
+    },
+    addFab:{
+      display: 'block',
+      position: 'fixed',
+      bottom: 15,
+      right: 0,
+      transform: 'translate(-50%,-50%)',
+      zIndex: 999,
+      cursor: "pointer",
+      "& > *":{
+        color: colors.white,
+        backgroundColor: colors.proteaBranding.pink,
+        "&:hover":{
+          backgroundColor: colors.proteaBranding.pink,
+        }
+      },
+
     }
   });
 
@@ -85,7 +102,6 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
     classes,
     myCommunities,
     discoverCommunities,
-    ethAddress,
     slideIndex,
     handleNameChange,
     handleSlideChange,
@@ -173,6 +189,11 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
               </section>
             </section>
           </SwipeableViews>
+          <Link className={classes.addFab} to={"/communities/create"}>
+            <Fab>
+              <Add />
+            </Fab>
+          </Link>
       </Fragment>
     }
   </Fragment>;

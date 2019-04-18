@@ -19,12 +19,12 @@ const makeSelectFilter = createSelector(selectMyCommunitiesFilter, (filter)=>{
 
 const makeSelectMyCommunities = createSelector(selectMyCommunitiesFilter, selectMyCommunties,
   (filter, communities) => {
-  return communities.filter(community => (filter == "" || community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0))
+  return communities.filter(community => (filter == "" || (community && community.name && community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0)))
 })
 
 const makeSelectDiscoverCommunities = createSelector(selectMyCommunitiesFilter, selectDiscoverCommunties,
   (filter, communities) => {
-  return communities.filter(community => (filter == "" || community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0))
+  return communities.filter(community => (filter == "" || (community && community.name && community.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0)))
 })
 
 /**

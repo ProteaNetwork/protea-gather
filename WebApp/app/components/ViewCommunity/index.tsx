@@ -189,7 +189,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   size="large">
                   {`Withdraw stake by ${daiTxAmount}Dai`}
                 </Button>}
-                {community.isAdmin && <Button
+                {community.isMember && community.isAdmin && <Button
                   onClick={() => onCreateEvent()}
                   className={classes.buttons}
                   size="large">

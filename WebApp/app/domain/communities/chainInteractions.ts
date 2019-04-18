@@ -26,7 +26,7 @@ export async function checkTransferApprovalState(tbcAddress: string){
     const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi, provider)).connect(signer);
 
     const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);
-    return approval.gt(ethers.utils.parseUnits("2", 18))
+    return approval.gt(ethers.utils.parseUnits("1000", 18))
   }
   catch(e){
     throw e;

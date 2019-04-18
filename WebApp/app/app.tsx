@@ -64,7 +64,8 @@ if (module.hot) {
   });
 }
 
-render();
+// We need the providers injected for the app to load
+window.addEventListener('load', () => render(), {once:true});
 
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,

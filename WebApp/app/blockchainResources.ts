@@ -34,13 +34,6 @@ export let blockchainResources: BlockchainResources = {
   isToshi: false
 };
 
-
-function waitForLoad() {
-  return new Promise(resolve => {
-    window.addEventListener('load', resolve, {once:true});
-  });
-}
-
 async function fetchFromWindow(){
   const { web3 } = window as any;
   blockchainResources.provider = await new ethers.providers.Web3Provider(web3.currentProvider);
@@ -51,7 +44,6 @@ async function fetchFromWindow(){
 }
 
 export async function initBlockchainResources() {
-  await waitForLoad();
   const { web3, ethereum } = window as any;
   try{
 
