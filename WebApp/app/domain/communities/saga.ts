@@ -20,14 +20,13 @@ import { BlockTag } from 'ethers/providers/abstract-provider';
 import { ICommunity } from "./types";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
-import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn } from "./chainInteractions";
+import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn, checkTransferApprovalState, getTokenBalance } from "./chainInteractions";
 import { checkStatus, getMembersAction } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-
-
+import { BigNumber } from "ethers/utils";
 
 export declare type EventFilter = {
   address?: string;
@@ -132,16 +131,29 @@ export function* joinCommunity(){
   while(true){
     const communityData = (yield take(joinCommunityAction.request)).payload;
     try{
-      yield put(setRemainingTxCountAction(3));
-      yield put(setTxContextAction("Unlocking Dai transfers to the community"));
-      yield retry(5, 2000, updateTransferApproval, true, communityData.tbcAddress)
-
-      // mint
-      yield put(setRemainingTxCountAction(2));
-      yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
+      const approvalState = yield call(checkTransferApprovalState, communityData.tbcAddress)
+      if(!approvalState){
+        yield put(setRemainingTxCountAction(3));
+        yield put(setTxContextAction("Unlocking Dai transfers to the community"));
+        yield retry(5, 2000, updateTransferApproval, true, communityData.tbcAddress)
+      }
       const tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, ethers.utils.parseUnits(`${communityData.daiValue}`, 18));
-      const mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
-
+      const liquidTokenBalanceBN = yield call(getTokenBalance, communityData.tbcAddress);
+      let mintedVolume: BigNumber = ethers.utils.bigNumberify(0);
+      if(liquidTokenBalanceBN.eq(0)){
+        // If no tokens have been minted
+        yield put(setRemainingTxCountAction(2));
+        yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
+        mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
+      }else if(liquidTokenBalanceBN.lt(tokenVolume)){
+        // A mint occured externally to this user, price has changed so mint whats needed
+        yield put(setRemainingTxCountAction(2));
+        yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
+        mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume.sub(liquidTokenBalanceBN), communityData.tbcAddress);
+      }else if(liquidTokenBalanceBN.gte(tokenVolume)){
+        // Theres enough for the mint
+        mintedVolume = tokenVolume;
+      }
 
       // stake
       yield put(setRemainingTxCountAction(1));
@@ -151,9 +163,6 @@ export function* joinCommunity(){
 
       yield put(setRemainingTxCountAction(0));
       yield put(joinCommunityAction.success());
-      // yield delay(1500);
-      // yield put(getCommunityAction.request(communityData.tbcAddress));
-
     }
     catch(e){
       yield put(setRemainingTxCountAction(0));

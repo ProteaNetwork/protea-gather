@@ -42,7 +42,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 class ViewCommunityContainer extends React.Component<Props>  {
   state = {
     slideIndex: 0,
-    daiTxAmount: 1,
+    daiTxAmount: 2,
   };
 
   componentDidMount(){

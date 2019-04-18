@@ -3,7 +3,7 @@ import { ApplicationRootState } from 'types';
 import { initialState } from './reducer';
 import { IEvent } from './types';
 import { makeSelectEthAddress } from 'containers/App/selectors';
-import { selectMyCommunties } from 'domain/communities/selectors';
+import { selectMyCommunties, selectDiscoverCommunties } from 'domain/communities/selectors';
 import { ICommunity } from 'domain/communities/types';
 
 /**
@@ -48,14 +48,13 @@ export const selectMyHostedEvents = createSelector(selectMyEvents, makeSelectEth
   }
 )
 
-export const selectDiscoverEvents = createSelector(selectMyCommunties, selectEventsDomain, makeSelectEthAddress,
-  (myCommunities, allEvents, ethAddress): IEvent[] => {
-    const eventManagers = (Object.values(myCommunities)).map((com: ICommunity)=> com.eventManagerAddress);
+export const selectDiscoverEvents = createSelector(selectDiscoverCommunties, selectEventsDomain, makeSelectEthAddress,
+  (communities, allEvents, ethAddress): IEvent[] => {
+    const eventManagers = (Object.values(communities)).map((com: ICommunity)=> com.eventManagerAddress);
     const eventsArray: IEvent[] = Object.values(allEvents);
     return eventsArray.filter((evt: IEvent) => eventManagers.includes(evt.eventManagerAddress)).filter((event: IEvent) => (event.memberState == 0 && event.organizer.toLowerCase() != ethAddress.toLowerCase()));
   }
 )
-
 
 // Notifications
 export const selectMyPendingAttendance = createSelector(selectMyEvents,

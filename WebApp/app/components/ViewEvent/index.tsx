@@ -153,6 +153,7 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
     opacity: 0,
     visibility: "hidden",
     transitionDuration: "400ms",
+    cursor: "pointer",
     "&.active":{
       visibility: "visible",
       opacity: 1
