@@ -15,8 +15,11 @@ import { getCommunityAction, joinCommunityAction } from 'domain/communities/acti
 import { RouteComponentProps } from 'react-router-dom';
 import { withdrawMembershipAction, increaseMembershipAction } from 'domain/membershipManagement/actions';
 import ViewCommunity from 'components/ViewCommunity';
-import { Button } from '@material-ui/core';
 import { forwardTo } from 'utils/history';
+import { IMember } from 'domain/membershipManagement/types';
+import { setFilter } from './actions';
+import reducer from './reducer';
+import injectReducer from 'utils/injectReducer';
 
 interface RouteParams {
   tbcAddress: string; // must be type string since route params
@@ -25,11 +28,14 @@ interface RouteParams {
 interface OwnProps extends RouteComponentProps<RouteParams>, React.Props<RouteParams> {
   community: ICommunity; // must be type string since route params
   events: IEvent[];
-  balances: any;
+  balances: {ethBalance: number, daiBalance: number, ethAddress: string};
+  filter: string;
+  members: IMember[];
 }
 
 interface DispatchProps {
   getCommunity(tbcAddress: string):void;
+  setFilter(filter: string): void;
   onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onWithdrawMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
@@ -66,13 +72,29 @@ class ViewCommunityContainer extends React.Component<Props>  {
   }
 
   render() {
-    const { community, events, balances, onIncreaseMembership, onWithdrawMembership, onJoinCommunity} = this.props;
+    const {
+      community,
+      events,
+      balances,
+      onIncreaseMembership,
+      onWithdrawMembership,
+      onJoinCommunity,
+      filter,
+      members,
+      setFilter
+    } = this.props;
     return (
     <Fragment>
       <ViewCommunity
         slideIndex={this.state.slideIndex}
         handleChange={this.handleChange}
         balances={balances}
+
+        handleNameChange={setFilter}
+        filter={filter}
+
+        members={members}
+
         onCreateEvent={this.onCreateEvent}
         handleChangeIndex={this.handleChangeIndex}
         handleDaiValueChange={this.handleDaiValueChange}
@@ -94,6 +116,9 @@ const mapStateToProps = selectViewCommunityContainer;
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
+    setFilter: (filter: string) =>{
+      dispatch(setFilter(filter))
+    },
     getCommunity: (tbcAddress: string) => {
       dispatch(getCommunityAction.request(tbcAddress))
     },
@@ -121,9 +146,19 @@ function mapDispatchToProps(dispatch: Dispatch) {
   };
 }
 
+// Remember to add the key to ./app/types/index.d.ts ApplicationRootState
+// <OwnProps> restricts access to the HOC's other props. This component must not do anything with reducer hoc
+const withReducer = injectReducer<OwnProps>({
+  key: 'viewCommunityPage',
+  reducer: reducer,
+});
+
 const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps,
 );
 
-export default compose(withConnect)(ViewCommunityContainer);
+export default compose(
+  withReducer,
+  withConnect
+)(ViewCommunityContainer);

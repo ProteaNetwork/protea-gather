@@ -3,17 +3,17 @@ import * as actions from './actions';
 import { ApplicationRootState } from 'types';
 
 /* --- STATE --- */
-interface ViewEventContainerState {
+interface ViewCommunityContainerState {
   readonly filter: string;
 }
 
 /* --- ACTIONS --- */
-type ViewEventContainerActions = ActionType<typeof actions>;
+type ViewCommunityContainerActions = ActionType<typeof actions>;
 
 /* --- EXPORTS --- */
 
 type RootState = ApplicationRootState;
-type ContainerState = ViewEventContainerState;
-type ContainerActions = ViewEventContainerActions;
+type ContainerState = ViewCommunityContainerState;
+type ContainerActions = ViewCommunityContainerActions;
 
 export { RootState, ContainerState, ContainerActions };

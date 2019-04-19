@@ -24,7 +24,17 @@ import classNames from 'classnames';
 const styles = ({ spacing, shape }: Theme) => createStyles({
   root: {
     backgroundColor: colors.proteaBranding.orange,
-    width: 500,
+    "& .slide":{
+      position: "relative",
+      transitionDuration: "400ms",
+      "&.active":{
+        opacity: 1,
+      },
+      "&.hidden":{
+        opacity: 0,
+
+      }
+    }
   },
   filteringSection:{
     padding: 20
@@ -257,207 +267,209 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
               <Tab label="ATTENDEES" />
             </Tabs>
           </AppBar>
-          <SwipeableViews
-            index={slideIndex}
-            onChangeIndex={handleChangeIndex}>
-            <section>
-              <section className={classes.bannerImg}>
-                {
-                  event.bannerImage && (<img src={apiUrlBuilder.attachmentStream(event.bannerImage)}>
-                  </img>)
-                }
-                {
-                  !event.bannerImage && (
-                  <Blockies
-                    seed={event.eventId ? event.eventId : "0x"}
-                    size={125}
-                    scale={5}
-                    color={colors.proteaBranding.orange}
-                    bgColor={colors.white}
-                    spotColor={colors.proteaBranding.pink}
-                  />
-                  )
-                }
-              </section>
-              <section className={classes.infoBar}>
-                <div>
-                  <Typography className={classes.texts}>Required Stake: {event.requiredDai ? event.requiredDai : ''}DAI  (Available: {`${parseFloat(`${community.availableStake}`).toFixed(2 )}DAI`})</Typography>
-                  <Typography className={classes.texts}>Date: {`${dayjs(event.eventDate).format('YYYY-MM-DD hh:mm')}`}</Typography>
-                </div>
-                <div>
-                  <Typography className={classes.texts}>Status: {
-                    `${event.state == 1 ? 'Not started': ''}
-                      ${event.state == 2 ? 'Started': ''}
-                      ${event.state == 3 ? 'Ended': ''}
-                      ${event.state == 4 ? 'Cancelled': ''}`
-                  }</Typography>
-                  <Typography className={classes.texts}>Remaining bookings: {event.maxAttendees == 0 ? 'Unlimited' : `${event.attendees.length}/${event.maxAttendees}}`}
-                  </Typography>
-                </div>
-              </section>
-              <section className={classes.buttonArea}>
-                {
-                  !community.isMember &&
-                  <Button
-                    className={classes.buttons}
-                    onClick={() => onJoinCommunity(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
-                    size="large">
-                    {`Join for community for ${event.requiredDai}Dai`}
-                  </Button>
-                }
-                {
-                  community.isMember && (community.availableStake < event.requiredDai) &&
-                  <Button
-                    className={classes.buttons}
-                    onClick={() => onIncreaseMembership(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
-                    size="large">
-                    {`Increase stake by ${event.requiredDai}Dai`}
-                  </Button>
-                }
-                {
-                  event && (event.organizer == balances.ethAddress)&&
-                  <Fragment>
-                    {
-                      event.state == 1 &&
-                      <Fragment>
-                         <Button className={classes.buttons} onClick={() => onStartEvent(event.eventId, event.membershipManagerAddress)}>
-                          Start Event
+          <section className={classes.root}>
+            <SwipeableViews
+              index={slideIndex}
+              onChangeIndex={handleChangeIndex}>
+              <article className={classNames('slide', (slideIndex == 0 ? 'active': 'hidden'))}>
+                <section className={classes.bannerImg}>
+                  {
+                    event.bannerImage && (<img src={apiUrlBuilder.attachmentStream(event.bannerImage)}>
+                    </img>)
+                  }
+                  {
+                    !event.bannerImage && (
+                    <Blockies
+                      seed={event.eventId ? event.eventId : "0x"}
+                      size={125}
+                      scale={5}
+                      color={colors.proteaBranding.orange}
+                      bgColor={colors.white}
+                      spotColor={colors.proteaBranding.pink}
+                    />
+                    )
+                  }
+                </section>
+                <section className={classes.infoBar}>
+                  <div>
+                    <Typography className={classes.texts}>Required Stake: {event.requiredDai ? event.requiredDai : ''}DAI  (Available: {`${parseFloat(`${community.availableStake}`).toFixed(2 )}DAI`})</Typography>
+                    <Typography className={classes.texts}>Date: {`${dayjs(event.eventDate).format('YYYY-MM-DD hh:mm')}`}</Typography>
+                  </div>
+                  <div>
+                    <Typography className={classes.texts}>Status: {
+                      `${event.state == 1 ? 'Not started': ''}
+                        ${event.state == 2 ? 'Started': ''}
+                        ${event.state == 3 ? 'Ended': ''}
+                        ${event.state == 4 ? 'Cancelled': ''}`
+                    }</Typography>
+                    <Typography className={classes.texts}>Remaining bookings: {event.maxAttendees == 0 ? 'Unlimited' : `${event.attendees.length}/${event.maxAttendees}}`}
+                    </Typography>
+                  </div>
+                </section>
+                <section className={classes.buttonArea}>
+                  {
+                    !community.isMember &&
+                    <Button
+                      className={classes.buttons}
+                      onClick={() => onJoinCommunity(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
+                      size="large">
+                      {`Join for community for ${event.requiredDai}Dai`}
+                    </Button>
+                  }
+                  {
+                    community.isMember && (community.availableStake < event.requiredDai) &&
+                    <Button
+                      className={classes.buttons}
+                      onClick={() => onIncreaseMembership(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
+                      size="large">
+                      {`Increase stake by ${event.requiredDai}Dai`}
+                    </Button>
+                  }
+                  {
+                    event && (event.organizer == balances.ethAddress)&&
+                    <Fragment>
+                      {
+                        event.state == 1 &&
+                        <Fragment>
+                          <Button className={classes.buttons} onClick={() => onStartEvent(event.eventId, event.membershipManagerAddress)}>
+                            Start Event
+                          </Button>
+                          <Button className={classes.buttons} onClick={() => onCancelEvent(event.eventId, event.membershipManagerAddress)}>
+                            Cancel Event
+                          </Button>
+                          {/* // <Button onClick={() => onChangeLimit(event.eventId, 2, event.membershipManagerAddress)}>
+                          //   Change Max limit to 2
+                          // </Button> */}
+                        </Fragment>
+                      }
+                      {
+                        event.state == 2 &&(
+                          <Button className={classes.buttons} onClick={() => onEndEvent(event.eventId, event.membershipManagerAddress)}>
+                            End Event
+                          </Button>
+                        )
+                      }
+                      {
+                        (event.state == 3 && event.memberState == 99 && event.gift > 0) &&
+                          <Fragment>
+                            <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
+                              Claim Gift
+                            </Button>
+                          </Fragment>
+                      }
+
+
+                      {/* <Button disabled={event.state != 2} onClick={() => onManualConfirmAttendees(event.eventId, ['0xdBEA2496d63eB313Ef6bA353d158653b5beC9dfC'], event.membershipManagerAddress)}>
+                        Confirm Members attendance
+                      </Button>
+                      */}
+
+                  </Fragment>
+                  }
+                  {
+                    event && community.isMember && event.organizer != balances.ethAddress  &&
+                    <Fragment>
+                      {
+                        event.state == 1 &&
+                        <Fragment>
+                          {
+                            event.memberState == 0 &&
+                            <Button className={classes.buttons} onClick={() => onRSVP(event.eventId, event.membershipManagerAddress)}>
+                              RSVP
+                            </Button>
+                          }
+                          {
+                            event.memberState == 1 &&
+                            <Button className={classes.buttons} onClick={() => onCancelRSVP(event.eventId, event.membershipManagerAddress)}>
+                              Cancel RSVP
+                            </Button>
+                          }
+
+                        </Fragment>
+                      }
+                      {
+                        (event.state == 2 && event.memberState == 1) &&
+                        <Button className={classes.buttons} onClick={() => onConfirmAttendance(event.eventId, event.membershipManagerAddress)}>
+                          Confirm attendance
                         </Button>
-                        <Button className={classes.buttons} onClick={() => onCancelEvent(event.eventId, event.membershipManagerAddress)}>
-                          Cancel Event
-                        </Button>
-                        {/* // <Button onClick={() => onChangeLimit(event.eventId, 2, event.membershipManagerAddress)}>
-                        //   Change Max limit to 2
-                        // </Button> */}
-                      </Fragment>
-                    }
-                    {
-                      event.state == 2 &&(
-                        <Button className={classes.buttons} onClick={() => onEndEvent(event.eventId, event.membershipManagerAddress)}>
-                          End Event
-                        </Button>
-                      )
-                    }
-                    {
-                      (event.state == 3 && event.memberState == 99 && event.gift > 0) &&
+                      }
+
+                      {
+                        (event.state == 3 && event.memberState == 99 && event.gift > 0) &&
                         <Fragment>
                           <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
-                            Claim Gift
+                            Claim Gift ({`${event.gift.toFixed(2)}${community.tokenSymbol}`})
                           </Button>
                         </Fragment>
-                    }
-
-
-                    {/* <Button disabled={event.state != 2} onClick={() => onManualConfirmAttendees(event.eventId, ['0xdBEA2496d63eB313Ef6bA353d158653b5beC9dfC'], event.membershipManagerAddress)}>
-                      Confirm Members attendance
-                    </Button>
-                     */}
-
-                </Fragment>
-                }
+                      }
+                      {
+                        (event.state == 4 && event.memberState == 1) &&
+                        <Fragment>
+                          <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
+                            Claim Deposit
+                          </Button>
+                        </Fragment>
+                      }
+                    </Fragment>
+                  }
+                </section>
+                <section className={classes.infoBar}>
+                  <Typography className={classes.texts} variant='subtitle1'>Description:</Typography>
+                  <Typography className={classes.texts}>{event.description}</Typography>
+                </section>
+              </article>
+              <article className={classNames('slide', classes.memberSection, (slideIndex == 1 ? 'active': 'hidden'))}>
+                <section className={classes.filteringSection}>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search Attendees"
+                      classes={{root: classes.inputRoot, input: classes.inputInput }}
+                      value={filter}
+                      onChange={(event) => handleNameChange(event.target.value)}
+                    />
+                  </div>
+                </section>
                 {
-                  event && community.isMember && event.organizer != balances.ethAddress  &&
+                  (event.organizer != balances.ethAddress && attendees && attendees.length > 0) &&
                   <Fragment>
                     {
-                      event.state == 1 &&
-                      <Fragment>
-                        {
-                          event.memberState == 0 &&
-                          <Button className={classes.buttons} onClick={() => onRSVP(event.eventId, event.membershipManagerAddress)}>
-                            RSVP
-                          </Button>
-                        }
-                        {
-                          event.memberState == 1 &&
-                          <Button className={classes.buttons} onClick={() => onCancelRSVP(event.eventId, event.membershipManagerAddress)}>
-                            Cancel RSVP
-                          </Button>
-                        }
-
-                      </Fragment>
-                    }
-                    {
-                      (event.state == 2 && event.memberState == 1) &&
-                      <Button className={classes.buttons} onClick={() => onConfirmAttendance(event.eventId, event.membershipManagerAddress)}>
-                        Confirm attendance
-                      </Button>
-                    }
-
-                    {
-                      (event.state == 3 && event.memberState == 99 && event.gift > 0) &&
-                      <Fragment>
-                        <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
-                          Claim Gift ({`${event.gift.toFixed(2)}${community.tokenSymbol}`})
-                        </Button>
-                      </Fragment>
-                    }
-                    {
-                      (event.state == 4 && event.memberState == 1) &&
-                      <Fragment>
-                        <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
-                          Claim Deposit
-                        </Button>
-                      </Fragment>
+                      (attendees.map((member: IMember) => {
+                        return (member.ethAddress && <MembersTab
+                          key={member.ethAddress}
+                          stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd"}
+                          member={member}/>)
+                      }))
                     }
                   </Fragment>
                 }
-              </section>
-              <section className={classes.infoBar}>
-                <Typography className={classes.texts} variant='subtitle1'>Description:</Typography>
-                <Typography className={classes.texts}>{event.description}</Typography>
-              </section>
-            </section>
-            <section className={classes.memberSection}>
-              <section className={classes.filteringSection}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    placeholder="Search Attendees"
-                    classes={{root: classes.inputRoot, input: classes.inputInput }}
-                    value={filter}
-                    onChange={(event) => handleNameChange(event.target.value)}
-                  />
-                </div>
-              </section>
-              {
-                (event.organizer != balances.ethAddress && attendees && attendees.length > 0) &&
-                <Fragment>
-                  {
-                    (attendees.map((member: IMember) => {
-                      return (member.ethAddress && <MembersTab
-                        key={member.ethAddress}
-                        stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd"}
-                        member={member}/>)
-                    }))
-                  }
-                </Fragment>
-              }
-              {
-                (event.organizer == balances.ethAddress && event.state == 2 && attendees && attendees.length > 0) &&
-                <Fragment>
-                  {
-                    confirmingList && (attendees.map((member: IMember) => {
-                      return (member.ethAddress && event.organizer != member.ethAddress && <MembersActionTab
-                        key={member.ethAddress}
-                        confirmed={event.confirmedAttendees.indexOf(member.ethAddress) >= 0}
-                        highlighted={(confirmingList.indexOf(member.ethAddress) >= 0 && (event.confirmedAttendees.indexOf(member.ethAddress) < 0))}
-                        action={() => handleTogglePendingApproval(member.ethAddress)}
-                        stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "Click to manually confirm"}
-                        member={member}/>)
-                    }))
-                  }
+                {
+                  (event.organizer == balances.ethAddress && event.state == 2 && attendees && attendees.length > 0) &&
+                  <Fragment>
+                    {
+                      confirmingList && (attendees.map((member: IMember) => {
+                        return (member.ethAddress && event.organizer != member.ethAddress && <MembersActionTab
+                          key={member.ethAddress}
+                          confirmed={event.confirmedAttendees.indexOf(member.ethAddress) >= 0}
+                          highlighted={(confirmingList.indexOf(member.ethAddress) >= 0 && (event.confirmedAttendees.indexOf(member.ethAddress) < 0))}
+                          action={() => handleTogglePendingApproval(member.ethAddress)}
+                          stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "Click to manually confirm"}
+                          member={member}/>)
+                      }))
+                    }
 
-                </Fragment>
-              }
-            </section>
-          </SwipeableViews>
-          {event.organizer == balances.ethAddress  && event.state == 2 &&
-            <Fab onClick={() => onManualConfirmAttendees(event.eventId, confirmingList, event.membershipManagerAddress)} className={classNames(classes.confirmMembersFab, {"active": confirmingList.length > 0})}>
-              <Save />
-            </Fab>
-          }
+                  </Fragment>
+                }
+              </article>
+            </SwipeableViews>
+            {event.organizer == balances.ethAddress  && event.state == 2 &&
+              <Fab onClick={() => onManualConfirmAttendees(event.eventId, confirmingList, event.membershipManagerAddress)} className={classNames(classes.confirmMembersFab, {"active": confirmingList.length > 0})}>
+                <Save />
+              </Fab>
+            }
+          </section>
         </Fragment>
       }
     </Fragment>

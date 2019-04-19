@@ -187,7 +187,7 @@ class AppWrapper extends React.Component<Props> {
               <List>
                 {
                   navLinks.map(({ name, path, routeNavLinkIcon }) => (
-                    <NavLink to={path} className={classes.link} key={name}>
+                    <NavLink onClick={this.close} to={path} className={classes.link} key={name}>
                       <ListItem button>
                         {/* <ListItemIcon>
                           {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
@@ -197,6 +197,9 @@ class AppWrapper extends React.Component<Props> {
                     </NavLink>
                   ))
                 }
+                <ListItem className={classes.link} button onClick={() => {this.close(); onLogout()}}>
+                  <ListItemText className={classes.navItem} primaryTypographyProps={{color:"inherit" }} color="inherit" primary={'Logout'} />
+                </ListItem>
               </List>
             </Drawer>
           </ClickAwayListener>

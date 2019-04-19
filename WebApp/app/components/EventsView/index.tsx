@@ -13,12 +13,24 @@ import { colors } from 'theme';
 import { IEvent } from 'domain/events/types';
 import EventCard from 'components/EventCard';
 import EventActionCard from 'components/EventActionCard';
+import classNames from 'classnames';
 
 const styles = (theme: Theme) =>
   createStyles({
     // JSS in CSS goes here
-    slideSection:{
+    root: {
+      backgroundColor: colors.proteaBranding.orange,
+      "& .slide":{
+        position: "relative",
+        transitionDuration: "400ms",
+        "&.active":{
+          opacity: 1,
+        },
+        "&.hidden":{
+          opacity: 0,
 
+        }
+      }
     },
     filteringSection:{
       padding: 20
@@ -128,171 +140,173 @@ const EventsView: React.SFC<OwnProps> = (props: OwnProps) => {
             <Tab label="DISCOVER EVENTS" />
           </Tabs>
         </AppBar>
-        <SwipeableViews
-            index={slideIndex}
-            onChangeIndex={handleSlideChangeIndex}>
-            <section className={classes.slideSection}>
-              <section className={classes.filteringSection}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
+        <section className={classes.root}>
+          <SwipeableViews
+              index={slideIndex}
+              onChangeIndex={handleSlideChangeIndex}>
+              <article className={classNames('slide', (slideIndex == 0 ? 'active': 'hidden'))}>
+                <section className={classes.filteringSection}>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search Events"
+                      classes={{root: classes.inputRoot, input: classes.inputInput }}
+                      value={filter}
+                      onChange={(event) => handleNameChange(event.target.value)}
+                    />
                   </div>
-                  <InputBase
-                    placeholder="Search Events"
-                    classes={{root: classes.inputRoot, input: classes.inputInput }}
-                    value={filter}
-                    onChange={(event) => handleNameChange(event.target.value)}
-                  />
-                </div>
-              </section>
-              <section className={classes.actionArea}>
-                {
-                  myPendingClaimEvents && (<Fragment>
-                    {myPendingClaimEvents
-                      .map((event: IEvent) => <EventActionCard
-                         bannerImage={event.bannerImage}
-                         comLogo={event.bannerImage}
-                         eventId={event.eventId}
-                         name={event.name}
-                         actionText={event.state == 3 ? "Claim Gift": "Claim Deposit"}
-                         action={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}
-                         communityName={event.communityName}
-                         key={event.eventId}>
+                </section>
+                <section className={classes.actionArea}>
+                  {
+                    myPendingClaimEvents && (<Fragment>
+                      {myPendingClaimEvents
+                        .map((event: IEvent) => <EventActionCard
+                          bannerImage={event.bannerImage}
+                          comLogo={event.bannerImage}
+                          eventId={event.eventId}
+                          name={event.name}
+                          actionText={event.state == 3 ? "Claim Gift": "Claim Deposit"}
+                          action={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}
+                          communityName={event.communityName}
+                          key={event.eventId}>
 
-                       </EventActionCard>)
-                    }
-                  </Fragment>)
-                }
-                {
-                  myPendingConfirmEvents && (<Fragment>
-                    {myPendingConfirmEvents
-                      .map((event: IEvent) => <EventActionCard
-                         bannerImage={event.bannerImage}
-                         comLogo={event.bannerImage}
-                         eventId={event.eventId}
-                         name={event.name}
-                         actionText={"Confirm attendance"}
-                         action={() => onConfirmAttendance(event.eventId, event.membershipManagerAddress)}
-                         communityName={event.communityName}
-                         key={event.eventId}>
+                        </EventActionCard>)
+                      }
+                    </Fragment>)
+                  }
+                  {
+                    myPendingConfirmEvents && (<Fragment>
+                      {myPendingConfirmEvents
+                        .map((event: IEvent) => <EventActionCard
+                          bannerImage={event.bannerImage}
+                          comLogo={event.bannerImage}
+                          eventId={event.eventId}
+                          name={event.name}
+                          actionText={"Confirm attendance"}
+                          action={() => onConfirmAttendance(event.eventId, event.membershipManagerAddress)}
+                          communityName={event.communityName}
+                          key={event.eventId}>
 
-                       </EventActionCard>)
-                    }
-                  </Fragment>)
-                }
-                {
-                  myHostingActiveEvents && (<Fragment>
-                    {myHostingActiveEvents
-                      .map((event: IEvent) => <EventActionCard
-                         bannerImage={event.bannerImage}
-                         comLogo={event.bannerImage}
-                         eventId={event.eventId}
-                         name={event.name}
-                         actionText={"End Event"}
-                         action={() => onEndEvent(event.eventId, event.membershipManagerAddress)}
-                         communityName={event.communityName}
-                         key={event.eventId}>
+                        </EventActionCard>)
+                      }
+                    </Fragment>)
+                  }
+                  {
+                    myHostingActiveEvents && (<Fragment>
+                      {myHostingActiveEvents
+                        .map((event: IEvent) => <EventActionCard
+                          bannerImage={event.bannerImage}
+                          comLogo={event.bannerImage}
+                          eventId={event.eventId}
+                          name={event.name}
+                          actionText={"End Event"}
+                          action={() => onEndEvent(event.eventId, event.membershipManagerAddress)}
+                          communityName={event.communityName}
+                          key={event.eventId}>
 
-                       </EventActionCard>)
-                    }
-                  </Fragment>)
-                }
-                {
-                  myHostingPendingEvents && (<Fragment>
-                    {myHostingPendingEvents
-                      .map((event: IEvent) => <EventActionCard
-                         bannerImage={event.bannerImage}
-                         comLogo={event.bannerImage}
-                         eventId={event.eventId}
-                         name={event.name}
-                         actionText={"Start Event"}
-                         action={() => onStartEvent(event.eventId, event.membershipManagerAddress)}
-                         communityName={event.communityName}
-                         key={event.eventId}>
+                        </EventActionCard>)
+                      }
+                    </Fragment>)
+                  }
+                  {
+                    myHostingPendingEvents && (<Fragment>
+                      {myHostingPendingEvents
+                        .map((event: IEvent) => <EventActionCard
+                          bannerImage={event.bannerImage}
+                          comLogo={event.bannerImage}
+                          eventId={event.eventId}
+                          name={event.name}
+                          actionText={"Start Event"}
+                          action={() => onStartEvent(event.eventId, event.membershipManagerAddress)}
+                          communityName={event.communityName}
+                          key={event.eventId}>
 
-                       </EventActionCard>)
-                    }
-                  </Fragment>)
-                }
-              </section>
-            </section>
-            <section className={classes.slideSection}>
-              <section className={classes.filteringSection}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
+                        </EventActionCard>)
+                      }
+                    </Fragment>)
+                  }
+                </section>
+              </article>
+              <article className={classNames('slide', (slideIndex == 1 ? 'active': 'hidden'))}>
+                <section className={classes.filteringSection}>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search Events"
+                      classes={{root: classes.inputRoot, input: classes.inputInput }}
+                      value={filter}
+                      onChange={(event) => handleNameChange(event.target.value)}
+                    />
                   </div>
-                  <InputBase
-                    placeholder="Search Events"
-                    classes={{root: classes.inputRoot, input: classes.inputInput }}
-                    value={filter}
-                    onChange={(event) => handleNameChange(event.target.value)}
-                  />
-                </div>
-              </section>
-              <section className={classes.content}>
-                {
-                  myUpcomingEvents && (<Fragment>
-                    {myUpcomingEvents
-                      .map((event: IEvent) => <EventCard
-                         bannerImage={event.bannerImage}
-                         comLogo={event.bannerImage}
-                         displayCommunityName={true}
-                         eventId={event.eventId}
-                         name={event.name}
-                         communityName={event.communityName}
-                         key={event.eventId}>
+                </section>
+                <section className={classes.content}>
+                  {
+                    myUpcomingEvents && (<Fragment>
+                      {myUpcomingEvents
+                        .map((event: IEvent) => <EventCard
+                          bannerImage={event.bannerImage}
+                          comLogo={event.bannerImage}
+                          displayCommunityName={true}
+                          eventId={event.eventId}
+                          name={event.name}
+                          communityName={event.communityName}
+                          key={event.eventId}>
 
-                       </EventCard>)
-                    }
-                  </Fragment>)
-                }
-                {
-                  myUpcomingEvents && myUpcomingEvents.length == 0 && <Fragment>
-                    No upcoming events
-                  </Fragment>
-                }
-              </section>
-            </section>
-            <section className={classes.slideSection}>
-              <section className={classes.filteringSection}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
+                        </EventCard>)
+                      }
+                    </Fragment>)
+                  }
+                  {
+                    myUpcomingEvents && myUpcomingEvents.length == 0 && <Fragment>
+                      No upcoming events
+                    </Fragment>
+                  }
+                </section>
+              </article>
+              <article className={classNames('slide', (slideIndex == 2 ? 'active': 'hidden'))}>
+                <section className={classes.filteringSection}>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search Events"
+                      classes={{root: classes.inputRoot, input: classes.inputInput }}
+                      value={filter}
+                      onChange={(event) => handleNameChange(event.target.value)}
+                    />
                   </div>
-                  <InputBase
-                    placeholder="Search Events"
-                    classes={{root: classes.inputRoot, input: classes.inputInput }}
-                    value={filter}
-                    onChange={(event) => handleNameChange(event.target.value)}
-                  />
-                </div>
-              </section>
-              <section className={classes.content}>
-                {
-                  discoverEvents && (<Fragment>
-                    {discoverEvents
-                      .map((event: IEvent) => <EventCard
-                        bannerImage={event.bannerImage}
-                        comLogo={event.bannerImage}
-                        displayCommunityName={false}
-                        eventId={event.eventId}
-                        name={event.name}
-                        communityName={event.communityName}
-                        key={event.eventId}>
+                </section>
+                <section className={classes.content}>
+                  {
+                    discoverEvents && (<Fragment>
+                      {discoverEvents
+                        .map((event: IEvent) => <EventCard
+                          bannerImage={event.bannerImage}
+                          comLogo={event.bannerImage}
+                          displayCommunityName={false}
+                          eventId={event.eventId}
+                          name={event.name}
+                          communityName={event.communityName}
+                          key={event.eventId}>
 
-                      </EventCard>)
-                    }
-                  </Fragment>)
-                }
-                {
-                  discoverEvents && discoverEvents.length == 0 && <Fragment>
-                    No additional events available
-                  </Fragment>
-                }
-              </section>
-            </section>
-          </SwipeableViews>
+                        </EventCard>)
+                      }
+                    </Fragment>)
+                  }
+                  {
+                    discoverEvents && discoverEvents.length == 0 && <Fragment>
+                      No additional events available
+                    </Fragment>
+                  }
+                </section>
+              </article>
+            </SwipeableViews>
+          </section>
       </Fragment>
     }
   </Fragment>;

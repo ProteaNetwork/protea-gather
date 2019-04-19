@@ -14,13 +14,11 @@ import { colors } from 'theme';
 import CommunityCard from 'components/CommunityCard';
 import { Add } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames';
 
 const styles = (theme: Theme) =>
   createStyles({
     // JSS in CSS goes here
-    slideSection:{
-
-    },
     filteringSection:{
       padding: 20
     },
@@ -121,74 +119,76 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
             <Tab label="DISCOVER COMMUNITIES" />
           </Tabs>
         </AppBar>
-        <SwipeableViews
-            index={slideIndex}
-            onChangeIndex={handleSlideChangeIndex}>
-            <section className={classes.slideSection}>
-              <section className={classes.filteringSection}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
+        <section className={classes.root}>
+          <SwipeableViews
+              index={slideIndex}
+              onChangeIndex={handleSlideChangeIndex}>
+              <article className={classNames('slide', (slideIndex == 0 ? 'active': 'hidden'))}>
+                <section className={classes.filteringSection}>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search Communities"
+                      classes={{root: classes.inputRoot, input: classes.inputInput }}
+                      value={filter}
+                      onChange={(event) => handleNameChange(event.target.value)}
+                    />
                   </div>
-                  <InputBase
-                    placeholder="Search Communities"
-                    classes={{root: classes.inputRoot, input: classes.inputInput }}
-                    value={filter}
-                    onChange={(event) => handleNameChange(event.target.value)}
-                  />
-                </div>
-              </section>
-              <section className={classes.content}>
-                {
-                  myCommunities && (<Fragment>
-                    {myCommunities
-                      .map((community: ICommunity) => <CommunityCard
-                        availableStake={community.availableStake}
-                        bannerImage={community.bannerImage}
-                        comLogo={community.comLogo}
-                        name={community.name}
-                        tbcAddress={community.tbcAddress}
-                        key={community.tbcAddress}>
+                </section>
+                <section className={classes.content}>
+                  {
+                    myCommunities && (<Fragment>
+                      {myCommunities
+                        .map((community: ICommunity) => <CommunityCard
+                          availableStake={community.availableStake}
+                          bannerImage={community.bannerImage}
+                          comLogo={community.comLogo}
+                          name={community.name}
+                          tbcAddress={community.tbcAddress}
+                          key={community.tbcAddress}>
 
-                      </CommunityCard>)
-                    }
-                  </Fragment>)
-                }
-              </section>
-            </section>
-            <section className={classes.slideSection}>
-              <section className={classes.filteringSection}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
+                        </CommunityCard>)
+                      }
+                    </Fragment>)
+                  }
+                </section>
+              </article>
+              <article className={classNames('slide', (slideIndex == 1 ? 'active': 'hidden'))}>
+                <section className={classes.filteringSection}>
+                  <div className={classes.search}>
+                    <div className={classes.searchIcon}>
+                      <SearchIcon />
+                    </div>
+                    <InputBase
+                      placeholder="Search Communities"
+                      classes={{root: classes.inputRoot, input: classes.inputInput }}
+                      value={filter}
+                      onChange={(event) => handleNameChange(event.target.value)}
+                    />
                   </div>
-                  <InputBase
-                    placeholder="Search Communities"
-                    classes={{root: classes.inputRoot, input: classes.inputInput }}
-                    value={filter}
-                    onChange={(event) => handleNameChange(event.target.value)}
-                  />
-                </div>
-              </section>
-              <section className={classes.content}>
-                {
-                  discoverCommunities && (<Fragment>
-                    {discoverCommunities
-                      .map((community: ICommunity) => <CommunityCard
-                        availableStake={community.availableStake}
-                        bannerImage={community.bannerImage}
-                        comLogo={community.comLogo}
-                        name={community.name}
-                        tbcAddress={community.tbcAddress}
-                        key={community.tbcAddress}>
+                </section>
+                <section className={classes.content}>
+                  {
+                    discoverCommunities && (<Fragment>
+                      {discoverCommunities
+                        .map((community: ICommunity) => <CommunityCard
+                          availableStake={community.availableStake}
+                          bannerImage={community.bannerImage}
+                          comLogo={community.comLogo}
+                          name={community.name}
+                          tbcAddress={community.tbcAddress}
+                          key={community.tbcAddress}>
 
-                      </CommunityCard>)
-                    }
-                  </Fragment>)
-                }
-              </section>
-            </section>
-          </SwipeableViews>
+                        </CommunityCard>)
+                      }
+                    </Fragment>)
+                  }
+                </section>
+              </article>
+            </SwipeableViews>
+          </section>
           <Link className={classes.addFab} to={"/communities/create"}>
             <Fab>
               <Add />
