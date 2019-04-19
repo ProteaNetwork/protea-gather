@@ -155,6 +155,7 @@ export default function* rootAuthenticationSaga() {
 
       // Wait till we receive a logout event
       yield take(ActionTypes.LOG_OUT);
+      localStorage.clear();
       yield cancel(watcher);
     } else {
       yield delay(2000);

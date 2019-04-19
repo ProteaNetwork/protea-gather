@@ -31,6 +31,7 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
   header: {
     width: 400,
     height: 20,
+    textOverflow: 'ellipsis',
   },
 });
 

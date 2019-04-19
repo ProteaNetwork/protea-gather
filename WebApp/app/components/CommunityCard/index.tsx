@@ -19,7 +19,8 @@ const styles = ({ palette, breakpoints, spacing }: Theme) => createStyles({
   },
   cardContent: {
     backgroundColor: colors.proteaBranding.blackBg,
-    color: colors.white
+    color: colors.white,
+    textOverflow: 'ellipsis',
   },
   media: {
     width: '100%',
@@ -41,8 +42,12 @@ const styles = ({ palette, breakpoints, spacing }: Theme) => createStyles({
     }
   },
   header: {
-    width: 400,
-    height: 20,
+    width: '100%',
+    height: 30,
+    marginBottom: 0,
+    overflow: "hidden",
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   link: {
     textDecoration: 'none',

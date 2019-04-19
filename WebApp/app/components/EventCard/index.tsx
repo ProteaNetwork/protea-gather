@@ -23,7 +23,7 @@ const styles = ({ palette, spacing, breakpoints }: Theme) => createStyles({
   },
   cardContent: {
     backgroundColor: colors.proteaBranding.blackBg,
-    color: colors.white
+    color: colors.white,
   },
   media: {
     width: '100%',
@@ -55,6 +55,9 @@ const styles = ({ palette, spacing, breakpoints }: Theme) => createStyles({
     height: 35,
     color: 'textSecondary', // TODO: add correct size
     overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+
   },
   link: {
     textDecoration: 'none',

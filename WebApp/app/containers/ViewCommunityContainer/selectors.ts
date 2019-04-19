@@ -2,34 +2,37 @@ import { createSelector, createStructuredSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
 import { ICommunity } from 'domain/communities/types';
 import { selectBalances } from 'domain/transactionManagement/selectors';
+import { selectCommunitiesDomain } from 'domain/communities/selectors';
+import { selectEventsDomain } from 'domain/events/selectors';
 
 /**
  * Direct selector to the viewCommunityContainer state domain
  */
-const selectCommunitiesDomain = (state: ApplicationRootState) => state.communities;
-const selectEventsDomain = (state: ApplicationRootState) => state.events;
-
-const selectEthBalance = (state: ApplicationRootState) => state.transactionManagement.ethBalance;
-const selectDaiBalance = (state: ApplicationRootState) => state.transactionManagement.daiBalance;
+const selectMembersFilter = (state: ApplicationRootState) => state.viewCommunityPage.filter ? state.viewCommunityPage.filter : "";
 
 /**
  * Other specific selectors
  */
-
+const makeSelectFilter = createSelector(selectMembersFilter, (filter)=>{
+  return filter;
+})
 
 export const makeSelectCommunity = () => createSelector(
   selectCommunitiesDomain,
-  // state: redux store
-  // props: connected component's props
   (state, props) => props.match.params.tbcAddress,
   (communities, tbcAddress) => communities[tbcAddress]
 );
 
+export const makeSelectFilterMembers = createSelector(
+  makeSelectCommunity(), makeSelectFilter,
+  (community, filter) => {
+    return community.memberList.filter(member => (filter == "" || member.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || member.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0);
+  }
+)
+
 export const makeSelectEvents = () => createSelector(
   makeSelectCommunity(),
   selectEventsDomain,
-  // state: redux store
-  // props: connected component's props
   (community: ICommunity, events) => {
     if(!community || !events){
       return [];
@@ -47,6 +50,8 @@ export const makeSelectEvents = () => createSelector(
 const selectViewCommunityContainer = createStructuredSelector({
   community: makeSelectCommunity(),
   events: makeSelectEvents(),
+  filter: makeSelectFilter,
+  members: makeSelectFilterMembers,
   balances: selectBalances
 });
 
