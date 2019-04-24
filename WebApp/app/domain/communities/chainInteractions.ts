@@ -21,8 +21,7 @@ export declare type EventFilter = {
 // View/Read
 export async function checkTransferApprovalState(tbcAddress: string){
   try{
-    const {provider, signer} = await getBlockchainObjects();
-    const signerAddress = await signer.getAddress();
+    const {provider, signer, signerAddress} = await getBlockchainObjects();
     const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi, provider)).connect(signer);
 
     const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);
@@ -30,6 +29,19 @@ export async function checkTransferApprovalState(tbcAddress: string){
   }
   catch(e){
     throw e;
+  }
+}
+
+export async function getPoolBalance(tbcAddress: string){
+  try{
+    const {provider, signer} = await getBlockchainObjects();
+    // @ts-ignore  // It's copied code, whats its problem
+    const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi, provider)).connect(signer);
+    const balance = await daiContract.balanceOf(tbcAddress);
+    return balance;
+  }
+  catch(error){
+    throw error;
   }
 }
 
@@ -156,6 +168,56 @@ export async function getTokenBalance(tbcAddress: string){
     throw error;
   }
 }
+
+export async function getContributionRate(tbcAddress: string){
+  try{
+    const {provider, signer} = await getBlockchainObjects();
+    const tbcContract = (await new ethers.Contract(tbcAddress, JSON.stringify(TbcContractAbi), provider)).connect(signer);
+    const contributionRate = await tbcContract.contributionRate();
+    return contributionRate;
+  }
+  catch(error){
+    throw error;
+  }
+}
+
+export async function getTotalSupply(tbcAddress: string){
+  try{
+    const {provider, signer} = await getBlockchainObjects();
+    const tbcContract = (await new ethers.Contract(tbcAddress, JSON.stringify(TbcContractAbi), provider)).connect(signer);
+    const totalSupply = await tbcContract.totalSupply();
+    return totalSupply;
+  }
+  catch(error){
+    throw error;
+  }
+}
+
+export async function getRevenueTarget(tbcAddress: string){
+  try{
+    const {provider, signer} = await getBlockchainObjects();
+    const tbcContract = (await new ethers.Contract(tbcAddress, JSON.stringify(TbcContractAbi), provider)).connect(signer);
+    const revenueTarget = await tbcContract.revenueTarget();
+    return revenueTarget;
+  }
+  catch(error){
+    throw error;
+  }
+}
+
+export async function getGradientDenominator(tbcAddress: string){
+  try{
+    const {provider, signer} = await getBlockchainObjects();
+    const tbcContract = (await new ethers.Contract(tbcAddress, JSON.stringify(TbcContractAbi), provider)).connect(signer);
+    const gradientDenominator = await tbcContract.gradientDenominator();
+    return gradientDenominator;
+  }
+  catch(error){
+    throw error;
+  }
+}
+
+
 
 // Write/Publish
 export async function publishCommunityToChain(name: string, tokenSymbol: string, gradientDenominator: number, contributionRate: number) {

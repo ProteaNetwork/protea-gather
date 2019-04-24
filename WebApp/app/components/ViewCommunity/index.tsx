@@ -125,6 +125,45 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
     paddingLeft: spacing.unit * 10,
     width: '100%',
   },
+  statsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    backgroundColor: colors.proteaBranding.blackBg,
+    paddingBottom: 50
+  },
+  statItem:{
+    maxWidth: "calc(50% - 15px)",
+    width: "100%",
+    textAlign: "center",
+    marginTop: 40,
+    marginBottom: 20,
+    "& > *:first-child":{
+      width: "100%",
+      textAlign: "center",
+      color: colors.white
+    },
+    "& > *:last-child":{
+      width: "100%",
+      textAlign: "center",
+      padding: "35px 0",
+      color: colors.white,
+      position: "relative",
+      "&:before":{
+        content:"''",
+        display: 'block',
+        borderRadius: 600,
+        position: "absolute",
+        transform: "translate(-50%, -50%)",
+        border: `5px solid ${colors.white}`,
+        top: "50%",
+        left: "50%",
+        width: "90px",
+        height: "90px",
+      }
+    }
+  }
 });
 
 interface OwnProps extends WithStyles<typeof styles> {
@@ -217,7 +256,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                     <Typography className={classes.texts}>Available Stake: {parseFloat(`${community.availableStake ? community.availableStake : 0}`).toFixed(2)}DAI</Typography>
                   </div>
                   <div>
-                    <Typography className={classes.texts}>Contribution Rate: {community.contributionRate ? community.contributionRate : 0}%</Typography>
+                    <Typography className={classes.texts}>Contribution Rate: {parseFloat(`${community.contributionRate ? community.contributionRate : 0}`).toFixed(0)}%</Typography>
                     <Typography className={classes.texts}>
                       {community.isMember ? `Joined: ${dayjs(community.memberSince).format('YYYY-MM-DD')}` : `Join today!`}
                     </Typography>
@@ -331,11 +370,31 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   }
               </article>
               <article className={classNames('slide', (slideIndex == 3 ? 'active': 'hidden'))}>
-                <div className={classes.infoBar}>
-                  <Typography>Stats information is not yet available</Typography>
-                </div>
-                <div>
-                  {/** TODO add the buttons for buying and selling inside community */}
+                <div className={classes.statsContainer}>
+                  <div className={classes.statItem}>
+                    <span>
+                      Total Supply
+                    </span>
+                    <div>
+                      {parseFloat(`${community.totalSupply}`).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className={classes.statItem}>
+                    <span>
+                      Gradient
+                    </span>
+                    <div>
+                      1/{parseInt(`${community.gradientDenominator}`)}
+                    </div>
+                  </div>
+                  <div className={classes.statItem}>
+                    <span>
+                      Pool Balance
+                    </span>
+                    <div>
+                      {parseFloat(`${community.poolBalance}`).toFixed(2)} <br/>DAI
+                    </div>
+                  </div>
                 </div>
               </article>
             </SwipeableViews>

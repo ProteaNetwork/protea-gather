@@ -2,7 +2,7 @@ import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
 import { checkStatus, increaseMembershipAction, withdrawMembershipAction, getMembersAction } from "./actions";
 
 // Ethers standard event filter type is missing the blocktags
-import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn, getTokenVolumeSell } from "domain/communities/chainInteractions";
+import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn, getTokenVolumeSell, getTotalSupply, getGradientDenominator, getPoolBalance, getContributionRate } from "domain/communities/chainInteractions";
 import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState, getMembersTx } from "./chainInteractions";
 import { statusUpdated, setMemberList } from "domain/communities/actions";
 import { ethers } from "ethers";
@@ -16,6 +16,10 @@ export function* checkMemberStates(membershipManagerAddress: string, tbcAddress:
   const approvalState = yield call(checkTransferApprovalState, tbcAddress);
   const liquidTokens =  ethers.utils.formatUnits(yield call(getTokenBalance, tbcAddress), 18);
   const isAdmin =  yield call(checkAdminState, membershipManagerAddress);
+  const totalSupply = ethers.utils.formatUnits(yield call(getTotalSupply, tbcAddress), 18);
+  const gradient = ethers.utils.formatUnits(yield call(getGradientDenominator, tbcAddress), 0);
+  const poolBalance = ethers.utils.formatUnits(yield call(getPoolBalance, tbcAddress), 18);
+  const contribution = ethers.utils.formatUnits(yield call(getContributionRate, tbcAddress), 0);
 
   yield put(statusUpdated(
     {
@@ -23,6 +27,10 @@ export function* checkMemberStates(membershipManagerAddress: string, tbcAddress:
       transfersUnlocked: approvalState,
       liquidTokens: liquidTokens,
       isAdmin: isAdmin,
+      gradientDenominator: gradient,
+      totalSupply: totalSupply,
+      poolBalance: poolBalance,
+      contributionRate: contribution,
       ...memberData
     }));
 }
