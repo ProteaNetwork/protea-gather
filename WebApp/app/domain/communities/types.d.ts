@@ -12,6 +12,8 @@ interface ICommunity{
   tokenSymbol: string;
   gradientDenominator: number;
   contributionRate: number;
+  totalSupply: number;
+  poolBalance: number;
   description: string;
   isMember: boolean;
   transfersUnlocked: boolean;
