@@ -112,11 +112,11 @@ function mapDispatchToProps(dispatch: Dispatch) {
     onCancelEvent: (eventId: string, membershipManagerAddress: string) => {
       dispatch(cancelEventAction.request({eventId, membershipManagerAddress: membershipManagerAddress}));
     },
-    onConfirmAttendance: (eventId: string, membershipManagerAddress: string) => {
-      dispatch(confirmAttendanceAction.request({eventId, membershipManagerAddress: membershipManagerAddress}));
+    onConfirmAttendance: (eventId: string, membershipManagerAddress: string, tbcAddress: string) => {
+      dispatch(confirmAttendanceAction.request({eventId, membershipManagerAddress: membershipManagerAddress, tbcAddress: tbcAddress}));
     },
-    onClaimGift: (eventId: string, membershipManagerAddress: string, state: number) => {
-      dispatch(claimGiftAction.request({eventId, membershipManagerAddress: membershipManagerAddress, state: state}));
+    onClaimGift: (eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string) => {
+      dispatch(claimGiftAction.request({eventId, membershipManagerAddress: membershipManagerAddress, state: state, tbcAddress: tbcAddress}));
     },
   };
 }

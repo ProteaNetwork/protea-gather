@@ -10,6 +10,7 @@ interface TransactionManagementState {
   ethAddress: string;
   txRemaining: number;
   txContext: string;
+  communityMutex: string;
 }
 
 /* --- ACTIONS --- */

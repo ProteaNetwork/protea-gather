@@ -196,10 +196,10 @@ interface OwnProps extends WithStyles<typeof styles> {
 
   onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
-  onRSVP(eventId: string, membershipManagerAddress: string): void;
-  onCancelRSVP(eventId: string, membershipManagerAddress: string): void;
-  onConfirmAttendance(eventId: string, membershipManagerAddress: string): void;
-  onClaimGift(eventId: string, membershipManagerAddress: string, state: number): void;
+  onRSVP(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
+  onCancelRSVP(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
+  onConfirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
+  onClaimGift(eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string): void;
 }
 
 const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -317,7 +317,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                     </Button>
                   }
                   {
-                    community.isMember && (community.availableStake < event.requiredDai) &&
+                    community.isMember && event.memberState > 0 && (community.availableStake < event.requiredDai) &&
                     <Button
                       className={classes.buttons}
                       onClick={() => onIncreaseMembership(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
@@ -352,7 +352,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                       {
                         (event.state == 3 && event.memberState == 99 && event.gift > 0) &&
                           <Fragment>
-                            <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
+                            <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state, community.tbcAddress)}>
                               Claim Gift
                             </Button>
                           </Fragment>
@@ -374,13 +374,13 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                         <Fragment>
                           {
                             event.memberState == 0 &&
-                            <Button className={classes.buttons} onClick={() => onRSVP(event.eventId, event.membershipManagerAddress)}>
+                            <Button className={classes.buttons} onClick={() => onRSVP(event.eventId, event.membershipManagerAddress, community.tbcAddress)}>
                               RSVP
                             </Button>
                           }
                           {
                             event.memberState == 1 &&
-                            <Button className={classes.buttons} onClick={() => onCancelRSVP(event.eventId, event.membershipManagerAddress)}>
+                            <Button className={classes.buttons} onClick={() => onCancelRSVP(event.eventId, event.membershipManagerAddress, community.tbcAddress)}>
                               Cancel RSVP
                             </Button>
                           }
@@ -389,7 +389,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                       }
                       {
                         (event.state == 2 && event.memberState == 1) &&
-                        <Button className={classes.buttons} onClick={() => onConfirmAttendance(event.eventId, event.membershipManagerAddress)}>
+                        <Button className={classes.buttons} onClick={() => onConfirmAttendance(event.eventId, event.membershipManagerAddress, community.tbcAddress)}>
                           Confirm attendance
                         </Button>
                       }
@@ -397,7 +397,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                       {
                         (event.state == 3 && event.memberState == 99 && event.gift > 0) &&
                         <Fragment>
-                          <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
+                          <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state, community.tbcAddress)}>
                             Claim Gift ({`${event.gift.toFixed(2)}${community.tokenSymbol}`})
                           </Button>
                         </Fragment>
@@ -405,7 +405,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                       {
                         (event.state == 4 && event.memberState == 1) &&
                         <Fragment>
-                          <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state)}>
+                          <Button className={classes.buttons} onClick={() => onClaimGift(event.eventId, event.membershipManagerAddress, event.state, community.tbcAddress)}>
                             Claim Deposit
                           </Button>
                         </Fragment>

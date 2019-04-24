@@ -42,10 +42,10 @@ interface DispatchProps {
   onStartEvent(eventId: string, membershipManagerAddress: string): void;
   onEndEvent(eventId: string, membershipManagerAddress: string): void;
   onCancelEvent(eventId: string, membershipManagerAddress: string): void;
-  onRSVP(eventId: string, membershipManagerAddress: string): void;
-  onCancelRSVP(eventId: string, membershipManagerAddress: string): void;
-  onConfirmAttendance(eventId: string, membershipManagerAddress: string): void;
-  onClaimGift(eventId: string, membershipManagerAddress: string, state: number): void;
+  onRSVP(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
+  onCancelRSVP(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
+  onConfirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
+  onClaimGift(eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string): void;
   onChangeLimit(eventId: string, limit: number, membershipManagerAddress: string): void;
   onManualConfirmAttendees(eventId: string, attendees: string[], membershipManagerAddress: string): void;
   onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
@@ -148,17 +148,17 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
     onCancelEvent: (eventId: string, membershipManagerAddress: string) => {
       dispatch(cancelEventAction.request({eventId, membershipManagerAddress: membershipManagerAddress}));
     },
-    onRSVP: (eventId: string, membershipManagerAddress: string) => {
-      dispatch(rsvpAction.request({eventId, membershipManagerAddress: membershipManagerAddress}));
+    onRSVP: (eventId: string, membershipManagerAddress: string, tbcAddress: string) => {
+      dispatch(rsvpAction.request({eventId, membershipManagerAddress: membershipManagerAddress, tbcAddress}));
     },
-    onCancelRSVP: (eventId: string, membershipManagerAddress: string) => {
-      dispatch(cancelRsvpAction.request({eventId, membershipManagerAddress: membershipManagerAddress}));
+    onCancelRSVP: (eventId: string, membershipManagerAddress: string, tbcAddress: string) => {
+      dispatch(cancelRsvpAction.request({eventId, membershipManagerAddress: membershipManagerAddress, tbcAddress}));
     },
-    onConfirmAttendance: (eventId: string, membershipManagerAddress: string) => {
-      dispatch(confirmAttendanceAction.request({eventId, membershipManagerAddress: membershipManagerAddress}));
+    onConfirmAttendance: (eventId: string, membershipManagerAddress: string, tbcAddress: string) => {
+      dispatch(confirmAttendanceAction.request({eventId, membershipManagerAddress: membershipManagerAddress, tbcAddress}));
     },
-    onClaimGift: (eventId: string, membershipManagerAddress: string, state: number) => {
-      dispatch(claimGiftAction.request({eventId, membershipManagerAddress: membershipManagerAddress, state: state}));
+    onClaimGift: (eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string) => {
+      dispatch(claimGiftAction.request({eventId, membershipManagerAddress: membershipManagerAddress, state: state, tbcAddress}));
     },
     onChangeLimit: (eventId: string, limit: number, membershipManagerAddress: string) => {
       dispatch(changeEventLimitAction.request({
