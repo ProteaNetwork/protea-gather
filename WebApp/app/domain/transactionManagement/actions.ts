@@ -18,3 +18,7 @@ export const setBalancesAction = createStandardAction(ActionTypes.SET_BALANCES)<
 export const setRemainingTxCountAction = createStandardAction(ActionTypes.SET_TX_REMAINING_COUNT)<number>();
 
 export const setTxContextAction = createStandardAction(ActionTypes.SET_TX_CONTEXT)<string>();
+
+export const setCommunityMutexAction = createStandardAction(ActionTypes.SET_COMMUNITY_MUTEX)<string>();
+
+export const updateTouchedChainDataAction = createStandardAction(ActionTypes.UPDATE_TOUCHED_CHAIN_DATA)<void>();

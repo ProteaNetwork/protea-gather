@@ -9,7 +9,7 @@ import { combineReducers } from 'redux';
 import ActionTypes from './constants';
 import { DomainState, DomainActions } from './types';
 import { getType } from 'typesafe-actions';
-import { setPendingState, setBalancesAction, setRemainingTxCountAction, setTxContextAction } from './actions';
+import { setPendingState, setBalancesAction, setRemainingTxCountAction, setTxContextAction, setCommunityMutexAction } from './actions';
 
 export const initialState: DomainState = {
   txPending: false,
@@ -17,11 +17,17 @@ export const initialState: DomainState = {
   ethBalance: 0,
   ethAddress: "0x",
   txRemaining: 0,
-  txContext: ''
+  txContext: '',
+  communityMutex: ''
 };
 
 function transactionManagementReducer(state: DomainState = initialState, action: DomainActions ) {
   switch (action.type) {
+    case getType(setCommunityMutexAction):
+      return {
+        ...state,
+        communityMutex: action.payload
+      }
     case getType(setTxContextAction):
       return {
         ...state,

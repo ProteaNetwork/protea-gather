@@ -35,7 +35,7 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
   innerCarousel: {
     marginTop: 20,
     paddingTop: "10px",
-    paddingBottom: 40,
+    paddingBottom: 20,
     '&> *':{
       outline: 'none'
     },
@@ -52,7 +52,7 @@ const styles = ({ spacing, breakpoints }: Theme) => createStyles({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    bottom: -10,
+    bottom: 0,
     padding: 0,
     '& > li': {
       display: 'block',

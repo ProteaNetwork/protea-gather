@@ -28,7 +28,7 @@ import {
   updateEvent as updateEventApi,
 } from "api/api";
 import { getEventsTx, checkMemberStateOnChain, publishEventToChain, getEvent, changeEventLimitTx, rsvpTx, cancelRsvpTx, startEventTx, confirmAttendanceTx, endEventTx, claimGiftTx, cancelEventTx, manualConfirmAttendeesTx } from "./chainInteractions";
-import { setTxContextAction, setRemainingTxCountAction } from "domain/transactionManagement/actions";
+import { setTxContextAction, setRemainingTxCountAction, setCommunityMutexAction } from "domain/transactionManagement/actions";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
 
@@ -207,10 +207,12 @@ export function* manualConfirmAttendees(eventId: string, attendees: string[], me
 }
 
 
-export function* rsvp(eventId: string, membershipManagerAddress: string) {
+export function* rsvp(eventId: string, membershipManagerAddress: string, tbcAddress: string) {
   try {
     yield put(setTxContextAction(`RSVPing to the event`));
     yield put(setRemainingTxCountAction(1));
+    yield put(setCommunityMutexAction(tbcAddress));
+
     yield retry(5, 2000, rsvpTx, eventId);
 
     yield put(rsvpAction.success());
@@ -222,10 +224,11 @@ export function* rsvp(eventId: string, membershipManagerAddress: string) {
   }
 }
 
-export function* cancelRsvp(eventId: string, membershipManagerAddress: string) {
+export function* cancelRsvp(eventId: string, membershipManagerAddress: string, tbcAddress: string) {
   try {
     yield put(setTxContextAction(`Cancelling RSVP`));
     yield put(setRemainingTxCountAction(1));
+    yield put(setCommunityMutexAction(tbcAddress));
 
     yield retry(5, 2000, cancelRsvpTx, eventId);
 
@@ -238,10 +241,12 @@ export function* cancelRsvp(eventId: string, membershipManagerAddress: string) {
   }
 }
 
-export function* confirmAttendance(eventId: string, membershipManagerAddress: string) {
+export function* confirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string) {
   try {
     yield put(setTxContextAction(`Confirming attendance to event`));
     yield put(setRemainingTxCountAction(1));
+
+    yield put(setCommunityMutexAction(tbcAddress));
 
     yield retry(5, 2000, confirmAttendanceTx, eventId);
 
@@ -254,7 +259,7 @@ export function* confirmAttendance(eventId: string, membershipManagerAddress: st
   }
 }
 
-export function* claimGift(eventId: string, membershipManagerAddress: string, eventState: number) {
+export function* claimGift(eventId: string, membershipManagerAddress: string, eventState: number, tbcAddress: string) {
   try {
     if (eventState == 3) {
       yield put(setTxContextAction(`Claiming gift of tokens for attending`));
@@ -263,6 +268,7 @@ export function* claimGift(eventId: string, membershipManagerAddress: string, ev
     }
 
     yield put(setRemainingTxCountAction(1));
+    yield put(setCommunityMutexAction(tbcAddress));
 
     yield retry(5, 2000, claimGiftTx, eventId);
 
@@ -335,28 +341,28 @@ export function* manualConfirmAttendeeListener() {
 export function* rsvpListener() {
   while (true) {
     const eventData = (yield take(rsvpAction.request)).payload;
-    yield fork(rsvp, eventData.eventId, eventData.membershipManagerAddress);
+    yield fork(rsvp, eventData.eventId, eventData.membershipManagerAddress, eventData.tbcAddress);
   }
 }
 
 export function* cancelRsvpListener() {
   while (true) {
     const eventData = (yield take(cancelRsvpAction.request)).payload;
-    yield fork(cancelRsvp, eventData.eventId, eventData.membershipManagerAddress);
+    yield fork(cancelRsvp, eventData.eventId, eventData.membershipManagerAddress, eventData.tbcAddress);
   }
 }
 
 export function* confirmAttendanceListener() {
   while (true) {
     const eventData = (yield take(confirmAttendanceAction.request)).payload;
-    yield fork(confirmAttendance, eventData.eventId, eventData.membershipManagerAddress);
+    yield fork(confirmAttendance, eventData.eventId, eventData.membershipManagerAddress, eventData.tbcAddress);
   }
 }
 
 export function* claimGiftListener() {
   while (true) {
     const eventData = (yield take(claimGiftAction.request)).payload;
-    yield fork(claimGift, eventData.eventId, eventData.membershipManagerAddress, eventData.state);
+    yield fork(claimGift, eventData.eventId, eventData.membershipManagerAddress, eventData.state, eventData.tbcAddress);
   }
 }
 
@@ -371,7 +377,7 @@ export function* updateEvent(event: IEvent) {
   }
 }
 
-export function* updateEvenListener() {
+export function* updateEventListener() {
   while (true) {
     const action = yield take(getType(updateEventAction.request));
     yield fork(updateEvent, action.payload);
@@ -384,7 +390,7 @@ export default function* root() {
   yield fork(getEventMetaListener);
   yield fork(getEventListener);
   yield fork(createEvent);
-  yield fork(updateEvenListener);
+  yield fork(updateEventListener);
 
   yield fork(startEventListener);
   yield fork(endEventListener);

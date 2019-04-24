@@ -22,7 +22,7 @@ import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
 import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn, checkTransferApprovalState, getTokenBalance, getDaiValueMint } from "./chainInteractions";
 import { checkStatus, getMembersAction } from "domain/membershipManagement/actions";
-import { setRemainingTxCountAction, setTxContextAction } from "domain/transactionManagement/actions";
+import { setRemainingTxCountAction, setTxContextAction, setCommunityMutexAction } from "domain/transactionManagement/actions";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
@@ -130,8 +130,10 @@ export function* createCommunity() {
 export function* joinCommunity(){
   while(true){
     const communityData = (yield take(joinCommunityAction.request)).payload;
+    yield put(setCommunityMutexAction(communityData.tbcAddress));
     try{
       const approvalState = yield call(checkTransferApprovalState, communityData.tbcAddress)
+      const contributionRate = yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate);
       if(!approvalState){
         yield put(setRemainingTxCountAction(3));
         yield put(setTxContextAction("Unlocking Dai transfers to the community"));
@@ -144,17 +146,33 @@ export function* joinCommunity(){
       const liquidTokensValuationBN = yield call(getDaiValueBurn, communityData.tbcAddress, liquidTokenBalanceBN);
 
       let mintedVolume: BigNumber = ethers.utils.bigNumberify(0);
+
+
+      //Calculate root puchase volume
+      const minusProteaTaxBN = daiValueBN.sub(daiValueBN.div(101));
+      const includingContributionBN = liquidTokenBalanceBN.add(liquidTokenBalanceBN.div(contributionRate+100))
+      const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
+
+
       if(liquidTokenBalanceBN.eq(0)){
         // If no tokens have been minted
         yield put(setRemainingTxCountAction(2));
-        yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.`));
+        yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.(Incl. Contribtions)`));
+
         mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
-      }else if(liquidTokensValuationBN.lt(daiValueBN)){
+      }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).gt(minusProteaTaxBN)){
+        yield put(setTxContextAction(`Roughly enough to stake`));
+        yield delay(1000);
+        mintedVolume = liquidTokenBalanceBN;
+
+      }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).lt(minusProteaTaxBN)){
         // A mint occured externally to this user, price has changed so mint whats needed
         const remainingToPuchaseDaiBN = daiValueBN.sub(liquidTokensValuationBN);
         tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, remainingToPuchaseDaiBN);
+
         yield put(setRemainingTxCountAction(2));
-        yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens.`));
+
+        yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens.(Incl. Contribtions)`));
         yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
         mintedVolume = yield call(getTokenBalance, communityData.tbcAddress);
       }else if(liquidTokenBalanceBN.gte(tokenVolume)){
@@ -165,6 +183,8 @@ export function* joinCommunity(){
       // stake
       yield put(setRemainingTxCountAction(1));
       yield put(setTxContextAction(`Reserving community tokens for membership.`));
+      yield delay(2000);
+
       const mintedDaiValue = yield retry(5, 2000, getDaiValueBurn, communityData.tbcAddress, mintedVolume);
       yield retry(5, 2000, increaseMembershipStake, mintedDaiValue, communityData.membershipManagerAddress)
 

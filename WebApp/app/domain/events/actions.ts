@@ -69,22 +69,22 @@ export const rsvpAction = createAsyncAction(
   ActionTypes.RSVP_TX_REQUEST,
   ActionTypes.RSVP_TX_SUCCESS,
   ActionTypes.RSVP_TX_FAILURE,
-)<{eventId: string, membershipManagerAddress: string}, void, string>();
+)<{eventId: string, membershipManagerAddress: string, tbcAddress: string}, void, string>();
 
 export const cancelRsvpAction = createAsyncAction(
   ActionTypes.CANCEL_RSVP_TX_REQUEST,
   ActionTypes.CANCEL_RSVP_TX_SUCCESS,
   ActionTypes.CANCEL_RSVP_TX_FAILURE,
-)<{eventId: string, membershipManagerAddress: string}, void, string>();
+)<{eventId: string, membershipManagerAddress: string, tbcAddress: string}, void, string>();
 
 export const confirmAttendanceAction = createAsyncAction(
   ActionTypes.CONFIRM_ATTENDANCE_TX_REQUEST,
   ActionTypes.CONFIRM_ATTENDANCE_TX_SUCCESS,
   ActionTypes.CONFIRM_ATTENDANCE_TX_FAILURE,
-)<{eventId: string, membershipManagerAddress: string}, void, string>();
+)<{eventId: string, membershipManagerAddress: string, tbcAddress: string}, void, string>();
 
 export const claimGiftAction = createAsyncAction(
   ActionTypes.CLAIM_GIFT_TX_REQUEST,
   ActionTypes.CLAIM_GIFT_TX_SUCCESS,
   ActionTypes.CLAIM_GIFT_TX_FAILURE,
-)<{eventId: string, membershipManagerAddress: string, state: number}, void, string>();
+)<{eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string}, void, string>();
