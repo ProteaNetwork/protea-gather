@@ -22,6 +22,7 @@ export declare type EventFilter = {
 export async function checkTransferApprovalState(tbcAddress: string){
   try{
     const {provider, signer, signerAddress} = await getBlockchainObjects();
+    // @ts-ignore  // It's copied code, whats its problem
     const daiContract = (await new ethers.Contract(`${blockchainResources.daiAddress}`, DaiContractAbi, provider)).connect(signer);
 
     const approval: BigNumber = await daiContract.allowance(signerAddress, tbcAddress);

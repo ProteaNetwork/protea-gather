@@ -24,6 +24,8 @@ const selectIsLoggedIn = (state: ApplicationRootState) => {
  */
 const selectEthAddress = (state: ApplicationRootState) => state.authentication.ethAddress ? state.authentication.ethAddress : "0x";
 
+const selectQrData = (state: ApplicationRootState) => state.transactionManagement.qrData ? state.transactionManagement.qrData : "";
+
 const selectProfileImage = (state: ApplicationRootState) => state.userProfile.profileImage;
 
 const selectDisplayName = (state: ApplicationRootState) => state.userProfile.displayName;
@@ -36,6 +38,10 @@ const selectNetworkId = () => blockchainResources.networkId;
  * Default selector used by App
  */
 const makeSelectIsLoggedIn = createSelector(selectIsLoggedIn, substate => {
+  return substate;
+});
+
+const makeQrData = createSelector(selectQrData, substate => {
   return substate;
 });
 
@@ -62,8 +68,8 @@ const makeSelectNetworkId = createSelector(selectNetworkId, substate => {
 
 // Root
 const selectApp = createSelector(
-  makeSelectEthAddress, makeSelectIsLoggedIn, makeSelectProfileImage, makeSelectDisplayName, makeSelectTxPending, makeSelectTxRemaining, makeSelectTxContext, makeSelectNetworkState, makeSelectNetworkId,
-  (ethAddress, isLoggedIn, profileImage, displayName, txPending, txRemaining, txContext, networkReady, networkId) => ({
+  makeSelectEthAddress, makeSelectIsLoggedIn, makeSelectProfileImage, makeSelectDisplayName, makeSelectTxPending, makeSelectTxRemaining, makeSelectTxContext, makeSelectNetworkState, makeSelectNetworkId, makeQrData,
+  (ethAddress, isLoggedIn, profileImage, displayName, txPending, txRemaining, txContext, networkReady, networkId, qrData) => ({
     ethAddress: ethAddress,
     isLoggedIn: isLoggedIn,
     profileImage: profileImage,
@@ -72,7 +78,8 @@ const selectApp = createSelector(
     txRemaining: txRemaining,
     txContext: txContext,
     networkReady: networkReady,
-    networkId: networkId
+    networkId: networkId,
+    qrData: qrData
   }
 ))
 

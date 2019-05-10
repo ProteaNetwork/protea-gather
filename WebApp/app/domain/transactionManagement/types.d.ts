@@ -11,6 +11,7 @@ interface TransactionManagementState {
   txRemaining: number;
   txContext: string;
   communityMutex: string;
+  qrData: string;
 }
 
 /* --- ACTIONS --- */

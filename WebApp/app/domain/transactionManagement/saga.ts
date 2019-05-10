@@ -1,9 +1,9 @@
 import { takeLatest, put, race, take, fork, call, select } from "redux-saga/effects";
-import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction, updateTouchedChainDataAction, setCommunityMutexAction } from "./actions";
+import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction, updateTouchedChainDataAction, setCommunityMutexAction, setQrAction, signQrAction } from "./actions";
 import { checkBalancesOnChain, mintDai } from "./chainInteractions";
 import { getAllCommunitiesAction, getCommunityAction } from "domain/communities/actions";
 import { delay } from "redux-saga/effects";
-import { blockchainResources } from "blockchainResources";
+import { blockchainResources, signMessage } from "blockchainResources";
 import { ApplicationRootState } from "types";
 
 
@@ -48,7 +48,25 @@ export function* toggleTXPendingFlag(action) {
   }
 }
 
+export function* signQr(message: string){
+  try{
+    const signedMessage = yield call(signMessage, message);
+    yield put(setQrAction(signedMessage));
+    yield put(signQrAction.success());
+  }
+  catch(e){
+    yield put(signQrAction.failure(e));
+  }
+}
+
 // Listeners
+export function* signQrListener(){
+  while(true){
+    const message = (yield take(signQrAction.request)).payload
+    yield fork(signQr, message);
+  }
+}
+
 export function* updatePostTxListener(){
   while(true){
     yield take(updateTouchedChainDataAction);
@@ -75,7 +93,9 @@ export function* refreshBalancesListener() {
 export default function* TransactionManagementSaga() {
   yield put(setPendingState(false));
   yield put(setCommunityMutexAction(''));
+  yield put(setQrAction(''));
   yield fork(txPendingListener);
   yield fork(refreshBalancesListener);
   yield fork(updatePostTxListener);
+  yield fork(signQrListener);
 }

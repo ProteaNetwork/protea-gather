@@ -35,6 +35,7 @@ import { forwardTo } from "utils/history";
 import { getLockedCommitmentTx, getTotalRemainingInUtilityTx } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
+import { blockchainResources, scanQrCode, verifySignature } from "blockchainResources";
 
 
 export function* checkMemberState(eventId: string, membershipManagerAddress: string) {
@@ -243,6 +244,15 @@ export function* cancelRsvp(eventId: string, membershipManagerAddress: string, t
 
 export function* confirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string) {
   try {
+    if(!blockchainResources.isMetaMask){
+      const fetchedMessage = yield call(scanQrCode, blockchainResources.signedMsgRegex);
+      const organizer = yield select((state: ApplicationRootState) => state.events[eventId].organizer);
+      const signer = yield call(verifySignature, eventId, fetchedMessage);
+      if(signer != organizer){
+        yield put(confirmAttendanceAction.failure("Invalid QR data"));
+        return;
+      }
+    }
     yield put(setTxContextAction(`Confirming attendance to event`));
     yield put(setRemainingTxCountAction(1));
 
@@ -355,6 +365,7 @@ export function* cancelRsvpListener() {
 export function* confirmAttendanceListener() {
   while (true) {
     const eventData = (yield take(confirmAttendanceAction.request)).payload;
+
     yield fork(confirmAttendance, eventData.eventId, eventData.membershipManagerAddress, eventData.tbcAddress);
   }
 }

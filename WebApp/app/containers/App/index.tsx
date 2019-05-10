@@ -16,7 +16,6 @@ import { connect } from 'react-redux';
 import { Switch, withRouter } from 'react-router';
 import { Redirect, Route } from 'react-router-dom';
 import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
 import injectSaga from 'utils/injectSaga';
 
 import { DAEMON } from 'utils/constants';
@@ -29,6 +28,7 @@ import saga from './saga';
 import selectApp from './selectors';
 import { RootState } from './types';
 import TxLoadingModal from 'components/TxLoadingModal';
+import { setQrAction } from 'domain/transactionManagement/actions';
 
 const PrivateRoute: React.SFC<any> = ({ component: Component, isLoggedIn, ...rest }) => {
   return (
@@ -84,15 +84,17 @@ interface StateProps {
   txContext: string;
   networkReady: boolean;
   networkId: number;
+  qrData:string;
 }
 
 interface DispatchProps {
   onLogout();
+  onCloseQr(): void;
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
 const App: React.SFC<Props> = (props: Props) => {
-  const { networkReady, networkId, isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext } = props;
+  const { onCloseQr, qrData, networkReady, networkId, isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext } = props;
   return (
     <AppWrapper
       onLogout={onLogout}
@@ -105,7 +107,7 @@ const App: React.SFC<Props> = (props: Props) => {
       networkId={networkId}
       networkReady={networkReady}
       >
-      <TxLoadingModal pendingTx={txPending} txRemaining={txRemaining} txContext={txContext}></TxLoadingModal>
+      <TxLoadingModal qrData={qrData} pendingTx={txPending} txRemaining={txRemaining} txContext={txContext} onCloseQr={onCloseQr} ></TxLoadingModal>
       <Switch>
         {routes.map(r => {
           const route = (r.isProtected) ?
@@ -125,6 +127,9 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(logOut());
     forwardTo('/');
   },
+  onCloseQr: () => {
+    dispatch(setQrAction(''))
+  }
 });
 
 const withConnect = connect(

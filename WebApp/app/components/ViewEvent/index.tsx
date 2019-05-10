@@ -200,6 +200,8 @@ interface OwnProps extends WithStyles<typeof styles> {
   onCancelRSVP(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
   onConfirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string): void;
   onClaimGift(eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string): void;
+
+  onGenerateQr(eventId: string): void;
 }
 
 const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
@@ -226,7 +228,8 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
       attendees,
       filter,
       handleTogglePendingApproval,
-      confirmingList
+      confirmingList,
+      onGenerateQr
     } = props;
 
     return <Fragment>
@@ -317,7 +320,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                     </Button>
                   }
                   {
-                    community.isMember && event.memberState > 0 && (community.availableStake < event.requiredDai) &&
+                    community.isMember && event.memberState == 0 && (community.availableStake < event.requiredDai) &&
                     <Button
                       className={classes.buttons}
                       onClick={() => onIncreaseMembership(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
@@ -337,15 +340,22 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                           <Button className={classes.buttons} onClick={() => onCancelEvent(event.eventId, event.membershipManagerAddress)}>
                             Cancel Event
                           </Button>
-                          {/* // <Button onClick={() => onChangeLimit(event.eventId, 2, event.membershipManagerAddress)}>
-                          //   Change Max limit to 2
-                          // </Button> */}
+                          {/* <Button onClick={() => onChangeLimit(event.eventId, 2, event.membershipManagerAddress)}>
+                            Change Max limit to 2
+                          </Button> */}
                         </Fragment>
                       }
                       {
                         event.state == 2 &&(
                           <Button className={classes.buttons} onClick={() => onEndEvent(event.eventId, event.membershipManagerAddress)}>
                             End Event
+                          </Button>
+                        )
+                      }
+                      {
+                        event.state == 2 &&(
+                          <Button className={classes.buttons} onClick={() => onGenerateQr(event.eventId)}>
+                            Generate QR
                           </Button>
                         )
                       }
@@ -357,12 +367,6 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                             </Button>
                           </Fragment>
                       }
-
-
-                      {/* <Button disabled={event.state != 2} onClick={() => onManualConfirmAttendees(event.eventId, ['0xdBEA2496d63eB313Ef6bA353d158653b5beC9dfC'], event.membershipManagerAddress)}>
-                        Confirm Members attendance
-                      </Button>
-                      */}
 
                   </Fragment>
                   }
