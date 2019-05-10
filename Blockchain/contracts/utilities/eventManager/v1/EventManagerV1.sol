@@ -39,14 +39,13 @@ contract EventManagerV1 is BaseUtility {
     /// @param _membershipManager   :address
     /// @param _communityCreator    :address
     constructor (
-        address _tokenManager, 
+        address _tokenManager,
         address _membershipManager,
         address _communityCreator
-    ) 
-        public 
+    )
+        public
         BaseUtility(_tokenManager, _membershipManager, _communityCreator)
-    {
-    }
+    {}
 
     modifier onlyRsvpAvailable(uint256 _index) {
         uint24 currentAttending = uint24(events_[_index].currentAttendees.length);
@@ -85,23 +84,23 @@ contract EventManagerV1 is BaseUtility {
         _;
     }
 
-    /// @dev Creates an event. 
-    /// @param _name                :string The name of the event. 
-    /// @param _maxAttendees        :uint24 The max number of attendees for this event. 
+    /// @dev Creates an event.
+    /// @param _name                :string The name of the event.
+    /// @param _maxAttendees        :uint24 The max number of attendees for this event.
     /// @param _organiser           :address The orgoniser of the event
-    /// @param _requiredDai       :uint256  The price of a 'deposit' for the event. 
+    /// @param _requiredDai       :uint256  The price of a 'deposit' for the event.
     function createEvent(
-        string calldata _name, 
-        uint24 _maxAttendees, 
-        address _organiser, 
+        string calldata _name,
+        uint24 _maxAttendees,
+        address _organiser,
         uint256 _requiredDai
-    ) 
+    )
         external
         onlyActiveMember(msg.sender)
-        returns(bool) 
+        returns(bool)
     {
         uint256 index = index_;
-        
+
         events_[index].name = _name;
         events_[index].maxAttendees = _maxAttendees;
         events_[index].organiser = _organiser;
@@ -117,23 +116,23 @@ contract EventManagerV1 is BaseUtility {
 
     /// @dev Changes the limit on the number of participants. Only the event organiser can call this function.
     /// @param _index           :uint256 The index of the event.
-    /// @param _limit           :uint24  The new participation limit for the event. 
-    function changeParticipantLimit(uint256 _index, uint24 _limit) 
-        external 
+    /// @param _limit           :uint24  The new participation limit for the event.
+    function changeParticipantLimit(uint256 _index, uint24 _limit)
+        external
         onlyOrganiser(_index)
     {
         if(_limit == 0) {
             events_[_index].maxAttendees = 0;
         }else{
-            require((events_[_index].currentAttendees.length < _limit) , "Limit can only be increased");
+            require((events_[_index].currentAttendees.length < _limit), "Limit can only be increased");
             events_[_index].maxAttendees = _limit;
         }
     }
-    
-    /// @dev Allows an event organiser to end an event. This function is only callable by the organiser of the event. 
+
+    /// @dev Allows an event organiser to end an event. This function is only callable by the organiser of the event.
     /// @param _index : The index of the event in the array of events.
-    function startEvent(uint256 _index) 
-        external 
+    function startEvent(uint256 _index)
+        external
         onlyOrganiser(_index)
         onlyPending(_index)
     {
@@ -141,11 +140,11 @@ contract EventManagerV1 is BaseUtility {
         events_[_index].state = 2;
         emit EventStarted(_index, msg.sender);
     }
-    
-    /// @dev Allows an event organiser to end an event. This function is only callable by the manager of the event. 
+
+    /// @dev Allows an event organiser to end an event. This function is only callable by the manager of the event.
     /// @param _index : The index of the event in the array of events.
-    function endEvent(uint256 _index) 
-        external 
+    function endEvent(uint256 _index)
+        external
         onlyOrganiser(_index)
         onlyStarted(_index)
     {
@@ -153,12 +152,12 @@ contract EventManagerV1 is BaseUtility {
         calcGift(_index);
         emit EventConcluded(_index, msg.sender, events_[_index].state);
     }
-    
-    /// @dev Allows an event organiser to cancel an event. 
+
+    /// @dev Allows an event organiser to cancel an event.
     ///     This function is only callable by the event organiser.
-    /// @param _index : The index of the event in the array of events. 
-    function cancelEvent(uint256 _index) 
-        external 
+    /// @param _index : The index of the event in the array of events.
+    function cancelEvent(uint256 _index)
+        external
         onlyOrganiser(_index)
         onlyPending(_index)
     {
@@ -168,8 +167,8 @@ contract EventManagerV1 is BaseUtility {
 
     /// @dev Allows a member to RSVP for an event.
     /// @param _index           :uint256 The index of the event.
-    function rsvp(uint256 _index) 
-        external  
+    function rsvp(uint256 _index)
+        external
         onlyPending(_index)
         onlyRsvpAvailable(_index)
         returns (bool)
@@ -185,8 +184,8 @@ contract EventManagerV1 is BaseUtility {
 
     /// @dev Allows a member to cancel an RSVP for an event.
     /// @param _index           :uint256 The index of the event.
-    function cancelRsvp(uint256 _index) 
-        external  
+    function cancelRsvp(uint256 _index)
+        external
         onlyPending(_index)
         returns (bool)
     {
@@ -196,15 +195,15 @@ contract EventManagerV1 is BaseUtility {
         memberState_[_index][msg.sender] = 0;
 
         events_[_index].currentAttendees = removeFromList(msg.sender, events_[_index].currentAttendees);
-        
+
         emit MemberCancelled(_index, msg.sender);
         return true;
     }
 
-    /// @dev Allows a member to confirm attendance. Uses the msg.sender as the address of the member. 
+    /// @dev Allows a member to confirm attendance. Uses the msg.sender as the address of the member.
     /// @param _index : The index of the event in the array.
-    function confirmAttendance(uint256 _index) 
-        external 
+    function confirmAttendance(uint256 _index)
+        external
         onlyStarted(_index)
         onlyRegistered(_index)
     {
@@ -212,12 +211,12 @@ contract EventManagerV1 is BaseUtility {
         events_[_index].totalAttended = events_[_index].totalAttended + 1;
 
         require(IMembershipManager(membershipManager_).unlockCommitment(msg.sender, _index, 0), "Unlocking has failed");
-        // Manual exposed attend until Proof of Attendance 
+        // Manual exposed attend until Proof of Attendance
         //partial release mechanisim is finished
         emit MemberAttended(_index, msg.sender);
     }
 
-    /// @dev Allows the admin to confirm attendance for attendees 
+    /// @dev Allows the admin to confirm attendance for attendees
     /// @param _index       :uint256 The index of the event in the array.
     /// @param _attendees   :address[] List of attendee accounts.
     function organiserConfirmAttendance(uint256 _index, address[] calldata _attendees)
@@ -229,7 +228,7 @@ contract EventManagerV1 is BaseUtility {
         for(uint256 i = 0; i < arrayLength; i++){
             if(memberState_[_index][_attendees[i]] == 1){
                 memberState_[_index][_attendees[i]] = 99;
-                events_[_index].totalAttended = events_[_index].totalAttended +1;
+                events_[_index].totalAttended = events_[_index].totalAttended + 1;
 
                 require(IMembershipManager(membershipManager_).unlockCommitment(_attendees[i], _index, 0), "Unlocking has failed");
                 emit MemberAttended(_index, _attendees[i]);
@@ -237,12 +236,12 @@ contract EventManagerV1 is BaseUtility {
         }
     }
 
-    /// @dev Pays out an atendee of an event. This function is only callable by the atendee. 
-    /// @param _member : The member to be paid out 
-    /// @param _index : The index of the event of the array. 
-    function claimGift(address _member, uint256 _index) 
-        external 
-        onlyMember(_member, _index) 
+    /// @dev Pays out an atendee of an event. This function is only callable by the attendee.
+    /// @param _member : The member to be paid out
+    /// @param _index : The index of the event of the array.
+    function claimGift(address _member, uint256 _index)
+        external
+        onlyMember(_member, _index)
         returns(bool)
     {
         require(events_[_index].state == 3 || events_[_index].state == 4, "Event not concluded");
@@ -260,10 +259,10 @@ contract EventManagerV1 is BaseUtility {
     }
 
     /// @dev Allows an organiser to send any remaining tokens that could be left from math inaccuracies
-    /// @param _index       :uint265 The index of the event of the array. 
+    /// @param _index       :uint265 The index of the event of the array.
     /// @param _target      :address Account to receive the remaining tokens
     /// @notice  Due to division having some aspects of rounding, theres a potential to have tiny amounts of tokens locked, since these grow in value they should be managed
-    function emptyActivitySlot(uint256 _index, address _target) 
+    function emptyActivitySlot(uint256 _index, address _target)
         external
         onlyOrganiser(_index)
     {
@@ -275,8 +274,8 @@ contract EventManagerV1 is BaseUtility {
 
     /// @dev Calculates the gift for atendees.
     /// @param _index : The index of the event in the event manager.
-    function calcGift(uint256 _index) 
-        internal 
+    function calcGift(uint256 _index)
+        internal
     {
         uint256 totalRemaining = IMembershipManager(membershipManager_).getUtilityStake(address(this), _index);
         if(totalRemaining > 0){
@@ -284,23 +283,23 @@ contract EventManagerV1 is BaseUtility {
         }
     }
 
-    /// @dev Used to get the members current state per activity 
-    /// @param _member : The member to be paid out 
+    /// @dev Used to get the members current state per activity
+    /// @param _member : The member to be paid out
     /// @param _index : The index of the event in the event manager.
     function getUserState(address _member, uint256 _index) external view returns(uint8) {
         return memberState_[_index][_member];
     }
 
     /// @dev Gets the details of an event.
-    /// @param _index           : The index of the event in the array of events. 
-    /// @return                 :EventData Event details. 
-    function getEvent(uint256 _index) 
-        external 
-        view 
+    /// @param _index           : The index of the event in the array of events.
+    /// @return                 :EventData Event details.
+    function getEvent(uint256 _index)
+        external
+        view
         returns(
-            string memory, 
-            uint24, 
-            uint256, 
+            string memory,
+            uint24,
+            uint256,
             uint24,
             uint256
         )
@@ -322,13 +321,13 @@ contract EventManagerV1 is BaseUtility {
         returns(address[] memory)
     {
         return events_[_index].currentAttendees;
-    }    
+    }
 
-    /// @dev Used to get the organiser for a specific event 
+    /// @dev Used to get the organiser for a specific event
     /// @param _index : The index of the event in the event manager.
-    function getOrganiser(uint256 _index) 
-        external 
-        view 
+    function getOrganiser(uint256 _index)
+        external
+        view
         returns(address)
     {
         return events_[_index].organiser;
@@ -343,7 +342,7 @@ contract EventManagerV1 is BaseUtility {
         uint256 arrayLength = _addressList.length;
         for (uint256 i = 0; i < arrayLength; i++){
             if(_addressList[i] != _target){
-                newList[i - offset]  = _addressList[i];
+                newList[i - offset] = _addressList[i];
             }else{
                 offset = 1;
             }

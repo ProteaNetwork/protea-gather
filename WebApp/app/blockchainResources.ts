@@ -16,7 +16,8 @@ export interface BlockchainResources{
   isStatus: boolean,
   isToshi: boolean,
   isMetaMask: boolean,
-  isCipher: boolean
+  isCipher: boolean,
+  signedMsgRegex: RegExp
 }
 
 export let blockchainResources: BlockchainResources = {
@@ -31,7 +32,8 @@ export let blockchainResources: BlockchainResources = {
   isCipher: false,
   isMetaMask: false,
   isStatus: false,
-  isToshi: false
+  isToshi: false,
+  signedMsgRegex: /0x[A-Fa-f0-9]+/
 };
 
 async function fetchFromWindow(){
@@ -129,6 +131,22 @@ export async function signMessage(message: string){
   }
   return;
 
+}
+
+export async function verifySignature(message: string, signature: string){
+  try{
+    const result = await ethers.utils.verifyMessage(message, signature);
+    return result;
+  }
+  catch(e){
+    throw e;
+  }
+}
+
+export async function scanQrCode(match?: RegExp){
+  const { web3 } = window as any;
+  const fetched = await web3.currentProvider.scanQRCode(match);
+  return fetched
 }
 
 export async function getBlockchainObjects(): Promise<BlockchainResources>{

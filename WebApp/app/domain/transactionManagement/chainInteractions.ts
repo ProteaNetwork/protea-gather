@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 
 // Ethers standard event filter type is missing the blocktags
 import { BlockTag } from 'ethers/providers/abstract-provider';
-import { blockchainResources, getBlockchainObjects } from "blockchainResources";
+import { blockchainResources, getBlockchainObjects, signMessage } from "blockchainResources";
 
 export declare type EventFilter = {
   address?: string;

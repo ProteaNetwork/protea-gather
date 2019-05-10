@@ -15,7 +15,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { joinCommunityAction, getCommunityAction } from 'domain/communities/actions';
 import { increaseMembershipAction } from 'domain/membershipManagement/actions';
 import { startEventAction, endEventAction, cancelEventAction, cancelRsvpAction, rsvpAction, confirmAttendanceAction, claimGiftAction, changeEventLimitAction, manualConfirmAttendeesAction, getEventAction } from 'domain/events/actions';
-import { refreshBalancesAction } from 'domain/transactionManagement/actions';
+import { refreshBalancesAction, signQrAction } from 'domain/transactionManagement/actions';
 import ViewEvent from 'components/ViewEvent';
 import { IMember } from 'domain/membershipManagement/types';
 import { setFilter } from './actions';
@@ -50,6 +50,7 @@ interface DispatchProps {
   onManualConfirmAttendees(eventId: string, attendees: string[], membershipManagerAddress: string): void;
   onJoinCommunity(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
+  onGenerateQr(eventId: string): void;
 }
 
 interface StateProps {}
@@ -89,7 +90,7 @@ class ViewEventContainer extends React.Component<Props> {
   }
 
   render() {
-    const { attendees, setFilter, filter, community, event, balances, onIncreaseMembership, onJoinCommunity, onStartEvent, onCancelEvent, onEndEvent, onManualConfirmAttendees, onChangeLimit, onCancelRSVP, onClaimGift, onConfirmAttendance, onRSVP} = this.props;
+    const { onGenerateQr, attendees, setFilter, filter, community, event, balances, onIncreaseMembership, onJoinCommunity, onStartEvent, onCancelEvent, onEndEvent, onManualConfirmAttendees, onChangeLimit, onCancelRSVP, onClaimGift, onConfirmAttendance, onRSVP} = this.props;
     return <Fragment>
 
       <ViewEvent
@@ -122,6 +123,7 @@ class ViewEventContainer extends React.Component<Props> {
           onClaimGift={onClaimGift}
 
           onManualConfirmAttendees={onManualConfirmAttendees}
+          onGenerateQr={onGenerateQr}
         >
 
       </ViewEvent>
@@ -194,6 +196,9 @@ const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
         membershipManagerAddress: membershipManagerAddress
       }))
     },
+    onGenerateQr: (eventId: string) => {
+      dispatch(signQrAction.request(eventId))
+    }
   };
 };
 

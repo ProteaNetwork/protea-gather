@@ -91,6 +91,7 @@
     "node-loader": "^0.6.0",
     "normalizr": "^3.3.0",
     "prop-types": "15.6.1",
+    "qrcode.react": "^0.9.3",
     "react": "16.4.2",
     "react-blockies": "^1.4.1",
     "react-dom": "16.4.2",

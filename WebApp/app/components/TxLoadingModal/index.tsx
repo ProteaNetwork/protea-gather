@@ -5,9 +5,11 @@
  */
 
 import React, { Fragment } from 'react';
-import { Theme, createStyles, withStyles, WithStyles, CircularProgress, Typography } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, CircularProgress, Typography, Fab } from '@material-ui/core';
 import classNames from 'classnames';
 import { colors } from 'theme';
+import { Close, CloudDownload } from '@material-ui/icons';
+import QrModal from 'components/QrModal';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -44,12 +46,15 @@ const styles = (theme: Theme) =>
       position: "absolute",
       top: "50%",
       left: "50%",
+      padding:"25vh 25vw",
       transform: "translate(-50%,-50%)",
       display: "flex",
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       textAlign: "center",
+      height: "100%",
+      width: "100%",
       "&::before": {
         content: '""',
         display: "block",
@@ -78,30 +83,43 @@ const styles = (theme: Theme) =>
       color: colors.white,
       fontWeight: 'bold',
       marginTop: 20
-    }
+    },
+
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
   pendingTx: boolean;
   txRemaining: number;
   txContext: string;
+  qrData: string;
+  onCloseQr(): void;
 }
 
 const TxLoadingModal: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { classes, pendingTx, txRemaining, txContext } = props;
+  const { onCloseQr, classes, pendingTx, txRemaining, txContext, qrData } = props;
   return (
-  <div className={classNames(classes.modalRoot, pendingTx ? "active" : "")}>
-    <div className={classes.infoRoot}>
-      <div className={classes.spinner}>
-        <CircularProgress color={"inherit"} size={80}></CircularProgress>
+  <div className={classNames(classes.modalRoot, pendingTx ? "active" : "", qrData != "" ? 'active': '')}>
+    {
+      <div className={classes.infoRoot}>
+        {
+          pendingTx && <Fragment>
+            <div className={classes.spinner}>
+              <CircularProgress color={"inherit"} size={80}></CircularProgress>
+            </div>
+            <Typography className={classes.txRemaining} component='h4' variant='h4'>
+              Transactions remaining: {`${txRemaining}`}
+            </Typography>
+            <Typography className={classes.txContext} component='h4' variant='h4'>
+              {`${txContext}`}
+            </Typography>
+          </Fragment>
+        }
       </div>
-      <Typography className={classes.txRemaining} component='h4' variant='h4'>
-        Transactions remaining: {`${txRemaining}`}
-      </Typography>
-      <Typography className={classes.txContext} component='h4' variant='h4'>
-        {`${txContext}`}
-      </Typography>
-    </div>
+    }
+    {
+      qrData != "" && <QrModal qrData={qrData} onCloseQr={onCloseQr}></QrModal>
+
+    }
 </div>);
 };
 
