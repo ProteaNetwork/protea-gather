@@ -26,8 +26,11 @@ export const makeSelectCommunity = () => createSelector(
 export const makeSelectFilterMembers = createSelector(
   makeSelectCommunity(), makeSelectFilter,
   (community, filter) => {
-    if(!community.memberList) return [];
-    return community.memberList.filter(member => (filter == "" || member.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || member.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0);
+    if(community){
+      return community.memberList ? community.memberList.filter(member => (filter == "" || member.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || member.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0) : [];
+    } else {
+      return [];
+    }
   }
 )
 

@@ -138,6 +138,7 @@ export function* joinCommunity(){
         yield put(setRemainingTxCountAction(3));
         yield put(setTxContextAction("Unlocking Dai transfers to the community"));
         yield retry(5, 2000, updateTransferApproval, true, communityData.tbcAddress)
+        yield delay(2000);
       }
 
       const daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);

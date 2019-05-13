@@ -84,6 +84,7 @@ export async function getCommunitiesFromChain() {
         membershipManagerAddress: parsedLog.values.membershipManager
       }
     });
+    debugger;
     return communities
   }
   catch(e){
