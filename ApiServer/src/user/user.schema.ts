@@ -5,23 +5,16 @@ import { ObjectId } from 'bson';
 
 export interface User {
   ethAddress: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  email: string;
+  displayName: string;
   profileImage: AttachmentDocument | ObjectId;
-  // 1. friendlist arrayIDs
 }
 
 export interface UserDocument extends User, Document { }
 
 export const UserSchema = new Schema({
   ethAddress: { type: String, required: true, index: true},
-  firstName: { type: String, required: false },
-  lastName: { type: String, required: false },
-  email: { type: String, required: false },
+  displayName: { type: String, required: false },
   profileImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
-  // 2. friends: [{type: Schema.Types.ObjectId, ref: Schema.User}]
 }, {
     timestamps: true,
     toJSON: {
@@ -44,7 +37,3 @@ export const UserSchema = new Schema({
       },
     },
   });
-
-UserSchema.virtual('fullName').get(function() {
-  return (this.firstName && this.lastName) ? this.firstName + ' ' + this.lastName : this.ethAddress;
-});

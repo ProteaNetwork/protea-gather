@@ -4,10 +4,7 @@ import { ApplicationRootState } from 'types';
 /**
  * Direct selector to the profileContainer state domain
  */
-
-const selectProfileContainerDomain = (state: ApplicationRootState) => {
-  return state ? state : {};
-};
+const selectProfileDomain = (state: ApplicationRootState) => state.userProfile;
 
 /**
  * Other specific selectors
@@ -17,10 +14,5 @@ const selectProfileContainerDomain = (state: ApplicationRootState) => {
  * Default selector used by ProfileContainer
  */
 
-const selectProfileContainer = () =>
-  createSelector(selectProfileContainerDomain, substate => {
-    return substate;
-  });
 
-export default selectProfileContainer;
-export { selectProfileContainerDomain };
+export default selectProfileDomain;

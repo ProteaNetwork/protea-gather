@@ -8,7 +8,7 @@ export interface IMemberArray{
 
 export interface IMember{
   ethAddress: string;
-  name: string;
+  displayName: string;
   profileImage: string;
 }
 

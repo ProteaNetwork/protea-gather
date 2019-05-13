@@ -36,7 +36,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 const CreateEventContainer: React.SFC<Props> = (props: Props) => {
   const {onSubmitCreateEvent, pendingTx, match: {params: {eventManagerAddress}}} = props;
-  
+
   const CreateEventSchema = Yup.object().shape({
     name: Yup.string().required("Please provide a name for your event"),
     bannerImage: Yup.mixed().required("Please add a banner image for the event")

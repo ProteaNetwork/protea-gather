@@ -6,8 +6,8 @@ import { ApplicationRootState } from 'types';
 interface UserProfileState {
   displayName: '',
   profileImage: '',
+  ethAddress: ''
 }
-
 
 /* --- ACTIONS --- */
 type AuthenticationActions = ActionType<typeof actions>;

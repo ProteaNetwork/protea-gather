@@ -92,13 +92,13 @@ const routes: appRoute[] = [
     isProtected: true,
     isNavRequired: true,
   },
-  // {
-  //   name: 'Profle',
-  //   path: '/profile/:ethAddress?',
-  //   component: ProfileContainer,
-  //   isProtected: true,
-  //   isNavRequired: true,
-  // },
+  {
+    name: 'Profle',
+    path: '/profile/',
+    component: ProfileContainer,
+    isProtected: true,
+    isNavRequired: true,
+  },
 ];
 
 export default routes;

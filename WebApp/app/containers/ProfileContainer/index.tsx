@@ -10,26 +10,64 @@ import { createStructuredSelector } from 'reselect';
 import { compose, Dispatch } from 'redux';
 
 import makeSelectProfileContainer from './selectors';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { fileSizeValidation, MAX_FILE_SIZE, fileTypeValidation, SUPPORTED_IMAGE_FORMATS } from 'fileManagement';
+import ProfileForm from 'components/ProfileForm';
+import { setUserProfile } from 'domain/userProfile/actions';
+import selectProfileDomain from './selectors';
+import apiUrlBuilder from 'api/apiUrlBuilder';
+import { IMember } from 'domain/membershipManagement/types';
 
 interface OwnProps {}
 
-interface DispatchProps {}
+interface DispatchProps {
+  onUpdateProfile(data: any): void;
+}
 
-interface StateProps {}
+interface StateProps {
+  profileData: IMember
+}
 
 type Props = StateProps & DispatchProps & OwnProps;
 
 const ProfileContainer: React.SFC<Props> = (props: Props) => {
-  return <Fragment>ProfileContainer</Fragment>;
+  const {onUpdateProfile, profileData} = props;
+
+  const UpdateProfileSchema = Yup.object().shape({
+    profileImage: Yup.mixed()
+      .test('fileSize', 'Maximum file size of 10MB exceeded', file => fileSizeValidation(file, MAX_FILE_SIZE))
+      .test('fileType', 'Please supply an image file', file => fileTypeValidation(file, SUPPORTED_IMAGE_FORMATS)),
+    displayName: Yup.string(),
+
+  })
+  return <Formik
+    initialValues={{
+      profileImage: profileData.profileImage,
+      displayName: profileData.displayName,
+    }}
+    validationSchema={UpdateProfileSchema}
+    onSubmit={
+      (values) => {
+        onUpdateProfile(values)
+      }
+    }
+    render={({submitForm}) =>
+      <ProfileForm submitForm={submitForm}/>
+    }
+  >
+  </Formik>;
 };
 
 const mapStateToProps = createStructuredSelector({
-  profileContainer: makeSelectProfileContainer(),
+  profileData: selectProfileDomain
 });
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
-    dispatch: dispatch,
+    onUpdateProfile: (data: IMember) =>{
+      dispatch(setUserProfile.request(data))
+    },
   };
 }
 

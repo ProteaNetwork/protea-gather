@@ -8,12 +8,13 @@ import { action, createStandardAction, createAsyncAction } from 'typesafe-action
 import { ICommunity } from './types';
 
 import ActionTypes from './constants';
+import { IMember } from 'domain/membershipManagement/types';
 
 export const getAllCommunitiesAction = createStandardAction(ActionTypes.GET_ALL_COMMUNITIES)<void>();
 
 export const saveCommunity = createStandardAction(ActionTypes.SAVE_COMMUNITY)<ICommunity>();
 
-export const setMemberList = createStandardAction(ActionTypes.SET_MEMBER_LIST)<{tbcAddress: string, memberList: string[]}>();
+export const setMemberList = createStandardAction(ActionTypes.SET_MEMBER_LIST)<{tbcAddress: string, memberList: IMember[]}>();
 
 export const statusUpdated = createStandardAction(ActionTypes.STATUS_UPDATED)<{
   tbcAddress: string,

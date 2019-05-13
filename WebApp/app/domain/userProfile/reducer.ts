@@ -13,6 +13,9 @@ function userProfileReducer(state = initialState, action) {
     case getType(userProfileActions.getUserProfile.success):
       return {...state,
               ...action.payload};
+    case getType(userProfileActions.setUserProfile.success):
+      return {...state,
+              ...action.payload};
     default:
       return state;
   }
