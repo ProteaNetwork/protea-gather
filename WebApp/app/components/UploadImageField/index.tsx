@@ -54,7 +54,7 @@ class Thumb extends React.Component<ThumbProps, ThumbState> {
     if (!file) {
       return (
         <Fragment>
-          <Image style={{width:"100%", height: "100%"}}/>
+          <Image className={classes.image} style={{width:"100%", height: "100%"}}/>
           <label htmlFor={name}>
             <Fab component="span" className={classes.imageButton} disabled={disabled || isSubmitting}>
               <CloudUpload />
@@ -73,12 +73,13 @@ class Thumb extends React.Component<ThumbProps, ThumbState> {
           className="img-thumbnail mt-2"
           width="100%"
           height="100%"
+          style={{objectFit: "cover"}}
          >
         </img>
         <label htmlFor={name}>
-            <Fab component="span" className={classes.imageButton} disabled={disabled || isSubmitting}>
-              <CloudUpload />
-            </Fab>
+          <Fab component="span" className={classes.imageButton} disabled={disabled || isSubmitting}>
+            <CloudUpload />
+          </Fab>
         </label>
       </Fragment>
     );
@@ -99,7 +100,11 @@ const styles = ({ spacing }: Theme) => createStyles({
   },
   controlRoot:{
     border: `5px solid ${colors.white}`,
-    height: "200px" // TODO: Make dynamic
+    height: "20vh", // TODO: Make dynamic
+    maxHeight: "300px"
+  },
+  image: {
+    objectFit: "cover",
   }
 });
 

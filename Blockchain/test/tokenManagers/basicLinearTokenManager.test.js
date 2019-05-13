@@ -615,8 +615,6 @@ describe('V1 Token Manager', () => {
                     let communityBalance = ethers.utils.formatUnits(await tokenManagerInstance.from(devnetAccounts[i].wallet.address)
                         .balanceOf(devnetAccounts[i].wallet.address), 18);
                     
-                    // console.log(parseFloat(communityBalance),
-                    //         parseFloat(daiToToken))
                     assert.equal(
                         parseFloat(communityBalance),
                         parseFloat(daiToToken) - (parseFloat(daiToToken) * (communitySettings.contributionRate / 100)),

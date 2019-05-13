@@ -13,13 +13,11 @@ import { getBlockchainObjects, signMessage } from 'blockchainResources';
 export function* getPermit() {
   const {signerAddress} = yield call(getBlockchainObjects)
   try {
-    // console.log('getting new permit');
     const permitResponse = yield call(getPermitApi, signerAddress);
     const signedPermit = yield call(signMessage, permitResponse.data.permit);
     yield put(authenticationActions.saveAccessPermit(signedPermit));
     return signedPermit;
   } catch (error) {
-    // TODO: What should we do in this case?
     console.log(error);
   }
 }
@@ -51,7 +49,6 @@ export function* refreshTokenPoller() {
     try {
       decodedToken = yield call(jwtDecode, apiToken);
     } catch (error) {
-      // console.log(`Unable to decode token. Refreshing...`);
       const newToken = yield call(getAccessToken, signedMessage, signerAddress);
       decodedToken = yield call(jwtDecode, newToken);
     }

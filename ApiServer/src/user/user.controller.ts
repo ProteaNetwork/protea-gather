@@ -1,19 +1,39 @@
 import Express from 'express';
-import { Controller, UseGuards, Req, Get } from '@nestjs/common';
+import { Controller, UseGuards, Req, Get, Put, NotFoundException, UseInterceptors, Body, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './user.schema';
+import { FileInterceptorHelper, FileOptions } from 'src/helper/fileInterceptorHelper';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/me')
+  @Get('/')
   @UseGuards(AuthGuard('jwt'))
   async getUserProfile(@Req() request: Express.Request & { user: User }) {
-    return {
-      displayName: request.user.fullName || request.user.ethAddress,
-      profileImage: request.user.profileImage,
-    };
+    const user = await this.userService.getUserByEthAddress(request.user.ethAddress);
+    if(!user){
+      throw(new NotFoundException)
+    }
+    user.displayName = user.displayName != "" ? user.displayName : user.ethAddress;
+    return user;
+  }
+
+  @Put('/')
+  @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptorHelper(
+    {
+      name: 'profileImage',
+      maxCount: 1,
+      type: FileOptions.PICTURE
+    }
+  ))
+  async setUserProfile(@Body() bodyData, @UploadedFile() profileImage) {
+    const user = await this.userService.updateUserProfile(bodyData, profileImage);
+    if(!user){
+      throw(new NotFoundException)
+    }
+    return user;
   }
 }

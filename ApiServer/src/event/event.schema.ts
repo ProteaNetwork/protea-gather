@@ -20,7 +20,6 @@ export const EventSchema = new Schema({
   eventId: {type: String, required: true },
   eventManagerAddress: { type: String, required: true },
   organizer: {type: String, required: true },
-  // attendees: [{type: String, required: false }],
   bannerImage: {type: Schema.Types.ObjectId, ref: Schemas.Attachment},
 
   name: { type: String, required: true },

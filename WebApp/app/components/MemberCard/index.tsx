@@ -38,12 +38,12 @@ const styles = ({ palette, spacing }: Theme) => createStyles({
 interface OwnProps {
   classes: any;
   profileImage: string;
-  name: string;
+  displayName: string;
   ethAddress: string;
 }
 
 function MemberCard(props: OwnProps) {
-  const { classes, ethAddress, profileImage, name } = props;
+  const { classes, ethAddress, profileImage, displayName } = props;
 
   return (
     <Fragment>
@@ -69,7 +69,7 @@ function MemberCard(props: OwnProps) {
           }
           <CardContent className={classes.cardContent}>
             <Typography className={classes.header} variant="h5" component="h2" gutterBottom>
-              {name ? name : ethAddress}
+              {displayName ? displayName : ethAddress}
             </Typography>
           </CardContent>
         </Card>

@@ -3,6 +3,7 @@ import apiUrlBuilder from './apiUrlBuilder';
 import { ICommunity } from 'domain/communities/types';
 import { IEvent } from 'domain/events/types';
 import formDataHelper from './formDataHelper';
+import { IMember } from 'domain/membershipManagement/types';
 
 export function login(signedAccessPermit: string, ethAddress: string): Promise<any> {
   const body = JSON.stringify({ signedAccessPermit: signedAccessPermit, ethAddress: ethAddress});
@@ -41,4 +42,8 @@ export function createEvent(event: IEvent, apiToken: string): Promise<any> {
 
 export function updateEvent(event: IEvent, apiToken: string): Promise<any> {
   return apiRequest('PUT', apiUrlBuilder.updateEvent(event.eventId), formDataHelper(event), undefined, true, apiToken)
+}
+
+export function updateProfile(profileData: IMember, apiToken: string): Promise<any> {
+  return apiRequest('PUT', apiUrlBuilder.updateProfile, formDataHelper(profileData), undefined, true, apiToken)
 }

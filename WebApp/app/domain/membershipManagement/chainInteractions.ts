@@ -47,7 +47,7 @@ export async function getMembersTx(membershipManagerAddress: string){
 
       const member: IMember = {
         ethAddress: parsedLog.values.member,
-        name: "",
+        displayName: "",
         profileImage: ""
       };
       if(added.indexOf(member.ethAddress) < 0){

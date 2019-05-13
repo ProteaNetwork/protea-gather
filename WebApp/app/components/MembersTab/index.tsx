@@ -66,7 +66,7 @@ const MembersTab: React.SFC<OwnProps> = (props: OwnProps) => {
       </div>
       <section className={classes.textRegion}>
         <Typography variant="h4" component="h3">
-          {member.name ? member.name : member.ethAddress}
+          {member.displayName ? member.displayName : member.ethAddress}
         </Typography>
         {
           stateMessage &&

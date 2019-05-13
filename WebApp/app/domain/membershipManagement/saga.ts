@@ -10,6 +10,8 @@ import { setRemainingTxCountAction, setTxContextAction, setCommunityMutexAction 
 import { retry } from "redux-saga/effects";
 import { BigNumber } from "ethers/utils";
 import { ApplicationRootState } from "types";
+import { getUserProfile as getUserProfileApi } from "api/api";
+import { IMember } from "./types";
 
 // Meta
 export function* checkMemberStates(membershipManagerAddress: string, tbcAddress: string){
@@ -34,6 +36,15 @@ export function* checkMemberStates(membershipManagerAddress: string, tbcAddress:
       contributionRate: contribution,
       ...memberData
     }));
+}
+
+export function* resolveMembersMeta(ethAddress: string) {
+  try{
+    return (yield call(getUserProfileApi, ethAddress));
+  }
+  catch(error){
+    return false;
+  }
 }
 
 // CRUD
@@ -150,7 +161,6 @@ export function* increaseMembershipListener(){
     if(result === true){
       // Trigger resolve community
       yield put(increaseMembershipAction.success());
-      // yield put(getCommunityAction.request(communityData.tbcAddress))
     }else{
       yield put(setRemainingTxCountAction(0));
       yield put(increaseMembershipAction.failure(result));
@@ -165,7 +175,6 @@ export function* withdrawMembershipListener(){
     if(result === true){
       // Trigger resolve community
       yield put(withdrawMembershipAction.success());
-      // yield put(getCommunityAction.request(communityData.tbcAddress))
     }else{
       yield put(setRemainingTxCountAction(0));
       yield put(withdrawMembershipAction.failure(result));
@@ -174,8 +183,11 @@ export function* withdrawMembershipListener(){
 }
 
 export function* getCommunityMembers(tbcAddress: string, membershipManagerAddress: string){
-  const memberList = yield call(getMembersTx, membershipManagerAddress);
-  yield put(setMemberList({tbcAddress: tbcAddress, memberList: memberList}));
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  const memberList: string[] = yield call(getMembersTx, membershipManagerAddress);
+  const fetchedMetaData = yield all(memberList.map(member => (call(getUserProfileApi, apiKey))))
+  const castMembers: IMember[] = fetchedMetaData.map(metaResponse => metaResponse.response.status == 200 ? {ethAddress: metaResponse.data.ethAddress, displayName: metaResponse.data.displayName, profileImage: metaResponse.data.profileImage} : undefined);
+  yield put(setMemberList({tbcAddress: tbcAddress, memberList: castMembers}));
 }
 
 export function* checkMemberStatusListener(){

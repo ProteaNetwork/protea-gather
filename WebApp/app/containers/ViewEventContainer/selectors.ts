@@ -39,7 +39,7 @@ export const makeSelectFilterAttendees = createSelector(
     if(!event){
       return;
     }
-    return event.attendees ? event.attendees.filter(attendee => (filter == "" || attendee.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || attendee.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0) : [];
+    return event.attendees ? event.attendees.filter(attendee => (filter == "" || attendee.displayName.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || attendee.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0) : [];
   }
 )
 
