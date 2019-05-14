@@ -493,7 +493,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
         </Fragment>
       }
       {
-      event.organizer == balances.ethAddress && <Link className={classes.editFab} to={`/events/${event.eventId}/update`}>
+      event && event.organizer == balances.ethAddress && <Link className={classes.editFab} to={`/events/${event.eventId}/update`}>
         <Fab>
           <Edit />
         </Fab>

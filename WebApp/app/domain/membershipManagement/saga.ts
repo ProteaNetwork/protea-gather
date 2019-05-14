@@ -63,16 +63,17 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
 
     yield put(setCommunityMutexAction(communityData.tbcAddress));
 
-     //Calculate root puchase volume
-     const minusProteaTaxBN = daiValueBN.sub(daiValueBN.div(101));
-     const includingContributionBN = liquidTokenBalanceBN.add(liquidTokenBalanceBN.div(contributionRate+100))
-     const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
+    //Calculate root puchase volume
+    const minusProteaTaxBN = daiValueBN.sub(daiValueBN.div(101));
+    const includingContributionBN = liquidTokenBalanceBN.gt(0) ? liquidTokenBalanceBN.mul(100).div(ethers.utils.parseUnits(`${100 - contributionRate}`, 0)).div(10) : liquidTokenBalanceBN;
+    const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
 
 
     if(liquidTokenBalanceBN.eq(0)){
       // If no tokens have been minted
       yield put(setRemainingTxCountAction(2));
       yield put(setTxContextAction(`Purchasing ${communityData.daiValue}(Incl. Contribtions) Dai worth of community tokens.`));
+
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
     }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).gt(minusProteaTaxBN)){
       yield put(setTxContextAction(`Roughly enough to stake`));
@@ -106,7 +107,7 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
     return true;
   }
   catch(e){
-    return e;
+    throw e;
   }
 }
 
@@ -149,7 +150,7 @@ export function* withdrawMembership(communityData: {tbcAddress:string, daiValue:
     return true;
   }
   catch(e){
-    return e
+    throw e
   }
 }
 

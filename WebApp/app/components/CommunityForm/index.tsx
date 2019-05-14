@@ -93,7 +93,7 @@ const CommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
             <Field name="tokenSymbol" label="Token Symbol:" component={TextField} disabled={!isNew} />
           </FormControl>
           <FormControl className={(!isNew) ? classes.hiddenFormControl : undefined}>
-            <Field name="contributionRate" type="number" label="Community contribution rate:"  component={TextField}/>
+            <Field name="contributionRate" InputProps={{inputProps: {min: 1, step: 1,}}} type="number" label="Community contribution rate:"  component={TextField}/>
           </FormControl>
           <FormControl className={(!isNew) ? classes.hiddenFormControl : undefined}>
             <Field name="reputationForAttendance" type="number" label="Reputation points for attendance"  component={TextField}/>

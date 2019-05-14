@@ -22,11 +22,13 @@ export class EventService {
 
   async createEvent(eventData: EventDTO, bannerImage): Promise<EventDocument>{
     const eventDoc = await new this.eventRepository(eventData);
-    const attachment = await this.attachmentService.create({
-      filename: `${eventData.eventId}-${bannerImage.originalname}`,
-      contentType: bannerImage.mimetype
-    }, bannerImage);
-    eventDoc.bannerImage = attachment;
+    if(bannerImage){
+      const attachment = await this.attachmentService.create({
+        filename: `${eventData.eventId}-${bannerImage.originalname}`,
+        contentType: bannerImage.mimetype
+      }, bannerImage);
+      eventDoc.bannerImage = attachment;
+    }
 
     eventDoc.save();
     return eventDoc.toObject();
@@ -40,7 +42,7 @@ export class EventService {
       });
     } else {
       eventDoc = await new this.eventRepository(eventData);
-    } 
+    }
 
     if (bannerImage) {
       this.attachmentService.delete(eventDoc.bannerImage);

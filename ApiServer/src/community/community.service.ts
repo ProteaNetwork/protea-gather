@@ -23,11 +23,14 @@ export class CommunityService {
 
   async createCommunity(createData: CommunityDTO, bannerImage): Promise<CommunityDocument | HttpException> {
     const communityDoc = await new this.communityRepository(createData);
-    const attachment = await this.attachmentService.create({
-      filename: `${createData.tbcAddress}-${bannerImage.originalname}`,
-      contentType: bannerImage.mimetype
-    }, bannerImage);
-    communityDoc.bannerImage = attachment;
+    if(bannerImage){
+      const attachment = await this.attachmentService.create({
+        filename: `${createData.tbcAddress}-${bannerImage.originalname}`,
+        contentType: bannerImage.mimetype
+      }, bannerImage);
+      communityDoc.bannerImage = attachment;
+    }
+
 
     communityDoc.save();
     return communityDoc.toObject();
