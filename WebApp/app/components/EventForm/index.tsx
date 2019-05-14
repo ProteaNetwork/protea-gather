@@ -5,12 +5,15 @@
  */
 
 import React from 'react';
-import { Theme, createStyles, withStyles, WithStyles, Typography, FormControl, Button, Paper, CircularProgress, Grid } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, Typography, FormControl, Button, Paper, CircularProgress, Grid, Fab } from '@material-ui/core';
 import { Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import UploadImageField from 'components/UploadImageField';
 import { colors } from 'theme';
 import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
+import { ArrowBack } from '@material-ui/icons';
+import { goBack } from 'utils/history';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -44,7 +47,22 @@ const styles = (theme: Theme) =>
       margin: "0 auto",
       display: 'block'
     },
-
+    backFab: {
+      display: 'block',
+      position: 'fixed',
+      bottom: -15,
+      left: 35,
+      transform: 'translate(-50%,-50%)',
+      zIndex: 999,
+      cursor: "pointer",
+      "& > *":{
+        color: colors.white,
+        backgroundColor: colors.proteaBranding.pink,
+        "&:hover":{
+          backgroundColor: colors.proteaBranding.pink,
+        }
+      },
+    }
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
@@ -125,6 +143,11 @@ const EventForm: React.SFC<OwnProps> = (props: OwnProps) => {
           </div>
         </Form>
       </Paper>
+      <div className={classes.backFab} onClick={() => goBack()}>
+        <Fab>
+          <ArrowBack />
+        </Fab>
+      </div>
     </div>
   );
 };

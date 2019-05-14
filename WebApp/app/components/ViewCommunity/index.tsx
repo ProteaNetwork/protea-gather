@@ -5,7 +5,7 @@
  */
 
 import React, { Fragment } from 'react';
-import { Theme, createStyles, withStyles, WithStyles, Paper, InputBase } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, Paper, InputBase, Fab } from '@material-ui/core';
 import { Button, Typography, Tabs, Tab, AppBar, Input } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { colors } from 'theme';
@@ -19,6 +19,8 @@ import MembersTab from 'components/MembersTab';
 import { IMember } from 'domain/membershipManagement/types';
 import classNames from 'classnames';
 import SearchIcon from '@material-ui/icons/Search';
+import { Edit } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 const styles = ({ spacing, shape }: Theme) => createStyles({
   root: {
@@ -163,6 +165,22 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
         height: "90px",
       }
     }
+  },
+  editFab:{
+    display: 'block',
+    position: 'fixed',
+    bottom: -15,
+    left: 35,
+    transform: 'translate(-50%,-50%)',
+    zIndex: 999,
+    cursor: "pointer",
+    "& > *":{
+      color: colors.white,
+      backgroundColor: colors.proteaBranding.pink,
+      "&:hover":{
+        backgroundColor: colors.proteaBranding.pink,
+      }
+    },
   }
 });
 
@@ -399,6 +417,14 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
               </article>
             </SwipeableViews>
           </section>
+          {
+            community.isAdmin && <Link className={classes.editFab} to={`/communities/${community.tbcAddress}/update`}>
+            <Fab>
+              <Edit />
+            </Fab>
+          </Link>
+
+          }
         </Fragment>
         )
       }

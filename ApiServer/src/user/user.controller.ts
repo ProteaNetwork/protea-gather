@@ -1,5 +1,5 @@
 import Express from 'express';
-import { Controller, UseGuards, Req, Get, Put, NotFoundException, UseInterceptors, Body, UploadedFile } from '@nestjs/common';
+import { Controller, UseGuards, Req, Get, Put, NotFoundException, UseInterceptors, Body, UploadedFile, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './user.schema';
@@ -9,10 +9,10 @@ import { FileInterceptorHelper, FileOptions } from 'src/helper/fileInterceptorHe
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('/')
+  @Get('/:ethAddress')
   @UseGuards(AuthGuard('jwt'))
-  async getUserProfile(@Req() request: Express.Request & { user: User }) {
-    const user = await this.userService.getUserByEthAddress(request.user.ethAddress);
+  async getUserProfile(@Param('ethAddress') ethAddress, @Req() request: Express.Request & { user: User }) {
+    const user = await this.userService.getUserByEthAddress(ethAddress);
     if(!user){
       throw(new NotFoundException)
     }

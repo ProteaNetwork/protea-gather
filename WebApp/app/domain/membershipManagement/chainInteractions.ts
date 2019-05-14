@@ -44,7 +44,6 @@ export async function getMembersTx(membershipManagerAddress: string){
     let results: IMember[] = [];
     (await provider.getLogs(filterMembershipStaked)).map(e => {
       const parsedLog = (membershipManagerContract.interface.parseLog(e));
-
       const member: IMember = {
         ethAddress: parsedLog.values.member,
         displayName: "",

@@ -18,7 +18,7 @@ import MembersTab from 'components/MembersTab';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 import MembersActionTab from 'components/MembersActionTab';
-import { Save } from '@material-ui/icons';
+import { Save, Edit } from '@material-ui/icons';
 import classNames from 'classnames';
 
 const styles = ({ spacing, shape }: Theme) => createStyles({
@@ -171,6 +171,22 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
     "&:hover":{
       backgroundColor: colors.proteaBranding.pink,
     }
+  },
+  editFab:{
+    display: 'block',
+    position: 'fixed',
+    bottom: -15,
+    left: 35,
+    transform: 'translate(-50%,-50%)',
+    zIndex: 999,
+    cursor: "pointer",
+    "& > *":{
+      color: colors.white,
+      backgroundColor: colors.proteaBranding.pink,
+      "&:hover":{
+        backgroundColor: colors.proteaBranding.pink,
+      }
+    },
   }
 
 });
@@ -475,6 +491,14 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
             }
           </section>
         </Fragment>
+      }
+      {
+      event.organizer == balances.ethAddress && <Link className={classes.editFab} to={`/events/${event.eventId}/update`}>
+        <Fab>
+          <Edit />
+        </Fab>
+      </Link>
+
       }
     </Fragment>
 };

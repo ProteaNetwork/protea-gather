@@ -1,6 +1,5 @@
-import { createSelector, createStructuredSelector } from 'reselect';
+import { createSelector } from 'reselect';
 import { ApplicationRootState } from 'types';
-import { ICommunity } from 'domain/communities/types';
 
 /**
  * Direct selector to the viewCommunityContainer state domain

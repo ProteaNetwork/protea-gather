@@ -1,9 +1,6 @@
 import { createStructuredSelector } from 'reselect';
 import { selectMyCommunties } from '../../domain/communities/selectors';
-import selectEventDomainRoot, { selectMyUpcomingEvents, selectMyPastEvents, selectMyActiveEvents, selectMyHostedEvents, selectDiscoverEvents } from 'domain/events/selectors';
-import { IEvent } from 'domain/events/types';
-import { makeSelectEthAddress } from 'containers/App/selectors';
-import { ICommunity } from 'domain/communities/types';
+import { selectMyUpcomingEvents, selectMyPastEvents, selectMyActiveEvents, selectMyHostedEvents, selectDiscoverEvents } from 'domain/events/selectors';
 
 /**
  * Direct selector to the dashboardContainer state domain

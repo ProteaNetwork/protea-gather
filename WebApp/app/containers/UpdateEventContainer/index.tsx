@@ -19,6 +19,8 @@ import { updateEventAction, changeEventLimitAction } from 'domain/events/actions
 import { fileSizeValidation, fileTypeValidation, SUPPORTED_IMAGE_FORMATS, MAX_FILE_SIZE } from 'fileManagement';
 import EventForm from 'components/EventForm';
 import { makeSelectEvent } from './selectors';
+import { makeSelectEthAddress } from 'containers/App/selectors';
+import { forwardTo } from 'utils/history';
 
 interface RouteParams {
   eventId: string;
@@ -26,14 +28,15 @@ interface RouteParams {
 
 interface OwnProps extends RouteComponentProps<RouteParams>, React.Props<RouteParams> {
   event: IEvent,
+  ethAddress: string
 }
 
 interface DispatchProps {
   onSubmitUpdateEvent(data): void;
   onChangeEventAttendeeLimit(
-    data:{ 
-      eventId: string, 
-      newLimit: number, 
+    data:{
+      eventId: string,
+      newLimit: number,
       membershipManagerAddress: string
   }): void;
 }
@@ -45,8 +48,11 @@ interface StateProps {
 type Props = StateProps & DispatchProps & OwnProps;
 
 const UpdateEventContainer: React.SFC<Props> = (props: Props) => {
-  const {onSubmitUpdateEvent, onChangeEventAttendeeLimit, pendingTx, match: {params: {eventId}}, event} = props;
-  
+  const {onSubmitUpdateEvent, onChangeEventAttendeeLimit, pendingTx, ethAddress, match: {params: {eventId}}, event} = props;
+  if(event.organizer != ethAddress){
+    forwardTo("/discover/events/")
+  }
+
   const UpdateEventSchema = (currentAttendees: number) => Yup.object().shape({
     bannerImage: Yup.mixed().required("Please add a banner image for the event")
       .test('fileSize', 'Maximum file size of 10MB exceeded', file => fileSizeValidation(file, MAX_FILE_SIZE))
@@ -55,7 +61,7 @@ const UpdateEventContainer: React.SFC<Props> = (props: Props) => {
     eventDate: Yup.date().min(dayjs().format('YYYY-MM-DD'), 'Event must be in the future'),
     eventTime: Yup.mixed().required(),
     maxAttendees: Yup.number()
-      .test('maxAttendees', `Max attendees can not be set lower than ${currentAttendees}. Set to 0 to disable`, 
+      .test('maxAttendees', `Max attendees can not be set lower than ${currentAttendees}. Set to 0 to disable`,
         v => (v === 0 || v > currentAttendees))
       .required()
       .integer(),
@@ -101,6 +107,7 @@ const UpdateEventContainer: React.SFC<Props> = (props: Props) => {
 
 const mapStateToProps = createStructuredSelector({
   event: makeSelectEvent(),
+  ethAddress: makeSelectEthAddress
 })
 
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
