@@ -28,6 +28,8 @@ export default function configureStore(initialState = {}) {
           // TODO Try to remove when `react-router-redux` is out of beta, LOCATION_CHANGE should not be fired more than once after hot reloading
           // Prevent recomputing reducers for `replaceReducer`
           shouldHotReload: false,
+          trace: true,
+          traceLimit: 25
         })
       : compose;
   /* eslint-enable */

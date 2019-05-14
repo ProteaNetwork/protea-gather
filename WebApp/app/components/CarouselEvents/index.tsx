@@ -106,7 +106,7 @@ function FabNext(props) {
             color: colors.white,
             backgroundColor: colors.proteaBranding.pink}}
       onClick={onClick}>
-      <ChevronRight />
+      <ChevronRight fontSize={"large"} />
     </Fab>
   );
 }
@@ -125,7 +125,7 @@ function FabPrevious(props) {
               color: colors.white,
               backgroundColor: colors.proteaBranding.pink}}
       onClick={onClick} >
-    <ChevronLeft />
+    <ChevronLeft fontSize={"large"} />
     </Fab>
   );
 }
