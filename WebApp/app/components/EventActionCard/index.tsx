@@ -19,6 +19,7 @@ const styles = (theme: Theme) =>
       alignItems: "center",
       width: "100%",
       height: 200,
+      borderRadius: 5,
       "& > *":{
         maxHeight: 200,
         width: "50%"

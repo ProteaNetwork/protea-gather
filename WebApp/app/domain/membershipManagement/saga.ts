@@ -40,7 +40,8 @@ export function* checkMemberStates(membershipManagerAddress: string, tbcAddress:
 
 export function* resolveMembersMeta(ethAddress: string) {
   try{
-    return (yield call(getUserProfileApi, ethAddress));
+    const apiToken = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+    return (yield call(getUserProfileApi, ethAddress, apiToken));
   }
   catch(error){
     return false;
@@ -184,8 +185,8 @@ export function* withdrawMembershipListener(){
 
 export function* getCommunityMembers(tbcAddress: string, membershipManagerAddress: string){
   const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
-  const memberList: string[] = yield call(getMembersTx, membershipManagerAddress);
-  const fetchedMetaData = yield all(memberList.map(member => (call(getUserProfileApi, apiKey))))
+  const memberList: IMember[] = yield call(getMembersTx, membershipManagerAddress);
+  const fetchedMetaData = yield all(memberList.map(member => (call(getUserProfileApi, member.ethAddress, apiKey))))
   const castMembers: IMember[] = fetchedMetaData.map(metaResponse => metaResponse.response.status == 200 ? {ethAddress: metaResponse.data.ethAddress, displayName: metaResponse.data.displayName, profileImage: metaResponse.data.profileImage} : undefined);
   yield put(setMemberList({tbcAddress: tbcAddress, memberList: castMembers}));
 }

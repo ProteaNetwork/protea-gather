@@ -17,6 +17,8 @@ import CommunityForm from 'components/CommunityForm';
 import { RouteComponentProps } from 'react-router';
 import { makeSelectCommunity } from './selectors';
 import { createStructuredSelector } from 'reselect';
+import { makeSelectEthAddress } from 'containers/App/selectors';
+import { forwardTo } from 'utils/history';
 
 interface RouteParams {
   tbcAddress: string; // must be type string since route params
@@ -38,6 +40,9 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 const UpdateCommunityContainer: React.SFC<Props> = (props: Props) => {
   const {onSubmitUpdateCommunity, pendingTx, community} = props;
+  if(!community.isAdmin){
+    forwardTo("/discover/communities/")
+  }
   const CommunitySchema = Yup.object().shape({
     name: Yup.string().required("Please provide a name for your community"),
     bannerImage: Yup.mixed().required("Please add a banner image for the community")
@@ -75,8 +80,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
   };
 }
 
-const mapStateToProps = createStructuredSelector({  
-  community: makeSelectCommunity()
+const mapStateToProps = createStructuredSelector({
+  community: makeSelectCommunity(),
+  ethAddress: makeSelectEthAddress
 });
 
 const withConnect = connect(

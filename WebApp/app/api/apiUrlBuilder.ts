@@ -6,7 +6,7 @@ const generateUri = (path: string) => `${apiSchema}://${apiHost}/${path}`;
 const apiUrlBuilder = {
   getPermit: generateUri('auth/permit'),
   login: generateUri('auth/login'),
-  getUserProfile: generateUri('users/'),
+  getUserProfile: (ethAddress: string) => generateUri(`users/${ethAddress}`),
   getCommunityMeta: (tbcAddress: string) => generateUri(`community/${tbcAddress}`),
   getEventMeta: (eventId: string) => generateUri(`event/${eventId}`),
   attachmentStream: (attachmentId: string) => generateUri(`attachment/${attachmentId}/stream`),

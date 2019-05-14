@@ -15,8 +15,8 @@ export function getPermit(ethAddress: string): Promise<any>  {
   return apiRequest('POST', apiUrlBuilder.getPermit, body, 'application/json');
 }
 
-export function getUserProfile(apiToken: string): Promise<any>  {
-  return apiRequest('GET', apiUrlBuilder.getUserProfile, null, 'application/json', true, apiToken);
+export function getUserProfile(ethAddress: string, apiToken: string): Promise<any>  {
+  return apiRequest('GET', apiUrlBuilder.getUserProfile(ethAddress), null, 'application/json', true, apiToken);
 }
 // Meta
 export function getCommunityMeta(tbcAddress: string): Promise<any> {

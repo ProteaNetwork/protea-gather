@@ -13,8 +13,9 @@ import { IMember } from 'domain/membershipManagement/types';
 // Individual exports for testing
 export function* getProfileData() {
   const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  const {signerAddress} = yield call(getBlockchainObjects)
   try {
-    const response = (yield call(getUserProfileApi, apiKey)).data;
+    const response = (yield call(getUserProfileApi, signerAddress, apiKey)).data;
     yield put(userProfileActions.getUserProfile.success(response));
   } catch (error) {
     console.log(error);

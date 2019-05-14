@@ -80,7 +80,10 @@ const styles = (theme: Theme) =>
     actionArea:{
       padding: 20,
       display: 'flex',
-      flexDirection: "column"
+      flexDirection: "column",
+      "& > *": {
+        marginBottom: 10
+      }
     }
   });
 

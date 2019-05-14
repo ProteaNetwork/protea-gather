@@ -22,7 +22,7 @@ const selectIsLoggedIn = (state: ApplicationRootState) => {
 /**
  * Other specific selectors
  */
-const selectEthAddress = (state: ApplicationRootState) => state.authentication.ethAddress ? state.authentication.ethAddress : "0x";
+const selectEthAddress = (state: ApplicationRootState) => state.transactionManagement.ethAddress ? state.transactionManagement.ethAddress : "0x";
 
 const selectQrData = (state: ApplicationRootState) => state.transactionManagement.qrData ? state.transactionManagement.qrData : "";
 
