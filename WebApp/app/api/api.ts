@@ -4,6 +4,7 @@ import { ICommunity } from 'domain/communities/types';
 import { IEvent } from 'domain/events/types';
 import formDataHelper from './formDataHelper';
 import { IMember } from 'domain/membershipManagement/types';
+import { IError } from 'domain/transactionManagement/types';
 
 export function login(signedAccessPermit: string, ethAddress: string): Promise<any> {
   const body = JSON.stringify({ signedAccessPermit: signedAccessPermit, ethAddress: ethAddress});
@@ -46,4 +47,8 @@ export function updateEvent(event: IEvent, apiToken: string): Promise<any> {
 
 export function updateProfile(profileData: IMember, apiToken: string): Promise<any> {
   return apiRequest('PUT', apiUrlBuilder.updateProfile, formDataHelper(profileData), undefined, true, apiToken)
+}
+
+export function sendErrorReport(error: IError, apiToken: string): Promise<any> {
+  return apiRequest('POST', apiUrlBuilder.sendErrorReport, JSON.stringify(error), "application/json", true, apiToken)
 }

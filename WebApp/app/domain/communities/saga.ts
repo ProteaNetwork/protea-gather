@@ -150,13 +150,13 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
     const includingContributionBN = liquidTokenBalanceBN.gt(0) ? liquidTokenBalanceBN.mul(100).div(ethers.utils.parseUnits(`${100 - contributionRate}`, 0)).div(10) : liquidTokenBalanceBN;
     const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
     // 420 * 0.6 = 252  |  (252 / 60) * 100 = 420
-
     if(liquidTokenBalanceBN.eq(0)){
       // If no tokens have been minted
       yield put(setRemainingTxCountAction(2));
       yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.(Incl. Contribtions)`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
+      mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(parseInt(contributionRate)))
     }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).gt(minusProteaTaxBN)){
       yield put(setTxContextAction(`Roughly enough to stake`));
       yield delay(1000);

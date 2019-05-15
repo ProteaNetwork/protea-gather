@@ -14,6 +14,11 @@ interface TransactionManagementState {
   qrData: string;
 }
 
+export interface IError{
+  reporterAddress: string;
+  errorMessage: string;
+}
+
 /* --- ACTIONS --- */
 type TransactionManagementActions = ActionType<typeof actions>;
 

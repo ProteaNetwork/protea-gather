@@ -1,10 +1,12 @@
 import { takeLatest, put, race, take, fork, call, select } from "redux-saga/effects";
-import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction, updateTouchedChainDataAction, setCommunityMutexAction, setQrAction, signQrAction } from "./actions";
+import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction, updateTouchedChainDataAction, setCommunityMutexAction, setQrAction, signQrAction, sendErrorReportAction } from "./actions";
 import { checkBalancesOnChain, mintDai } from "./chainInteractions";
 import { getAllCommunitiesAction, getCommunityAction } from "domain/communities/actions";
 import { delay } from "redux-saga/effects";
-import { blockchainResources, signMessage } from "blockchainResources";
+import { blockchainResources, signMessage, getBlockchainObjects } from "blockchainResources";
 import { ApplicationRootState } from "types";
+import { sendErrorReport as sendErrorReportApi } from "api/api";
+import { IError } from "./types";
 
 
 
@@ -29,10 +31,15 @@ export function* toggleTXPendingFlag(action) {
   try {
     yield put(setPendingState(true));
 
-    yield race({
+    const {success, failure} = yield race({
       success: take(action.type.replace('TX_REQUEST', 'TX_SUCCESS')),
       failure: take(action.type.replace('TX_REQUEST', 'TX_FAILURE'))
     })
+
+    if(failure){
+      yield put(sendErrorReportAction.request(failure.payload))
+    }
+
     yield put(setRemainingTxCountAction(0));
     yield put(setTxContextAction(`Updating data from the chain`));
     // TODO: Automatic update of previously looked up event & community
@@ -90,6 +97,22 @@ export function* refreshBalancesListener() {
   }
 }
 
+export function* sendErrorReportListener(){
+  while(true){
+    const errorMessage = (yield take(sendErrorReportAction.request)).payload;
+    const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+    const {signerAddress} = yield call(getBlockchainObjects);
+    const error: IError = {reporterAddress: signerAddress.toString(), errorMessage: JSON.stringify(errorMessage)}
+    try{
+      yield call(sendErrorReportApi, error, apiKey);
+      yield put(sendErrorReportAction.success())
+    }
+    catch(e){
+      yield put(sendErrorReportAction.failure(e))
+    }
+  }
+}
+
 export default function* TransactionManagementSaga() {
   yield put(setPendingState(false));
   yield put(setCommunityMutexAction(''));
@@ -98,4 +121,5 @@ export default function* TransactionManagementSaga() {
   yield fork(refreshBalancesListener);
   yield fork(updatePostTxListener);
   yield fork(signQrListener);
+  yield fork(sendErrorReportListener);
 }
