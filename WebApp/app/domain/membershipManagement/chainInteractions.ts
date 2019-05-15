@@ -144,7 +144,7 @@ export async function increaseMembershipStake(daiValue: BigNumber, membershipMan
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
-    for(let i = 0; i < 5; i++){
+    for(let i = 0; i < 60; i++){
       try{
         const txReceipt = await (await membershipManager.stakeMembership(daiValue.sub((1 * i)), signerAddress)).wait();
         const membershipStakedEvent = membershipManager.interface.parseLog(await(txReceipt.events.filter(
@@ -171,7 +171,7 @@ export async function withdrawMembershipStake(daiValue: BigNumber, membershipMan
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
 
-    for(let i = 0; i < 5; i++){
+    for(let i = 0; i < 60; i++){
       try{
         const txReceipt = await(await membershipManager.withdrawMembership(daiValue.sub((1*i)), signerAddress)).wait()
         const membershipWithdrawnEvent = membershipManager.interface.parseLog(await(txReceipt.events.filter(

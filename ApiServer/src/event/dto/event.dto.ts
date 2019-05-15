@@ -11,6 +11,6 @@ export class EventDTO {
   name: string;
   @IsString()
   description: string;
-  @IsString() // TODO: fix FormData casting issue
+  @IsDate() // TODO: fix FormData casting issue
   eventDate: Date;
 }

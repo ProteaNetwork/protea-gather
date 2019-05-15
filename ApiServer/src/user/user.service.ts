@@ -28,14 +28,16 @@ export class UserService {
 
   async updateUserProfile(userData: UserDTO, profileImage): Promise<UserDocument>{
     const user = await this.userRepository.findOne({ethAddress: userData.ethAddress.toLowerCase()});
-    const attachment = await this.attachmentService.create({
-      filename: `${userData.ethAddress.toLowerCase()}-${profileImage.originalname}`,
-      contentType: profileImage.mimetype
-    }, profileImage);
 
     if(user) {
       user.displayName = userData.displayName;
-      user.profileImage = attachment;
+      if(profileImage){
+        const attachment = await this.attachmentService.create({
+          filename: `${userData.ethAddress.toLowerCase()}-${profileImage.originalname}`,
+          contentType: profileImage.mimetype
+        }, profileImage);
+        user.profileImage = attachment;
+      }
       user.save();
       return user.toObject();
     }

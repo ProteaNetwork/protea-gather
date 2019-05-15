@@ -149,7 +149,7 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
     const minusProteaTaxBN = daiValueBN.sub(daiValueBN.div(101));
     const includingContributionBN = liquidTokenBalanceBN.gt(0) ? liquidTokenBalanceBN.mul(100).div(ethers.utils.parseUnits(`${100 - contributionRate}`, 0)).div(10) : liquidTokenBalanceBN;
     const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
-
+    // 420 * 0.6 = 252  |  (252 / 60) * 100 = 420
 
     if(liquidTokenBalanceBN.eq(0)){
       // If no tokens have been minted
