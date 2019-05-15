@@ -34,7 +34,7 @@ const CreateCommunityContainer: React.SFC<Props> = (props: Props) => {
     bannerImage: Yup.mixed()
       .test('fileSize', 'Maximum file size of 10MB exceeded', file => fileSizeValidation(file, MAX_FILE_SIZE))
       .test('fileType', 'Please supply an image file', file => fileTypeValidation(file, SUPPORTED_IMAGE_FORMATS)),
-    description: Yup.string().max(240,"240 character limit exceeded"),
+    description: Yup.string().max(2000,"2000 character limit exceeded"),
     tokenSymbol: Yup.string().max(5, "Please keep the symbol under 5 charactors").required("Please specify a token symbol"),
     contributionRate: Yup.number().integer("Please use whole numbers").min(0, "Please use non-negative numbers").max(90, "Contribution rate is maxed at 90%").required("Please specify a contribution rate"),
     gradientDenominator: Yup.number().required(),

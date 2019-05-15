@@ -40,8 +40,8 @@ https://rinkeby.etherscan.io/address/0x0f17d2198dbb9d7a50557284f7ee10dfa5e0628a
 The current contracts as of 14/04/2019 are deployed on Rinkeby at the following address, with the following markets. 
 
 #### Rinkeby
-PseudoDai:              0xc77aC3D1D2f56f8F2003Ae1AD9872cc978b004d4
-Community Factory:      0xC5e72E3198f312369Ce2b4295e480732153D882a
-Basic Linear Factory:   0xa95b397b04127996b7ecd14Aa3546c6e9a59C3bC
-Membership Mgr Fact:    0x13Da6f2a5cA04d6D0C6041b297e3Eeb7dFb3466E
-Event Manager Factory:  0x6D0D7D3826D01bda4a61d3b526742c232388A418
+PseudoDai:              0xb5947cFD299a4bB5a749AA18A8D1a41353B52332
+Community Factory:      0xb142f4d19c4CA99230990143896b0a32E31ed4C0
+Basic Linear Factory:   0x6e4451E154F740aa7386a8831DC73C072C948a8D
+Membership Mgr Fact:    0xbE24cC927f55D0645146052EC58c2b4cE8219239
+Event Manager Factory:  0x4b4daE72c251371530ce0CED2Ed8192b6caBcb85

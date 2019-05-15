@@ -48,7 +48,7 @@ const UpdateCommunityContainer: React.SFC<Props> = (props: Props) => {
     bannerImage: Yup.mixed().required("Please add a banner image for the community")
       .test('fileSize', 'Maximum file size of 10MB exceeded', file => fileSizeValidation(file, MAX_FILE_SIZE))
       .test('fileType', 'Please supply an image file', file => fileTypeValidation(file, SUPPORTED_IMAGE_FORMATS)),
-    description: Yup.string().max(240,"240 character limit exceeded").required("A description is required"), // TODO: Add max
+    description: Yup.string().max(2000,"2000 character limit exceeded").required("A description is required"), // TODO: Add max
     tokenSymbol: Yup.string().max(5, "Please keep the symbol under 5 charactors").required("Please specify a token symbol"),
   })
   return (

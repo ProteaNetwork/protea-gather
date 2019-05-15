@@ -42,7 +42,7 @@ const CreateEventContainer: React.SFC<Props> = (props: Props) => {
     bannerImage: Yup.mixed()
       .test('fileSize', 'Maximum file size of 10MB exceeded', file => fileSizeValidation(file, MAX_FILE_SIZE))
       .test('fileType', 'Please supply an image file', file => fileTypeValidation(file, SUPPORTED_IMAGE_FORMATS)),
-    description: Yup.string().max(240,"240 character limit exceeded"),
+    description: Yup.string().max(2000,"2000 character limit exceeded"),
     eventDate: Yup.date().min(dayjs().format('YYYY-MM-DD'), 'Event must be in the future'),
     eventTime: Yup.mixed().required(),
     maxAttendees: Yup.number().required().integer(),

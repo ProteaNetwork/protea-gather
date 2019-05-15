@@ -39,11 +39,11 @@ spec:
             - name: MAINNET_DAI_ADDRESS
               value: "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
             - name: RINKEBY_DAI_ADDRESS
-              value: "0xc77aC3D1D2f56f8F2003Ae1AD9872cc978b004d4"
+              value: "0xb5947cFD299a4bB5a749AA18A8D1a41353B52332"
             - name: MAINNET_COMMUNITY_FACTORY_ADDRESS
               value: ""
             - name: RINKEBY_COMMUNITY_FACTORY_ADDRESS
-              value: "0xC5e72E3198f312369Ce2b4295e480732153D882a"
+              value: "0xb142f4d19c4CA99230990143896b0a32E31ed4C0"
       imagePullSecrets:
         - name: gitlab-registry-protea
 ---
@@ -147,7 +147,7 @@ spec:
             - name: INFURA_API_KEY
               value: "5b87341803ab415295dc6dd54b4239e6"
             - name: RINKEBY_COMMUNITY_FACTORY
-              value: "0xC5e72E3198f312369Ce2b4295e480732153D882a"
+              value: "0xb142f4d19c4CA99230990143896b0a32E31ed4C0"
             - name: MAINNET_COMMUNITY_FACTORY
               value: ""
             - name: APPLICATION_WALLET_PRIVATE_KEY
