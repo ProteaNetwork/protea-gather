@@ -143,6 +143,7 @@ export async function increaseMembershipStake(daiValue: BigNumber, membershipMan
     const {provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
+    let errorHolder: string = "";
 
     for(let i = 0; i < 60; i++){
       try{
@@ -154,9 +155,10 @@ export async function increaseMembershipStake(daiValue: BigNumber, membershipMan
         return membershipStakedEvent.values.tokensStaked;
       }
       catch(error){
+        errorHolder = error;
       }
     }
-    return false;
+    throw errorHolder;
   }
   catch(e){
     throw e;
@@ -170,6 +172,7 @@ export async function withdrawMembershipStake(daiValue: BigNumber, membershipMan
     const {provider, signer} = await getBlockchainObjects();
     const membershipManager = (await new ethers.Contract(membershipManagerAddress, JSON.stringify(MembershipManagerAbi), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
+    let errorHolder: string = "";
 
     for(let i = 0; i < 60; i++){
       try{
@@ -180,9 +183,10 @@ export async function withdrawMembershipStake(daiValue: BigNumber, membershipMan
         return membershipWithdrawnEvent.values.tokensWithdrawn;
       }
       catch(error){
+        errorHolder = error;
       }
     }
-    return false;
+    throw errorHolder;
   }
   catch(e){
     throw e;

@@ -75,6 +75,7 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
       yield put(setTxContextAction(`Purchasing ${communityData.daiValue}(Incl. Contribtions) Dai worth of community tokens.`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
+      mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(parseInt(contributionRate)))
     }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).gt(minusProteaTaxBN)){
       yield put(setTxContextAction(`Roughly enough to stake`));
       yield delay(1000);
@@ -89,7 +90,9 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
 
       yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens.(Incl. Contribtions)`));
       yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
+
       mintedVolume = yield call(getTokenBalance, communityData.tbcAddress);
+      // Removing contribution
     }else if(liquidTokenBalanceBN.gte(tokenVolume)){
       // Theres enough for the mint
       mintedVolume = tokenVolume;
@@ -158,6 +161,7 @@ export function* withdrawMembership(communityData: {tbcAddress:string, daiValue:
 export function* increaseMembershipListener(){
   while(true){
     const communityData = (yield take(increaseMembershipAction.request)).payload;
+
     // mint
     const result = yield retry(5, 2000, increaseMembership, communityData);
     if(result === true){

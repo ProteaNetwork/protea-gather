@@ -15,7 +15,10 @@ enum ActionTypes {
   SIGN_QR_REQUEST = 'protea/transactionManagement/SIGN_QR_REQUEST',
   SIGN_QR_SUCCESS = 'protea/transactionManagement/SIGN_QR_SUCCESS',
   SIGN_QR_FAILURE = 'protea/transactionManagement/SIGN_QR_FAILURE',
-  SET_QR = 'protea/transactionManagement/SET_QR'
+  SET_QR = 'protea/transactionManagement/SET_QR',
+  SEND_ERROR_REPORT_REQUEST = 'protea/transactionManagement/SEND_ERROR_REPORT_REQUEST',
+  SEND_ERROR_REPORT_SUCCESS = 'protea/transactionManagement/SEND_ERROR_REPORT_SUCCESS',
+  SEND_ERROR_REPORT_FAILURE = 'protea/transactionManagement/SEND_ERROR_REPORT_FAILURE',
 }
 
 export default ActionTypes;

@@ -15,6 +15,7 @@ const apiUrlBuilder = {
   createEvent: generateUri(`event`),
   updateEvent: (eventId: string) => generateUri(`event/${eventId}/update`),
   updateProfile: generateUri(`users`),
+  sendErrorReport: generateUri(`error`),
 };
 
 export default apiUrlBuilder;

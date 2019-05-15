@@ -31,3 +31,9 @@ export const signQrAction = createAsyncAction(
   ActionTypes.SIGN_QR_FAILURE
 )<string, void, string>();
 
+export const sendErrorReportAction = createAsyncAction(
+  ActionTypes.SEND_ERROR_REPORT_REQUEST,
+  ActionTypes.SEND_ERROR_REPORT_SUCCESS,
+  ActionTypes.SEND_ERROR_REPORT_FAILURE
+)<string, void, string>();
+
