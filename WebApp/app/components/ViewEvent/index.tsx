@@ -316,7 +316,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                   </div>
                   <div>
                     <Typography className={classes.texts}>Status: {
-                      `${event.state == 1 ? 'Not started': ''}
+                      `${event.state <= 1 ? 'Not started': ''}
                         ${event.state == 2 ? 'Started': ''}
                         ${event.state == 3 ? 'Ended': ''}
                         ${event.state == 4 ? 'Cancelled': ''}`
@@ -348,7 +348,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                     event && (event.organizer == balances.ethAddress)&&
                     <Fragment>
                       {
-                        event.state == 1 &&
+                        event.state <= 1 &&
                         <Fragment>
                           <Button className={classes.buttons} onClick={() => onStartEvent(event.eventId, event.membershipManagerAddress)}>
                             Start Event
@@ -390,7 +390,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                     event && community.isMember && event.organizer != balances.ethAddress  &&
                     <Fragment>
                       {
-                        event.state == 1 &&
+                        event.state <= 1 &&
                         <Fragment>
                           {
                             event.memberState == 0 &&
@@ -452,6 +452,19 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                     />
                   </div>
                 </section>
+                {
+                  (event.organizer == balances.ethAddress && event.state != 2 && attendees && attendees.length > 0) &&
+                    <Fragment>
+                    {
+                      (attendees.map((member: IMember) => {
+                        return (member.ethAddress && <MembersTab
+                          key={member.ethAddress}
+                          stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd"}
+                          member={member}/>)
+                      }))
+                    }
+                  </Fragment>
+                }
                 {
                   (event.organizer != balances.ethAddress && attendees && attendees.length > 0) &&
                   <Fragment>
