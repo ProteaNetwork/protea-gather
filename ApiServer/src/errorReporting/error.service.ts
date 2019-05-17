@@ -3,7 +3,6 @@ import { Schemas, Modules } from 'src/app.constants';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ErrorDocument } from './error.schema';
-import { ErrorDTO } from './dto/error.dto';
 
 @Injectable()
 export class ErrorService {
@@ -13,7 +12,7 @@ export class ErrorService {
   {
   }
 
-  async saveError(errorData: ErrorDTO): Promise<ErrorDocument>{
+  async saveError(errorData: any): Promise<ErrorDocument>{
     const errorDoc = await new this.errorRepository(errorData);
     errorDoc.save();
     return errorDoc.toObject();
