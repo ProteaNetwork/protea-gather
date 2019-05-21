@@ -37,6 +37,7 @@ import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { blockchainResources, scanQrCode, verifySignature } from "blockchainResources";
 import { scanQrCodeAction } from "containers/QrScannerContainer/actions";
+import ActionTypes from "containers/QrScannerContainer/constants";
 
 
 export function* checkMemberState(eventId: string, membershipManagerAddress: string) {
@@ -245,37 +246,38 @@ export function* cancelRsvp(eventId: string, membershipManagerAddress: string, t
 
 export function* confirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string) {
   try {
-    if(!blockchainResources.isMetaMask){
-      yield put(scanQrCodeAction.request());
-      const { fetchedMessageAction, failureAction } = yield race({
-        failureAction: take(scanQrCodeAction.failure),
-        fetchedMessageAction: take(scanQrCodeAction.success),
-      });
-      if(fetchedMessageAction){
-        const organizer = yield select((state: ApplicationRootState) => state.events[eventId].organizer);
-        const signer = yield call(verifySignature, eventId, fetchedMessageAction.payload);
-        if(signer != organizer){
-          throw "Invalid QR data";
-        }
-      }else if(failureAction){
-        throw failureAction.payload
-      }else{
-        throw "Unknown scan error"
-      }
+    yield put(scanQrCodeAction.request());
+    const { fetchedMessage, failure } = yield race({
+      failure: take(ActionTypes.SCAN_QR_FAILURE),
+      fetchedMessage: take(ActionTypes.SCAN_QR_SUCCESS)
+    });
+    if(fetchedMessage){
+      const organizer = yield select((state: ApplicationRootState) => state.events[eventId].organizer);
 
+      const signer = yield call(verifySignature, eventId, fetchedMessage.payload);
+      if(signer != organizer){
+        throw "Invalid QR data";
+      }
+    }
+    if(failure){
+      throw `${failure}`;
     }
     yield put(setTxContextAction(`Confirming attendance to event`));
     yield put(setRemainingTxCountAction(1));
 
     yield put(setCommunityMutexAction(tbcAddress));
 
+    debugger;
     yield retry(5, 2000, confirmAttendanceTx, eventId);
+    debugger;
 
     yield put(confirmAttendanceAction.success());
     yield delay(5000);
     yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
   catch (e) {
+    debugger;
+    yield put(setTxContextAction(`Scanning error`));
     yield put(confirmAttendanceAction.failure(e));
   }
 }

@@ -14,6 +14,7 @@ import reducer from './reducer';
 import QrScanner from 'components/QrScanner';
 import { makeSelectQrState } from './selectors';
 import { scanQrCodeAction } from './actions';
+import { blockchainResources } from 'blockchainResources';
 
 interface OwnProps {}
 
@@ -30,9 +31,9 @@ type Props = StateProps & DispatchProps & OwnProps;
 
 const QrScannerContainer: React.SFC<Props> = (props: Props) => {
   const { active, onScan, onError } = props;
-
+  const {signedMsgRegex} = blockchainResources;
   const onScanParse = (data) => {
-    if(data && data.indexOf("0x") >= 0){
+    if(data && signedMsgRegex.exec(data)){
       onScan(data);
     }
   }

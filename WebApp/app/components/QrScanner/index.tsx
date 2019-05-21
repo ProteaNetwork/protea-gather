@@ -30,7 +30,7 @@ const QrScanner: React.SFC<OwnProps> = (props: OwnProps) => {
   const { classes, onError, onScan } = props;
   const settings = {
     resolution: 600,
-    delay: 300,
+    delay: 250,
     facingMode: "environment"
   }
   return <Fragment>
