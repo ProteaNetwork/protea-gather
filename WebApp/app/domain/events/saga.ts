@@ -247,18 +247,18 @@ export function* confirmAttendance(eventId: string, membershipManagerAddress: st
   try {
     if(!blockchainResources.isMetaMask){
       yield put(scanQrCodeAction.request());
-      const { fetchedMessage, failure } = yield race({
-        failure: take(scanQrCodeAction.failure),
-        fetchedMessage: take(scanQrCodeAction.success),
+      const { fetchedMessageAction, failureAction } = yield race({
+        failureAction: take(scanQrCodeAction.failure),
+        fetchedMessageAction: take(scanQrCodeAction.success),
       });
-      if(fetchedMessage){
+      if(fetchedMessageAction){
         const organizer = yield select((state: ApplicationRootState) => state.events[eventId].organizer);
-        const signer = yield call(verifySignature, eventId, fetchedMessage);
+        const signer = yield call(verifySignature, eventId, fetchedMessageAction.payload);
         if(signer != organizer){
           throw "Invalid QR data";
         }
-      }else if(failure){
-        throw failure
+      }else if(failureAction){
+        throw failureAction.payload
       }else{
         throw "Unknown scan error"
       }
