@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { take, fork, call, put, all, select, delay } from "@redux-saga/core/effects";
+import { take, fork, call, put, all, select, delay, race } from "@redux-saga/core/effects";
 
 import { saveCommunity } from "domain/communities/actions";
 import { ICommunity } from "domain/communities/types";
@@ -36,6 +36,7 @@ import { getLockedCommitmentTx, getTotalRemainingInUtilityTx } from "domain/memb
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { blockchainResources, scanQrCode, verifySignature } from "blockchainResources";
+import { scanQrCodeAction } from "containers/QrScannerContainer/actions";
 
 
 export function* checkMemberState(eventId: string, membershipManagerAddress: string) {
@@ -245,13 +246,23 @@ export function* cancelRsvp(eventId: string, membershipManagerAddress: string, t
 export function* confirmAttendance(eventId: string, membershipManagerAddress: string, tbcAddress: string) {
   try {
     if(!blockchainResources.isMetaMask){
-      const fetchedMessage = yield call(scanQrCode, blockchainResources.signedMsgRegex);
-      const organizer = yield select((state: ApplicationRootState) => state.events[eventId].organizer);
-      const signer = yield call(verifySignature, eventId, fetchedMessage);
-      if(signer != organizer){
-        yield put(confirmAttendanceAction.failure("Invalid QR data"));
-        return;
+      yield put(scanQrCodeAction.request());
+      const { fetchedMessage, failure } = yield race({
+        failure: take(scanQrCodeAction.failure),
+        fetchedMessage: take(scanQrCodeAction.success),
+      });
+      if(fetchedMessage){
+        const organizer = yield select((state: ApplicationRootState) => state.events[eventId].organizer);
+        const signer = yield call(verifySignature, eventId, fetchedMessage);
+        if(signer != organizer){
+          throw "Invalid QR data";
+        }
+      }else if(failure){
+        throw failure
+      }else{
+        throw "Unknown scan error"
       }
+
     }
     yield put(setTxContextAction(`Confirming attendance to event`));
     yield put(setRemainingTxCountAction(1));

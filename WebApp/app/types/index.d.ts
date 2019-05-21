@@ -11,6 +11,7 @@ import { ContainerState as EventsPageContainerState } from '../containers/Events
 import { ContainerState as ViewEventPageContainerState } from '../containers/ViewEventContainer/types';
 import { ContainerState as CommunitiesPageContainerState } from '../containers/CommunitiesPageContainer/types';
 import { ContainerState as ViewCommunityPageContainerState } from '../containers/ViewCommunityContainer/types';
+import { ContainerState as QrScannerContainerState } from '../containers/QrScannerContainer/types';
 
 export interface LifeStore extends Store<{}> {
   injectedReducers?: any;
@@ -46,4 +47,7 @@ export interface ApplicationRootState {
   readonly viewEventPage: ViewEventPageContainerState;
   readonly communitiesPage: CommunitiesPageContainerState;
   readonly viewCommunityPage: ViewCommunityPageContainerState;
+
+  // Utils
+  readonly qrScannerContainer: QrScannerContainerState;
 }

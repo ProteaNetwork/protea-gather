@@ -84,6 +84,16 @@ const styles = (theme: Theme) =>
       "& > *": {
         marginBottom: 10
       }
+    },
+    slide:{
+      transitionDuration: "400ms",
+      "&.hidden":{
+        height: 0,
+        opacity: 0,
+      },
+      "&.active": {
+        opacity: 1,
+      }
     }
   });
 
@@ -147,7 +157,7 @@ const EventsView: React.SFC<OwnProps> = (props: OwnProps) => {
           <SwipeableViews
               index={slideIndex}
               onChangeIndex={handleSlideChangeIndex}>
-              <article className={classNames('slide', (slideIndex == 0 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, (slideIndex == 0 ? 'active': 'hidden'))}>
                 <section className={classes.filteringSection}>
                   <div className={classes.search}>
                     <div className={classes.searchIcon}>
@@ -232,7 +242,7 @@ const EventsView: React.SFC<OwnProps> = (props: OwnProps) => {
                   }
                 </section>
               </article>
-              <article className={classNames('slide', (slideIndex == 1 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, (slideIndex == 1 ? 'active': 'hidden'))}>
                 <section className={classes.filteringSection}>
                   <div className={classes.search}>
                     <div className={classes.searchIcon}>
@@ -270,7 +280,7 @@ const EventsView: React.SFC<OwnProps> = (props: OwnProps) => {
                   }
                 </section>
               </article>
-              <article className={classNames('slide', (slideIndex == 2 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, (slideIndex == 2 ? 'active': 'hidden'))}>
                 <section className={classes.filteringSection}>
                   <div className={classes.search}>
                     <div className={classes.searchIcon}>

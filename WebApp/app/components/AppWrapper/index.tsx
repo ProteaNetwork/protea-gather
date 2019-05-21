@@ -20,6 +20,7 @@ import { NavLink, Link } from 'react-router-dom';
 import ReactSVG from 'react-svg';
 import { colors } from 'theme';
 import NetworkState from 'components/NetworkState';
+import QrScannerContainer from 'containers/QrScannerContainer';
 
 const styles = ({ palette, breakpoints, spacing, zIndex, mixins}: Theme) => createStyles({
   root: {
@@ -209,6 +210,7 @@ class AppWrapper extends React.Component<Props> {
         <main className={classNames(classes.content, isLoggedIn && classes.contentLoggedIn)}>
           {children}
         </main>
+        <QrScannerContainer></QrScannerContainer>
         <NetworkState networkId={networkId} ready={networkReady}></NetworkState>
       </div>
     );

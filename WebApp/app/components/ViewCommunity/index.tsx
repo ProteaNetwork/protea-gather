@@ -25,17 +25,6 @@ import { Link } from 'react-router-dom';
 const styles = ({ spacing, shape }: Theme) => createStyles({
   root: {
     backgroundColor: colors.proteaBranding.orange,
-    "& .slide":{
-      position: "relative",
-      transitionDuration: "400ms",
-      "&.active":{
-        opacity: 1,
-      },
-      "&.hidden":{
-        opacity: 0,
-
-      }
-    }
   },
   infoBar: {
     backgroundColor: colors.proteaBranding.blackBg,
@@ -181,6 +170,16 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
         backgroundColor: colors.proteaBranding.pink,
       }
     },
+  },
+  slide:{
+    transitionDuration: "400ms",
+    "&.hidden":{
+      height: 0,
+      opacity: 0,
+    },
+    "&.active": {
+      opacity: 1,
+    }
   }
 });
 
@@ -249,7 +248,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
             <SwipeableViews
               index={slideIndex}
               onChangeIndex={handleChangeIndex}>
-              <article className={classNames('slide', (slideIndex == 0 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, (slideIndex == 0 ? 'active': 'hidden'))}>
                 <section className={classes.bannerImg}>
                   {
                     community.bannerImage && (<img src={apiUrlBuilder.attachmentStream(community.bannerImage)}>
@@ -320,7 +319,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   <Typography className={classes.texts}>{community.description}</Typography>
                 </section>
               </article>
-              <article className={classNames('slide', classes.eventsSection, (slideIndex == 1 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, classes.eventsSection, (slideIndex == 1 ? 'active': 'hidden'))}>
                 {upcomingEvents.length === 0 ?
                   <div className={classes.infoBar}>
                     <Typography className={classes.texts}>No upcoming events</Typography>
@@ -362,7 +361,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   }
                 </div>
               </article>
-              <article className={classNames('slide', (slideIndex == 2 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, (slideIndex == 2 ? 'active': 'hidden'))}>
                 <section className={classes.filteringSection}>
                     <div className={classes.search}>
                       <div className={classes.searchIcon}>
@@ -387,7 +386,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                     ))
                   }
               </article>
-              <article className={classNames('slide', (slideIndex == 3 ? 'active': 'hidden'))}>
+              <article className={classNames(classes.slide, (slideIndex == 3 ? 'active': 'hidden'))}>
                 <div className={classes.statsContainer}>
                   <div className={classes.statItem}>
                     <span>
