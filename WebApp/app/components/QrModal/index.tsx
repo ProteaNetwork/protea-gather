@@ -63,8 +63,9 @@ class QrModal extends React.Component<OwnProps> {
                 value={qrData ? qrData : 'Konami future'}
                 size={250}
                 level={'H'}
-                bgColor={colors.white}
-                fgColor={colors.proteaBranding.blackBg}
+                includeMargin={true}
+                bgColor={"#ffffff"}
+                fgColor={"#000000"}
               />
             </div>
           </Fragment>)
