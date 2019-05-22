@@ -35,9 +35,11 @@ import { forwardTo } from "utils/history";
 import { getLockedCommitmentTx, getTotalRemainingInUtilityTx } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-import { blockchainResources, scanQrCode, verifySignature } from "blockchainResources";
+import { verifySignature } from "blockchainResources";
 import { scanQrCodeAction } from "containers/QrScannerContainer/actions";
 import ActionTypes from "containers/QrScannerContainer/constants";
+import { getUserProfile as getUserProfileApi } from "api/api";
+import { IMember } from "domain/membershipManagement/types";
 
 
 export function* checkMemberState(eventId: string, membershipManagerAddress: string) {
@@ -76,6 +78,16 @@ export function* populateCommunityEventsListener() {
 
 export function* resolveEvent(eventId: string, membershipManagerAddress: string) {
   let eventData = yield call(getEvent, eventId);
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  const fetchedMetaData = yield all(eventData.attendees.map(member => (call(getUserProfileApi, member.ethAddress, apiKey))))
+  const parsedFetch = fetchedMetaData.map(metaResponse => metaResponse.response.status == 200 ? {ethAddress: metaResponse.data.ethAddress, displayName: metaResponse.data.displayName, profileImage: metaResponse.data.profileImage} : undefined);
+  eventData.attendees = parsedFetch.map((withMeta: IMember) => {
+    const fullAddressObject = eventData.attendees.filter((user: IMember) => user.ethAddress.toLowerCase() == withMeta.ethAddress)[0];
+    fullAddressObject.profileImage = withMeta.profileImage;
+    fullAddressObject.displayName = withMeta.displayName;
+    return fullAddressObject;
+  })
+
   eventData.membershipManagerAddress = membershipManagerAddress;
   eventData.communityName =  yield select((state: ApplicationRootState) => state.communities[eventData.tbcAddress].name);
   eventData.comLogo =  yield select((state: ApplicationRootState) => state.communities[eventData.tbcAddress].comLogo);

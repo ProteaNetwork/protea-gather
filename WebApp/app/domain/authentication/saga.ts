@@ -18,7 +18,7 @@ export function* getPermit() {
     yield put(authenticationActions.saveAccessPermit(signedPermit));
     return signedPermit;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -79,7 +79,7 @@ export function* loginFlow() {
       yield call(forwardTo, '/dashboard'); // TODO: have this only redirect when on log in
     } catch (error) {
       yield put(authenticationActions.authenticate.failure(error.message));
-      console.log(error);
+      console.error(error);
     }
   }
 }

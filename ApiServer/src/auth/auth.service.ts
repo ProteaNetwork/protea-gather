@@ -51,7 +51,7 @@ export class AuthService {
       );
       return addressOfSigner.toLowerCase() === ethAddress.toLowerCase();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return false;
     }
   }

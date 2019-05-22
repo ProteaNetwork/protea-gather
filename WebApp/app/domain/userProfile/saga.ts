@@ -18,7 +18,7 @@ export function* getProfileData() {
     const response = (yield call(getUserProfileApi, signerAddress, apiKey)).data;
     yield put(userProfileActions.getUserProfile.success(response));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     yield put(userProfileActions.getUserProfile.failure(error.message));
   } finally {
     // yield put(sendingRequest(false))

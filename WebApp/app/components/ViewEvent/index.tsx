@@ -331,7 +331,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                         ${event.state == 3 ? 'Ended': ''}
                         ${event.state == 4 ? 'Cancelled': ''}`
                     }</Typography>
-                    <Typography className={classes.texts}>Remaining bookings: {event.maxAttendees == 0 ? 'Unlimited' : `${event.attendees.length}/${event.maxAttendees}}`}
+                    <Typography className={classes.texts}>Remaining bookings: {event.maxAttendees == 0 ? 'Unlimited' : `${event.attendees.length}/${event.maxAttendees}`}
                     </Typography>
                   </div>
                 </section>
@@ -467,9 +467,15 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                     <Fragment>
                     {
                       (attendees.map((member: IMember) => {
+                        let message: string;
+                        if(member.ethAddress == event.organizer){
+                          message = "Organizer"
+                        }else{
+                          message = event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd";
+                        }
                         return (member.ethAddress && <MembersTab
                           key={member.ethAddress}
-                          stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd"}
+                          stateMessage={message}
                           member={member}/>)
                       }))
                     }
@@ -480,9 +486,15 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                   <Fragment>
                     {
                       (attendees.map((member: IMember) => {
+                        let message: string;
+                        if(member.ethAddress == event.organizer){
+                          message = "Organizer"
+                        }else{
+                          message = event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd";
+                        }
                         return (member.ethAddress && <MembersTab
                           key={member.ethAddress}
-                          stateMessage={event.confirmedAttendees.indexOf(member.ethAddress)  >= 0 ? "Attended" : "RSVP'd"}
+                          stateMessage={message}
                           member={member}/>)
                       }))
                     }
