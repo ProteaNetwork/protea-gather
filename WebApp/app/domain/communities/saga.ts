@@ -27,6 +27,7 @@ import { registerUtility, setReputationReward, increaseMembershipStake } from "d
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { BigNumber } from "ethers/utils";
+import { blockchainResources } from "blockchainResources";
 
 export declare type EventFilter = {
   address?: string;
@@ -60,7 +61,7 @@ export function* fetchCommunity(tbcAddress){
 
 }
 export function* resolveCommunity(community){
-  yield put(saveCommunity(community));
+  yield put(saveCommunity({...community, networkId: blockchainResources.networkId}));
   yield put(checkStatus({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
   yield put(getMembersAction({tbcAddress: community.tbcAddress, membershipManagerAddress: community.membershipManagerAddress}));
   yield put(getCommunityMetaAction.request(community.tbcAddress));
@@ -70,7 +71,7 @@ export function* resolveCommunity(community){
 export function* createCommunityInDB(community: ICommunity){
   const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
   try{
-    return (yield call(createCommunityApi, community, apiKey));
+    return (yield call(createCommunityApi, {...community, networkId: blockchainResources.networkId}, apiKey));
   }
   catch(error){
     yield put(createCommunityAction.failure(error.message));
@@ -81,7 +82,7 @@ export function* createCommunityInDB(community: ICommunity){
 export function* updateCommunityInDB(community: ICommunity){
   const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
   try {
-    return (yield call(updateCommunityApi, community, apiKey));
+    return (yield call(updateCommunityApi, {...community, networkId: blockchainResources.networkId}, apiKey));
   }
   catch(error) {
     yield put(createCommunityAction.failure(error.message));

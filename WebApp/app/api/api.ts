@@ -5,6 +5,7 @@ import { IEvent } from 'domain/events/types';
 import formDataHelper from './formDataHelper';
 import { IMember } from 'domain/membershipManagement/types';
 import { IError } from 'domain/transactionManagement/types';
+import { blockchainResources } from 'blockchainResources';
 
 export function login(signedAccessPermit: string, ethAddress: string): Promise<any> {
   const body = JSON.stringify({ signedAccessPermit: signedAccessPermit, ethAddress: ethAddress});
@@ -30,7 +31,7 @@ export function getEventMeta(eventId: string): Promise<any> {
 
 // Creation
 export function createCommunity(community: ICommunity, apiToken: string): Promise<any> {
-  return apiRequest('POST', apiUrlBuilder.createCommunity, formDataHelper(community), undefined, true, apiToken)
+  return apiRequest('POST', apiUrlBuilder.createCommunity(), formDataHelper(community), undefined, true, apiToken)
 }
 
 export function updateCommunity(community: ICommunity, apiToken: string): Promise<any> {
@@ -38,7 +39,7 @@ export function updateCommunity(community: ICommunity, apiToken: string): Promis
 }
 
 export function createEvent(event: IEvent, apiToken: string): Promise<any> {
-  return apiRequest('POST', apiUrlBuilder.createEvent, formDataHelper(event), undefined, true, apiToken)
+  return apiRequest('POST', apiUrlBuilder.createEvent(), formDataHelper(event), undefined, true, apiToken)
 }
 
 export function updateEvent(event: IEvent, apiToken: string): Promise<any> {
@@ -50,5 +51,5 @@ export function updateProfile(profileData: IMember, apiToken: string): Promise<a
 }
 
 export function sendErrorReport(error: IError, apiToken: string): Promise<any> {
-  return apiRequest('POST', apiUrlBuilder.sendErrorReport, JSON.stringify(error), "application/json", true, apiToken)
+  return apiRequest('POST', apiUrlBuilder.sendErrorReport(), JSON.stringify(error), "application/json", true, apiToken)
 }

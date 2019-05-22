@@ -1,4 +1,4 @@
-import { IsString, IsDate } from 'class-validator';
+import { IsString, IsDate, IsNumber } from 'class-validator';
 
 export class EventDTO {
   @IsString()
@@ -13,4 +13,6 @@ export class EventDTO {
   description: string;
   @IsDate() // TODO: fix FormData casting issue
   eventDate: Date;
+  @IsNumber()
+  networkId: number;
 }

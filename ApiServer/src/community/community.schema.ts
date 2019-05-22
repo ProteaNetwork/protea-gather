@@ -13,6 +13,7 @@ export interface Community {
   description: string;
   gradientDenominator: number;
   contributionRate: number;
+  networkId: number;
 }
 
 export interface CommunityDocument extends Community, Document { }
@@ -27,6 +28,7 @@ export const CommunitySchema = new Schema({
   description: { type: String, required: false },
   gradientDenominator: { type: Number, required: false},
   contributionRate: { type: Number, required: false},
+  networkId: { type: Number, required: true},
 }, {
     timestamps: true,
     toJSON: {

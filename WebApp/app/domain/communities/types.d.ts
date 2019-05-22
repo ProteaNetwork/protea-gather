@@ -23,6 +23,7 @@ interface ICommunity{
   isAdmin: boolean;
   comLogo: string;
   memberList: IMember[];
+  networkId: number;
 }
 
 /* --- STATE --- */

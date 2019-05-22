@@ -12,6 +12,7 @@ export interface Event {
   bannerImage: AttachmentDocument | ObjectId;
   description: string;
   eventDate: Date;
+  networkId: number;
 }
 
 export interface EventDocument extends Event, Document { }
@@ -25,6 +26,7 @@ export const EventSchema = new Schema({
   name: { type: String, required: true },
   description: { type: String, required: false },
   eventDate: { type: Date, required: false},
+  networkId: { type: Number, required: true},
 }, {
     timestamps: true,
     toJSON: {
