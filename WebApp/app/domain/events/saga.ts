@@ -267,16 +267,13 @@ export function* confirmAttendance(eventId: string, membershipManagerAddress: st
 
     yield put(setCommunityMutexAction(tbcAddress));
 
-    debugger;
     yield retry(5, 2000, confirmAttendanceTx, eventId);
-    debugger;
 
     yield put(confirmAttendanceAction.success());
     yield delay(5000);
     yield put(getEventAction({ eventId: eventId, membershipManagerAddress: membershipManagerAddress }));
   }
   catch (e) {
-    debugger;
     yield put(setTxContextAction(`Scanning error`));
     yield put(confirmAttendanceAction.failure(e));
   }
