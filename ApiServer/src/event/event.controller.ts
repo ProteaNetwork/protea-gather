@@ -8,9 +8,9 @@ import { FileInterceptorHelper, FileOptions } from 'src/helper/fileInterceptorHe
 export class EventController {
   constructor(private readonly eventService: EventService){}
 
-  @Get(':eventId')
-  async getCommunityMeta(@Param('eventId') eventId) {
-    const event =  await this.eventService.getEventById(eventId);
+  @Get(':networkId/:eventId')
+  async getEventMeta(@Param('eventId') eventId, @Param('networkId') networkId) {
+    const event =  await this.eventService.getEventById(eventId, networkId);
     if(!event){
       throw(new NotFoundException)
     }
@@ -18,7 +18,7 @@ export class EventController {
   }
 
 
-  @Post()
+  @Post('/:networkId')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptorHelper(
     {
@@ -27,11 +27,11 @@ export class EventController {
       type: FileOptions.PICTURE
     }
   ))
-  async createEvent(@Body() bodyData: EventDTO, @UploadedFile() bannerImage){
-    return await this.eventService.createEvent(bodyData, bannerImage);
+  async createEvent(@Body() bodyData: EventDTO, @Param('networkId') networkId, @UploadedFile() bannerImage){
+    return await this.eventService.createEvent(bodyData, networkId, bannerImage);
   }
 
-  @Put(':eventId/update')
+  @Put(':networkId/:eventId/update')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptorHelper(
     {
@@ -40,7 +40,7 @@ export class EventController {
       type: FileOptions.PICTURE
     }
   ))
-  async updateEvent(@Body() bodyData, @UploadedFile() bannerImage){
-    return await this.eventService.updateEvent(bodyData, bannerImage);
+  async updateEvent(@Body() bodyData, @Param('networkId') networkId, @UploadedFile() bannerImage){
+    return await this.eventService.updateEvent(bodyData, networkId, bannerImage);
   }
 }

@@ -29,6 +29,8 @@ interface IEvent{
   description: string;
   eventDate: Date;
   memberState: Number;
+
+  networkId: number;
 }
 
 /* --- STATE --- */

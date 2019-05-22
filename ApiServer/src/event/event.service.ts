@@ -15,13 +15,14 @@ export class EventService {
   {
   }
 
-  async getEventById(eventId: string): Promise<EventDocument>{
-    const doc = await this.eventRepository.findOne({eventId});
+  async getEventById(eventId: string, networkId: number): Promise<EventDocument>{
+    const doc = await this.eventRepository.findOne({eventId, networkId});
     return doc ? doc.toObject() : false;
   }
 
-  async createEvent(eventData: EventDTO, bannerImage): Promise<EventDocument>{
+  async createEvent(eventData: EventDTO, networkId: number, bannerImage): Promise<EventDocument>{
     const eventDoc = await new this.eventRepository(eventData);
+    eventDoc.networkId = networkId;
     if(bannerImage){
       const attachment = await this.attachmentService.create({
         filename: `${eventData.eventId}-${bannerImage.originalname}`,
@@ -34,8 +35,8 @@ export class EventService {
     return eventDoc.toObject();
   }
 
-  async updateEvent(eventData: EventDTO, bannerImage): Promise<EventDocument>{
-    let eventDoc = await this.eventRepository.findOne({eventId: eventData.eventId});
+  async updateEvent(eventData: EventDTO, networkId: number, bannerImage): Promise<EventDocument>{
+    let eventDoc = await this.eventRepository.findOne({eventId: eventData.eventId, networkId: networkId});
     if (eventDoc) {
       Object.keys(eventData).forEach(key => {
         eventDoc[key] = eventData[key];

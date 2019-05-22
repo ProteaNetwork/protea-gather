@@ -16,13 +16,14 @@ export class CommunityService {
 
   }
 
-  async getCommunityByTbcAddress(tbcAddress: string): Promise<CommunityDocument> {
-    const doc = await this.communityRepository.findOne({ tbcAddress });
+  async getCommunityByTbcAddress(tbcAddress: string, networkId: number): Promise<CommunityDocument> {
+    const doc = await this.communityRepository.findOne({ tbcAddress, networkId });
     return doc ? doc.toObject() : false;
   }
 
-  async createCommunity(createData: CommunityDTO, bannerImage): Promise<CommunityDocument | HttpException> {
+  async createCommunity(createData: CommunityDTO, networkId: number, bannerImage): Promise<CommunityDocument | HttpException> {
     const communityDoc = await new this.communityRepository(createData);
+    communityDoc.networkId = networkId;
     if(bannerImage){
       const attachment = await this.attachmentService.create({
         filename: `${createData.tbcAddress}-${bannerImage.originalname}`,
@@ -36,8 +37,8 @@ export class CommunityService {
     return communityDoc.toObject();
   }
 
-  async updateCommunity(tbcAddress: string, communityData: CommunityDTO, bannerImage): Promise<CommunityDocument> {
-    const communityDoc = await this.communityRepository.findOne({ tbcAddress: tbcAddress });
+  async updateCommunity(tbcAddress: string, networkId: number, communityData: CommunityDTO, bannerImage): Promise<CommunityDocument> {
+    const communityDoc = await this.communityRepository.findOne({ tbcAddress: tbcAddress, networkId: networkId });
     Object.keys(communityData).forEach(key => {
       communityDoc[key] = communityData[key];
     });

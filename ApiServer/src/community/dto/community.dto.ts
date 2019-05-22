@@ -17,4 +17,6 @@ export class CommunityDTO {
   gradientDenominator: number;
   @IsNumber()
   contributionRate: number;
+  @IsNumber()
+  networkId: number;
 }

@@ -35,7 +35,7 @@ import { forwardTo } from "utils/history";
 import { getLockedCommitmentTx, getTotalRemainingInUtilityTx } from "domain/membershipManagement/chainInteractions";
 import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-import { verifySignature } from "blockchainResources";
+import { verifySignature, blockchainResources } from "blockchainResources";
 import { scanQrCodeAction } from "containers/QrScannerContainer/actions";
 import ActionTypes from "containers/QrScannerContainer/constants";
 import { getUserProfile as getUserProfileApi } from "api/api";
@@ -126,6 +126,7 @@ export function* createEvent() {
           ethers.utils.bigNumberify(newEvent.maxAttendees),
           ethers.utils.parseUnits(`${newEvent.requiredDai}`, 18)))
       }
+      newEvent.networkId = blockchainResources.networkId;
 
       yield put(setRemainingTxCountAction(0));
       yield put(setTxContextAction(`Storing images & meta data`));
@@ -435,8 +436,3 @@ export default function* root() {
   yield fork(confirmAttendanceListener);
   yield fork(claimGiftListener);
 }
-
-
-
-// memberhsi 0x1202687EA1422c8ECf63bf4b366001BA1f0cf860
-// event "0x853409477090D89e8291997d167dA0cFb665f962-4"

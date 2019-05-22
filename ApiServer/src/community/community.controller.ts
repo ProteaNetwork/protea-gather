@@ -8,16 +8,16 @@ import {FileOptions, FileInterceptorHelper } from 'src/helper/fileInterceptorHel
 export class CommunityController {
   constructor(private readonly communityService: CommunityService){}
 
-  @Get(':tbcAddress')
-  async getCommunityMeta(@Param('tbcAddress') communityAddress) {
-    const community =  await this.communityService.getCommunityByTbcAddress(communityAddress);
+  @Get(':networkId/:tbcAddress')
+  async getCommunityMeta(@Param('tbcAddress') communityAddress, @Param('networkId') networkId) {
+    const community =  await this.communityService.getCommunityByTbcAddress(communityAddress, networkId);
     if(!community){
       throw(new NotFoundException)
     }
     return community;
   }
 
-  @Post()
+  @Post("/:networkId")
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptorHelper(
     {
@@ -26,11 +26,11 @@ export class CommunityController {
       type: FileOptions.PICTURE
     }
   ))
-  async createCommunity(@Body() bodyData: CommunityDTO, @UploadedFile() bannerImage){
-    return await this.communityService.createCommunity(bodyData, bannerImage);
+  async createCommunity(@Body() bodyData: CommunityDTO, @Param('networkId') networkId, @UploadedFile() bannerImage){
+    return await this.communityService.createCommunity(bodyData, networkId, bannerImage);
   }
 
-  @Put(':tbcAddress/update')
+  @Put(':networkId/:tbcAddress/update')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptorHelper(
     {
@@ -39,7 +39,7 @@ export class CommunityController {
       type: FileOptions.PICTURE
     }
   ))
-  async updateCommunity(@Param('tbcAddress') tbcAddress, @Body() bodyData, @UploadedFile() bannerImage){
-    return await this.communityService.updateCommunity(tbcAddress, bodyData, bannerImage);
+  async updateCommunity(@Param('tbcAddress') tbcAddress, @Param('networkId') networkId, @Body() bodyData, @UploadedFile() bannerImage){
+    return await this.communityService.updateCommunity(tbcAddress, networkId, bodyData, bannerImage);
   }
 }
