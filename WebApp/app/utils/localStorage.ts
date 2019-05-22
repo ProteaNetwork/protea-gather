@@ -7,7 +7,7 @@ export const loadState = () => {
 
     return JSON.parse(serializedState);
   } catch (err) {
-    console.log('Error loading state from local storage');
+    console.error('Error loading state from local storage');
     return undefined;
   }
 };
@@ -17,6 +17,6 @@ export const saveState = (state) => {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('state', serializedState);
   } catch (err) {
-    console.log('Error saving state to local storage');
+    console.error('Error saving state to local storage');
   }
 };

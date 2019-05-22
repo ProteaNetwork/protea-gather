@@ -283,20 +283,20 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                   {!community.isMember && <Button
                     className={classes.buttons}
                     onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                    disabled={balances.daiBalance < parseFloat(`${daiTxAmount}`)}
+                    disabled={balances.daiBalance < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
                     size="large">
                     {`Join for ${daiTxAmount}Dai`}
                   </Button>}
                   {community.isMember && <Button
                     className={classes.buttons}
-                    disabled={parseFloat(`${balances.daiBalance}`) < parseFloat(`${daiTxAmount}`)}
+                    disabled={parseFloat(`${balances.daiBalance}`) < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
                     onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
                     size="large">
                     {`Increase stake by ${daiTxAmount}Dai`}
                   </Button>}
                   {community.isMember && <Button
                     className={classes.buttons}
-                    disabled={community.availableStake < parseFloat(`${daiTxAmount}`)}
+                    disabled={community.availableStake < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
                     onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
                     size="large">
                     {`Withdraw stake by ${daiTxAmount}Dai`}
