@@ -8,7 +8,8 @@ export const colors = {
     pink: '#FF4081',
     black: '#333333',
     blackBg: '#464441',
-    green: "#00e676"
+    green: "#00e676",
+    red: "#EA0000"
   },
   white: '#FFFFFF',
   black: '#000000',

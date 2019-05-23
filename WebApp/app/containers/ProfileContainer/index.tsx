@@ -26,14 +26,13 @@ interface DispatchProps {
 }
 
 interface StateProps {
-  profileData: IMember
+  profileData: IMember | any
 }
 
 type Props = StateProps & DispatchProps & OwnProps;
 
 const ProfileContainer: React.SFC<Props> = (props: Props) => {
   const {onUpdateProfile, profileData} = props;
-
   const UpdateProfileSchema = Yup.object().shape({
     profileImage: Yup.mixed()
       .test('fileSize', 'Maximum file size of 10MB exceeded', file => fileSizeValidation(file, MAX_FILE_SIZE))
@@ -53,7 +52,7 @@ const ProfileContainer: React.SFC<Props> = (props: Props) => {
       }
     }
     render={({submitForm}) =>
-      <ProfileForm submitForm={submitForm}/>
+      <ProfileForm pendingState={profileData.pendingResponse} submitForm={submitForm}/>
     }
   >
   </Formik>;

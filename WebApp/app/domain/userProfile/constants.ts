@@ -11,6 +11,7 @@ enum ActionTypes {
   SET_PROFILE_REQUEST = 'protea/userProfile/SET_PROFILE_REQUEST',
   SET_PROFILE_SUCCESS = 'protea/userProfile/SET_PROFILE_SUCCESS',
   SET_PROFILE_FAILURE = 'protea/userProfile/SET_PROFILE_FAILURE',
+  SET_PENDING_RESPONSE = 'protea/userProfile/SET_PENDING_RESPONSE',
 }
 
 export default ActionTypes;
