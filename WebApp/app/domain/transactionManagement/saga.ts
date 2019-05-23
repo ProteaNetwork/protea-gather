@@ -1,5 +1,5 @@
 import { takeLatest, put, race, take, fork, call, select } from "redux-saga/effects";
-import { setPendingState, refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction, updateTouchedChainDataAction, setCommunityMutexAction, setQrAction, signQrAction, sendErrorReportAction } from "./actions";
+import { refreshBalancesAction, setBalancesAction, setTxContextAction, setRemainingTxCountAction, updateTouchedChainDataAction, setCommunityMutexAction, setQrAction, signQrAction, sendErrorReportAction, setTxPendingState } from "./actions";
 import { checkBalancesOnChain, mintDai } from "./chainInteractions";
 import { getAllCommunitiesAction, getCommunityAction } from "domain/communities/actions";
 import { delay } from "redux-saga/effects";
@@ -15,11 +15,11 @@ import { IError } from "./types";
 export function* refreshBalances(){
   let newBalances = yield call(checkBalancesOnChain);
   if(newBalances.daiBalance == 0 && blockchainResources.networkId != 1){
-    yield put(setPendingState(true));
+    yield put(setTxPendingState(true));
     yield put(setRemainingTxCountAction(1));
     yield put(setTxContextAction(`Setting up with pseudo dai`));
     yield call(mintDai);
-    yield put(setPendingState(false));
+    yield put(setTxPendingState(false));
     yield put(setRemainingTxCountAction(0));
     newBalances = yield call(checkBalancesOnChain);
   }
@@ -29,7 +29,7 @@ export function* refreshBalances(){
 // State managers
 export function* toggleTXPendingFlag(action) {
   try {
-    yield put(setPendingState(true));
+    yield put(setTxPendingState(true));
 
     const {success, failure} = yield race({
       success: take(action.type.replace('TX_REQUEST', 'TX_SUCCESS')),
@@ -51,7 +51,7 @@ export function* toggleTXPendingFlag(action) {
     yield put(refreshBalancesAction())
   } catch (error) {
   } finally {
-    yield put(setPendingState(false));
+    yield put(setTxPendingState(false));
   }
 }
 
@@ -114,7 +114,7 @@ export function* sendErrorReportListener(){
 }
 
 export default function* TransactionManagementSaga() {
-  yield put(setPendingState(false));
+  yield put(setTxPendingState(false));
   yield put(setCommunityMutexAction(''));
   yield put(setQrAction(''));
   yield fork(txPendingListener);

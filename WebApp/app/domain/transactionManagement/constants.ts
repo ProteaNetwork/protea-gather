@@ -5,7 +5,7 @@
  */
 
 enum ActionTypes {
-  SET_PENDING_STATE = 'protea/transactionManagement/SET_PENDING_STATE',
+  SET_TX_PENDING_STATE = 'protea/transactionManagement/SET_TX_PENDING_STATE',
   REFRESH_BALANCES = 'protea/transactionManagement/REFRESH_BALANCES',
   SET_BALANCES = 'protea/transactionManagement/SET_BALANCES',
   SET_TX_REMAINING_COUNT = 'protea/transactionManagement/SET_TX_REMAINING_COUNT',

@@ -1,11 +1,11 @@
 import { ethers } from 'ethers';
 import { normalize } from 'normalizr';
-import { call, fork, put, race, select, take, takeLatest } from 'redux-saga/effects';
+import { call, fork, put, race, select, take, takeLatest, delay } from 'redux-saga/effects';
 import { ApplicationRootState } from 'types';
 import { getUserProfile as getUserProfileApi, updateProfile as updateProfileApi } from '../../api/api';
 import * as userProfileActions from './actions';
 import ActionTypes from './constants';
-import { setUserProfile } from './actions';
+import { setUserProfile, setPendingStateAction } from './actions';
 import { getBlockchainObjects } from 'blockchainResources';
 import { IMember } from 'domain/membershipManagement/types';
 
@@ -31,10 +31,16 @@ export function* setProfileData(data: IMember) {
   data.ethAddress = signerAddress;
   try {
     const userData = (yield call(updateProfileApi, data, apiKey)).data;
-    yield put(setUserProfile.success(userData))
+    yield put(setPendingStateAction("success"));
+    yield put(setUserProfile.success(userData));
+    yield delay(2000);
+    yield put(setPendingStateAction("ready"));
+
   }
   catch (error) {
-    yield put(setUserProfile.failure(error.message));
+    yield put(setPendingStateAction("failure"));
+    yield delay(2000);
+    yield put(setPendingStateAction("ready"));
     return false;
   }
 }
@@ -42,6 +48,7 @@ export function* setProfileData(data: IMember) {
 export function* setProfileDataListener() {
   while(true){
     const profileData = (yield take(setUserProfile.request)).payload;
+    yield put(setPendingStateAction("request"));
     yield call(setProfileData, profileData)
   }
 }

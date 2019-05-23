@@ -93,7 +93,7 @@ const routes: appRoute[] = [
     isNavRequired: true,
   },
   {
-    name: 'Profle',
+    name: 'Profile',
     path: '/profile/',
     component: ProfileContainer,
     isProtected: true,

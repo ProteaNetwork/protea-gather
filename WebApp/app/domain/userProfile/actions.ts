@@ -1,4 +1,4 @@
-import { createAsyncAction } from 'typesafe-actions';
+import { createAsyncAction, createStandardAction } from 'typesafe-actions';
 import ActionTypes from './constants';
 import { IMember } from 'domain/membershipManagement/types';
 
@@ -13,3 +13,5 @@ export const setUserProfile = createAsyncAction(
   ActionTypes.SET_PROFILE_SUCCESS,
   ActionTypes.SET_PROFILE_FAILURE)
   <IMember, {}, string>();
+
+export const setPendingStateAction = createStandardAction(ActionTypes.SET_PENDING_RESPONSE)<string>();

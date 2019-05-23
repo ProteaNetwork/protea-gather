@@ -6,6 +6,7 @@ export const initialState = {
   displayName: '',
   profileImage: '',
   daiBalance: 0,
+  pendingResponse: "ready"
 };
 
 function userProfileReducer(state = initialState, action) {
@@ -16,6 +17,9 @@ function userProfileReducer(state = initialState, action) {
     case getType(userProfileActions.setUserProfile.success):
       return {...state,
               ...action.payload};
+    case getType(userProfileActions.setPendingStateAction):
+      return {...state,
+              pendingResponse: action.payload};
     default:
       return state;
   }

@@ -9,7 +9,7 @@ import {} from './types';
 
 import ActionTypes from './constants';
 
-export const setPendingState = createStandardAction(ActionTypes.SET_PENDING_STATE)<Boolean>();
+export const setTxPendingState = createStandardAction(ActionTypes.SET_TX_PENDING_STATE)<Boolean>();
 
 export const refreshBalancesAction = createStandardAction(ActionTypes.REFRESH_BALANCES)<void>()
 

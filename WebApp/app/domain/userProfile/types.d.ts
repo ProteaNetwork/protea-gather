@@ -4,9 +4,10 @@ import { ApplicationRootState } from 'types';
 
 /* --- STATE --- */
 interface UserProfileState {
-  displayName: '',
-  profileImage: '',
-  ethAddress: ''
+  displayName: string,
+  profileImage: string,
+  ethAddress: string,
+  pendingResponse: string
 }
 
 /* --- ACTIONS --- */
