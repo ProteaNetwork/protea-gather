@@ -115,7 +115,18 @@ const styles = ({ palette, breakpoints, spacing, zIndex, mixins}: Theme) => crea
   },
   navItem:{
     color: colors.white,
-
+  },
+  daiBalance: {
+    position: "absolute",
+    right: 0,
+    display: "flex",
+    alignContent: "center",
+    alignItems: "flex-end",
+    "& svg":{
+      width: 25,
+      height: 25,
+      margin: "0 10px"
+    }
   }
 });
 
@@ -177,6 +188,12 @@ class AppWrapper extends React.Component<Props> {
               <Link className={classes.appBarLogo} to="/dashboard">
                 <ReactSVG src="/protea_logo_outline.svg" />
               </Link>
+              <div className={classes.daiBalance}>
+                <span>
+                  {parseFloat(`${daiBalance}`).toFixed(2)}
+                </span>
+                <ReactSVG src="DaiIcon.svg" />
+              </div>
             </Toolbar>
           </AppBar>
           <ClickAwayListener onClickAway={this.close}>
