@@ -85,6 +85,7 @@ interface StateProps {
   networkReady: boolean;
   networkId: number;
   qrData:string;
+  daiBalance: number
 }
 
 interface DispatchProps {
@@ -94,13 +95,13 @@ interface DispatchProps {
 
 type Props = StateProps & DispatchProps & OwnProps;
 const App: React.SFC<Props> = (props: Props) => {
-  const { onCloseQr, qrData, networkReady, networkId, isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext } = props;
+  const { onCloseQr, qrData, networkReady, networkId, isLoggedIn, ethAddress, displayName, profileImage, onLogout, txPending, txRemaining, txContext, daiBalance } = props;
   return (
     <AppWrapper
       onLogout={onLogout}
       isLoggedIn={isLoggedIn}
       displayName={displayName}
-      daiBalance={1}
+      daiBalance={daiBalance}
       ethAddress={ethAddress}
       profileImage={profileImage}
       navLinks={routes.filter(r => r.isNavRequired)}
