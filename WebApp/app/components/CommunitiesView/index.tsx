@@ -156,6 +156,7 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
                           bannerImage={community.bannerImage}
                           comLogo={community.comLogo}
                           name={community.name}
+                          memberCount={community.memberList.length}
                           tbcAddress={community.tbcAddress}
                           key={community.tbcAddress}>
 
@@ -187,6 +188,7 @@ const CommunitiesView: React.SFC<OwnProps> = (props: OwnProps) => {
                           availableStake={community.availableStake}
                           bannerImage={community.bannerImage}
                           comLogo={community.comLogo}
+                          memberCount={community.memberList.length}
                           name={community.name}
                           tbcAddress={community.tbcAddress}
                           key={community.tbcAddress}>
