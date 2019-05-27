@@ -59,6 +59,7 @@ export interface OwnProps {
   name: string;
   availableStake: number;
   bannerImage: string;
+  memberCount: number;
   comLogo: string;
   tbcAddress: string;
 }
@@ -70,7 +71,7 @@ interface StyleProps {
 type Props = OwnProps & StyleProps;
 
 function CommunityCard(props: Props) {
-  const { classes, availableStake, bannerImage, name,  tbcAddress } = props;
+  const { classes, availableStake, bannerImage, name, tbcAddress, memberCount } = props;
   return (
     <Card className={classes.card}>
       <Link to={`/communities/${tbcAddress}`} className={classes.link} >
@@ -99,7 +100,10 @@ function CommunityCard(props: Props) {
               {name}
             </Typography>
             <Typography color="inherit">
-              Available Stake: {parseFloat(`${availableStake}`).toFixed(2)} DAI
+              Members: {memberCount}
+            </Typography>
+            <Typography color="inherit">
+              My Stake: {parseFloat(`${availableStake}`).toFixed(2)} DAI
             </Typography>
           </CardContent>
         </CardActionArea>
