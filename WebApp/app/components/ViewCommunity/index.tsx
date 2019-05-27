@@ -269,13 +269,12 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 </section>
                 <section className={classes.infoBar}>
                   <div>
-                    <Typography className={classes.texts}>Community Token: {community.tokenSymbol ? community.tokenSymbol : ''}</Typography>
-                    <Typography className={classes.texts}>Available Stake: {parseFloat(`${community.availableStake ? community.availableStake : 0}`).toFixed(2)}DAI</Typography>
+                    <Typography className={classes.texts}>Market cap: {community.poolBalance ? parseFloat(`${community.poolBalance}`).toFixed(2) : 0} DAI</Typography>
+                    <Typography className={classes.texts}>Members: {members ? members.length : 0}</Typography>
                   </div>
                   <div>
-                    <Typography className={classes.texts}>Contribution Rate: {parseFloat(`${community.contributionRate ? community.contributionRate : 0}`).toFixed(0)}%</Typography>
-                    <Typography className={classes.texts}>
-                      {community.isMember ? `Joined: ${dayjs(community.memberSince).format('YYYY-MM-DD')}` : `Join today!`}
+                    <Typography className={classes.texts}>My Stake: {parseFloat(`${community.availableStake ? community.availableStake : 0}`).toFixed(2)} DAI</Typography>
+                    <Typography className={classes.texts}>Upcoming events: {upcomingEvents ? upcomingEvents.length : 0}
                     </Typography>
                   </div>
                 </section>
