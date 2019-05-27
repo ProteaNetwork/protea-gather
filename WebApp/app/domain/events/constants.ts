@@ -58,6 +58,8 @@ enum ActionTypes {
   CLAIM_GIFT_TX_SUCCESS = 'protea/events/CLAIM_GIFT_TX_SUCCESS',
   CLAIM_GIFT_TX_FAILURE = 'protea/events/CLAIM_GIFT_TX_FAILURE',
 
+  RESET_EVENTS = 'protea/events/RESET_EVENTS',
+  REMOVE_EVENT = 'protea/events/REMOVE_EVENT',
 }
 
 export default ActionTypes;

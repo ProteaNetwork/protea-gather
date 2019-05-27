@@ -25,6 +25,7 @@ const styles = (theme: Theme) =>
       display: 'block',
       width: "130px !important",
       height: "130px !important",
+      objectFit: "cover"
     },
     textRegion: {
       width: 'calc(100% - 130px)',

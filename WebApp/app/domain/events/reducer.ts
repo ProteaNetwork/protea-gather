@@ -8,7 +8,7 @@ import { combineReducers } from 'redux';
 
 import ActionTypes from './constants';
 import { DomainState, DomainActions } from './types';
-import { saveEvent, getEventMetaAction, statusUpdated } from './actions';
+import { saveEvent, getEventMetaAction, statusUpdated, resetEventsAction, removeEventAction } from './actions';
 import { getType } from 'typesafe-actions';
 
 export const initialState: DomainState = {
@@ -40,6 +40,13 @@ function eventsReducer(state: DomainState = initialState, action: DomainActions 
           ...action.payload,
         }
       }
+    case getType(removeEventAction):
+        delete state[action.payload];
+        return {
+          ...state
+        }
+    case getType(resetEventsAction):
+      return initialState
     default:
       return state;
   }

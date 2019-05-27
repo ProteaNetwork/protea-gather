@@ -88,3 +88,7 @@ export const claimGiftAction = createAsyncAction(
   ActionTypes.CLAIM_GIFT_TX_SUCCESS,
   ActionTypes.CLAIM_GIFT_TX_FAILURE,
 )<{eventId: string, membershipManagerAddress: string, state: number, tbcAddress: string}, void, string>();
+
+export const resetEventsAction = createStandardAction(ActionTypes.RESET_EVENTS)<void>();
+
+export const removeEventAction = createStandardAction(ActionTypes.REMOVE_EVENT)<string>();

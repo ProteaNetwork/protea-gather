@@ -7,6 +7,8 @@ import {
   getCommunityAction,
   joinCommunityAction,
   updateCommunityAction,
+  resetCommunitiesAction,
+  removeCommunityAction,
 } from "./actions";
 import { ethers } from "ethers";
 import {
@@ -28,6 +30,7 @@ import { retry } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { BigNumber } from "ethers/utils";
 import { blockchainResources } from "blockchainResources";
+import { removeEventAction } from "domain/events/actions";
 
 export declare type EventFilter = {
   address?: string;
@@ -210,12 +213,29 @@ export function* joinCommunityListener() {
     }
   }
 }
+
 export function* getAllCommunitiesListener() {
   while(true){
     yield take(getAllCommunitiesAction);
+    const communitiesFromState = yield select((state: ApplicationRootState) => state.communities);
+    let communities = yield call(getCommunitiesFromChain);
+    if(Object.keys(communitiesFromState).length > 0){
+      const toRemove = Object.keys(communitiesFromState).filter(key => communitiesFromState[key].networkId && communitiesFromState[key].networkId != blockchainResources.networkId);
+      yield all(toRemove.map(address => put(removeCommunityAction(address))));
+      const eventsFromState = yield select((state: ApplicationRootState) => state.events);
+      if(Object.keys(eventsFromState).length > 0){
+        const eventsToRemove = Object.keys(eventsFromState).filter(eventKey => toRemove.indexOf(eventsFromState[eventKey].tbcAddress) >= 0 || eventsFromState[eventKey].networkId != blockchainResources.networkId);
+        eventsToRemove.length > 0 ? yield all(eventsToRemove.map(address => put(removeEventAction(address)))) : null;
+      }
 
-    const communities = yield call(getCommunitiesFromChain);
-    yield all(communities.map(com => (fork(resolveCommunity, com))))
+      const resolvedCommunities = Object.keys(communitiesFromState).filter(key => communitiesFromState[key].networkId && communitiesFromState[key].networkId == blockchainResources.networkId && communitiesFromState[key].name).map(validKey => communitiesFromState[validKey]);
+      yield all(resolvedCommunities.map(resolvedCommunity => put(saveCommunity(resolvedCommunity))));
+      const resolvedAddresses = resolvedCommunities.map(community => community.tbcAddress);
+      communities = communities.filter(com => resolvedAddresses.indexOf(com.tbcAddress) < 0)
+      yield all(communities.map(com => (fork(resolveCommunity, com))))
+    }else{
+      yield all(communities.map(com => (fork(resolveCommunity, com))))
+    }
   }
 }
 

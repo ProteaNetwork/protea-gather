@@ -1,8 +1,9 @@
 import { Schema, Document } from 'mongoose';
 
 export interface Error {
-  reporterAddress: string;
-  errorMessage: string;
+  reporterAddress: String;
+  errorMessage: String;
+  networkId: Number;
 }
 
 export interface ErrorDocument extends Error, Document { }
@@ -10,6 +11,7 @@ export interface ErrorDocument extends Error, Document { }
 export const ErrorSchema = new Schema({
   reporterAddress: { type: String, required: true, indexed: true },
   errorMessage: { type: String, required: true },
+  networkId: { type: Number, required: false}
 }, {
     timestamps: true,
     toJSON: {

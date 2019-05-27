@@ -27,6 +27,9 @@ enum ActionTypes {
   UPDATE_COMMUNITY_REQUEST = 'protea/communities/UPDATE_COMMUNITY_REQUEST',
   UPDATE_COMMUNITY_SUCCESS = 'protea/communities/UPDATE_COMMUNITY_SUCCESS',
   UPDATE_COMMUNITY_FAILURE = 'protea/communities/UPDATE_COMMUNITY_FAILURE',
+
+  RESET_COMMUNITIES = 'protea/communities/RESET_COMMUNITIES',
+  REMOVE_COMMUNITY = 'protea/communities/REMOVE_COMMUNITY',
 }
 
 export default ActionTypes;

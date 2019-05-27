@@ -12,8 +12,9 @@ export class ErrorService {
   {
   }
 
-  async saveError(errorData: any): Promise<ErrorDocument>{
+  async saveError(errorData: {errorMessage: String, reporterAddress: String}, networkId: number): Promise<ErrorDocument>{
     const errorDoc = await new this.errorRepository(errorData);
+    errorDoc.networkId = networkId;
     errorDoc.save();
     return errorDoc.toObject();
   }

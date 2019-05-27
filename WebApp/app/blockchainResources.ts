@@ -85,9 +85,21 @@ export async function initBlockchainResources() {
       blockchainResources.daiAddress = `${process.env.MAINNET_DAI_ADDRESS}`;
       blockchainResources.commmunityFactoryAddress = `${process.env.MAINNET_COMMUNITY_FACTORY_ADDRESS}`;
       blockchainResources.approvedNetwork = true;
+    } else if(chainId == 5){
+      blockchainResources.daiAddress = `${process.env.GOERLI_DAI_ADDRESS}`;
+      blockchainResources.commmunityFactoryAddress = `${process.env.GOERLI_COMMUNITY_FACTORY_ADDRESS}`;
+      blockchainResources.approvedNetwork = true;
     } else if(chainId == 4){
       blockchainResources.daiAddress = `${process.env.RINKEBY_DAI_ADDRESS}`;
       blockchainResources.commmunityFactoryAddress = `${process.env.RINKEBY_COMMUNITY_FACTORY_ADDRESS}`;
+      blockchainResources.approvedNetwork = true;
+    } else if(chainId == 42){
+      blockchainResources.daiAddress = `${process.env.KOVAN_DAI_ADDRESS}`;
+      blockchainResources.commmunityFactoryAddress = `${process.env.KOVAN_COMMUNITY_FACTORY_ADDRESS}`;
+      blockchainResources.approvedNetwork = true;
+    } else if(chainId == 3){
+      blockchainResources.daiAddress = `${process.env.ROPSTEN_DAI_ADDRESS}`;
+      blockchainResources.commmunityFactoryAddress = `${process.env.ROPSTEN_COMMUNITY_FACTORY_ADDRESS}`;
       blockchainResources.approvedNetwork = true;
     }else {
       throw "Invalid network"

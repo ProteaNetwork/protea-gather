@@ -226,9 +226,8 @@ export async function publishCommunityToChain(name: string, tokenSymbol: string,
     const {provider, signer} = await getBlockchainObjects();
     const communityFactory = (await new ethers.Contract(`${blockchainResources.commmunityFactoryAddress}`, JSON.stringify(CommunityFactoryABI), provider)).connect(signer);
     const signerAddress = await signer.getAddress();
-
     const txReceipt = await(await communityFactory.createCommunity(name, tokenSymbol, signerAddress, gradientDenominator, contributionRate)).wait();
-    // TODO: Error handling
+
     const communityCreatedEvent = communityFactory.interface.parseLog(await(txReceipt.events.filter(
       event => event.eventSignature == communityFactory.interface.events.CommunityCreated.signature
     ))[0]);

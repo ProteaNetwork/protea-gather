@@ -8,7 +8,7 @@ interface AuthenticationState {
   ethAddress: string,
   signedPermit: string,
   walletUnlocked: boolean,
-  errorMessage: string,
+  errorMessage: string
 }
 
 
