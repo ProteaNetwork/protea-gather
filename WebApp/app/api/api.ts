@@ -5,7 +5,6 @@ import { IEvent } from 'domain/events/types';
 import formDataHelper from './formDataHelper';
 import { IMember } from 'domain/membershipManagement/types';
 import { IError } from 'domain/transactionManagement/types';
-import { blockchainResources } from 'blockchainResources';
 
 export function login(signedAccessPermit: string, ethAddress: string): Promise<any> {
   const body = JSON.stringify({ signedAccessPermit: signedAccessPermit, ethAddress: ethAddress});

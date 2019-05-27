@@ -16,6 +16,7 @@ enum ActionTypes {
   LOG_OUT = 'protea/authentication/LOG_OUT',
   SET_ETH_ADDRESS = 'protea/authentication/SET_ETH_ADDRESS',
   BROWSER_SIGNING_ERROR = 'protea/authentication/BROWSER_SIGNING_ERROR',
+  SET_NETWORK_ID = 'protea/authentication/SET_NETWORK_ID',
 }
 
 export default ActionTypes;

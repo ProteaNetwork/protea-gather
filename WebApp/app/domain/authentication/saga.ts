@@ -8,7 +8,9 @@ import * as userProfileActions from '../userProfile/actions';
 import * as authenticationActions from './actions';
 import ActionTypes from './constants';
 import { refreshBalancesAction } from 'domain/transactionManagement/actions';
-import { getBlockchainObjects, signMessage } from 'blockchainResources';
+import { getBlockchainObjects, signMessage, blockchainResources } from 'blockchainResources';
+import { resetCommunitiesAction } from 'domain/communities/actions';
+import { resetEventsAction } from 'domain/events/actions';
 
 export function* getPermit() {
   const {signerAddress} = yield call(getBlockchainObjects)
@@ -90,6 +92,7 @@ export function* connectWallet() {
     try {
       yield put(authenticationActions.setEthAddress({ethAddress : ethAddress}));
       yield put(authenticationActions.connectWallet.success());
+
     } catch (error) {
       yield put(authenticationActions.connectWallet.failure(error.message));
     }
@@ -115,6 +118,7 @@ export const addressChangeEventChannel = eventChannel(emit => {
 export function* addressChangeListener() {
   while (true) {
     const newAddress = yield take(addressChangeEventChannel);
+    localStorage.clear();
     yield put(authenticationActions.setEthAddress({ethAddress : newAddress}));
     yield put(authenticationActions.logOut());
     yield fork(connectWallet)
@@ -141,6 +145,7 @@ export default function* rootAuthenticationSaga() {
 
       // Check store for existing signed message
       const signedMessage = yield select((state: ApplicationRootState) => state.authentication.signedPermit);
+
       let watcher;
       if (!signedMessage) {
         // Start the login listener
@@ -152,7 +157,6 @@ export default function* rootAuthenticationSaga() {
 
       // Wait till we receive a logout event
       yield take(ActionTypes.LOG_OUT);
-      localStorage.clear();
       yield cancel(watcher);
     } else {
       yield delay(2000);

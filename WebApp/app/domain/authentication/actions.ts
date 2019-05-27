@@ -11,6 +11,7 @@ export const saveAccessPermit = createStandardAction(ActionTypes.SAVE_ACCESS_PER
 
 export const saveAccessToken = createStandardAction(ActionTypes.SAVE_ACCESS_TOKEN)<{accessToken: string}>();
 
+export const setNetworkIdAction = createStandardAction(ActionTypes.SET_NETWORK_ID)<number>();
 
 export const setEthAddress = createStandardAction(ActionTypes.SET_ETH_ADDRESS)<{ethAddress: string}>();
 

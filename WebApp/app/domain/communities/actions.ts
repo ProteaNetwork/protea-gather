@@ -55,3 +55,7 @@ export const joinCommunityAction = createAsyncAction(
   ActionTypes.JOIN_COMMUNITY_TX_FAILURE,
 )<{daiValue: number, tbcAddress: string, membershipManagerAddress: string}, void, string>();
 
+
+export const resetCommunitiesAction = createStandardAction(ActionTypes.RESET_COMMUNITIES)<void>();
+
+export const removeCommunityAction = createStandardAction(ActionTypes.REMOVE_COMMUNITY)<string>();
