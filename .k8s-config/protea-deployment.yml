@@ -25,38 +25,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
-          env:
-            - name: APP_NAME
-              value: "protea_webapp"
-            - name: APP_SCHEMA
-              value: "https" # Check this
-            - name: APP_HOST
-              value: "0.0.0.0"
-            - name: APP_PORT
-              value: "3000"
-            # - name: API_HOST # This is set in GitLab CI
-            #   value: "api-$CI_BUILD_REF_NAME.protea.io:3001/api/"
-            - name: MAINNET_DAI_ADDRESS
-              value: "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359"
-            - name: RINKEBY_DAI_ADDRESS
-              value: "0xb5947cFD299a4bB5a749AA18A8D1a41353B52332"
-            - name: GOERLI_DAI_ADDRESS
-              value: "0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3"
-            - name: KOVAN_DAI_ADDRESS
-              value: "0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3"
-            - name: ROPSTEN_DAI_ADDRESS
-              value: "0x3f05e5D250FE1A294c665E970513a36D7E2F3230"
-            - name: MAINNET_COMMUNITY_FACTORY_ADDRESS
-              value: ""
-            - name: RINKEBY_COMMUNITY_FACTORY_ADDRESS
-              value: "0xb142f4d19c4CA99230990143896b0a32E31ed4C0"
-            - name: GOERLI_COMMUNITY_FACTORY_ADDRESS
-              value: "0x9f36F9100F75A68BA66C02106A539c1dC72c97C1"
-            - name: KOVAN_COMMUNITY_FACTORY_ADDRESS
-              value: "0x9f36F9100F75A68BA66C02106A539c1dC72c97C1"
-            - name: ROPSTEN_COMMUNITY_FACTORY_ADDRESS
-              value: "0x253a8E67C88c95955CE1817aE2AF92c260Fad605"
-
       imagePullSecrets:
         - name: gitlab-registry-protea
 ---

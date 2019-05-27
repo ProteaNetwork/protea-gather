@@ -7,6 +7,7 @@ docker-build:
   before_script:
     - echo "Starting Docker build stage..."
     - echo "Override global 'before_script'"
+    - source .gitlab-ci-scripts/env_${CI_BUILD_REF_NAME}.sh
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker-compose -v
@@ -16,7 +17,7 @@ docker-build:
     - docker-compose push
   only:
     - nightly
-    - staging
+    - master
 
 deploy:
   stage: deploy
@@ -35,5 +36,5 @@ deploy:
     - kubectl apply -f kubernetes.yml
   only:
     - nightly
-    - staging
+    - master
 
