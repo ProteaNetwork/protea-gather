@@ -14,7 +14,6 @@ import { IEvent } from 'domain/events/types';
 import apiUrlBuilder from 'api/apiUrlBuilder';
 import Blockies from 'react-blockies';
 import { ICommunity } from 'domain/communities/types';
-import dayjs from 'dayjs';
 import MembersTab from 'components/MembersTab';
 import { IMember } from 'domain/membershipManagement/types';
 import classNames from 'classnames';

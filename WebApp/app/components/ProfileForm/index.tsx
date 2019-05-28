@@ -5,17 +5,24 @@
  */
 
 import React, { Fragment } from 'react';
-import { Theme, createStyles, withStyles, WithStyles, Paper, Button, FormControl, Typography, Input, CircularProgress } from '@material-ui/core';
+import { Theme, createStyles, withStyles, WithStyles, Paper, Button, FormControl, Typography, Input, CircularProgress, AppBar, Tab, Tabs } from '@material-ui/core';
 import { colors } from 'theme';
 import { Form, Field } from 'formik';
 import UploadImageField from 'components/UploadImageField';
 import { TextField } from 'formik-material-ui';
 import classNames from 'classnames';
+import SwipeableViews from 'react-swipeable-views';
 import { Done, Clear } from '@material-ui/icons';
+import { blockchainResources } from 'blockchainResources';
+import { ICommunity } from 'domain/communities/types';
+import { Link } from 'react-router-dom';
 
 const styles = (theme: Theme) =>
   createStyles({
       // JSS in CSS goes here
+      root: {
+        backgroundColor: colors.proteaBranding.orange,
+      },
       background:{
         display: "block",
         backgroundColor: colors.proteaBranding.black,
@@ -114,16 +121,88 @@ const styles = (theme: Theme) =>
         },
         "&.request":{
         },
+      },
+      slide:{
+        transitionDuration: "400ms",
+        "&.hidden":{
+          height: 0,
+          // opacity: 0,
+        },
+        "&.active": {
+          // opacity: 1,
+          height: "auto"
+        }
+      },
+      address:{
+        display: "inline-block",
+        textOverflow: "ellipsis",
+        width: "100%",
+        overflow: "hidden",
+        opacity: 0.5
+      },
+      mainBalances:{
+        padding: 20,
+        display: "flex",
+        flexDirection: "row",
+        flexWrap:"wrap",
+        textAlign: "left",
+        "& > *": {
+          width: "50%",
+          marginBottom: 15
+        }
+      },
+      communitiesBalances:{
+        display: "flex",
+        flexWrap: "wrap",
+        "& > *":{
+          borderTop: "1px solid white",
+          padding: 20,
+          display:"flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          "&:last-child":{
+            borderBottom: "1px solid white",
+          },
+          "& > *:first-child":{
+            maxWidth: "30%",
+            textOverflow: "ellipsis",
+            overflowX: "hidden",
+            whiteSpace: "nowrap",
+          
+          },
+          "& > * ": {
+            flexGrow: 1,
+            flexBasis: 100,
+            
+          }
+        }
+      },
+      communityButton:{
+        textDecoration:"none",
+        "&:hover": {
+          textDecoration:"none",
+        }
+      },
+      communityStake:{
+        textAlign: "center"
       }
   });
 
 interface OwnProps extends WithStyles<typeof styles> {
   pendingState: string;
+  slideIndex: number;
+  communities: ICommunity[];
+  daiBalance: number;
+  totalStaked: number;
+  handleChange(event: any, value: any): void;
+  handleChangeIndex(index: any): void;
   submitForm(data): void;
 }
 
 const ProfileForm: React.SFC<OwnProps> = (props: OwnProps) => {
-  const { submitForm, classes, pendingState } = props;
+  const { communities, daiBalance, submitForm, handleChange, handleChangeIndex, slideIndex, classes, pendingState, totalStaked } = props;
   return (<div className={classNames(classes.background, `${pendingState}`)}>
     <div className={classNames(classes.stateModal, `${pendingState}`)}>
       <div>
@@ -132,29 +211,100 @@ const ProfileForm: React.SFC<OwnProps> = (props: OwnProps) => {
         { pendingState == "success" && <Done color={"inherit"} ></Done>}
       </div>
     </div>
-    <Paper square={true} className={classes.paperRoot} elevation={0}>
-      <Form className={classes.formRoot}>
-        <Typography className={classes.heading} component="h1" variant="h1">
-          Update your Profile
-        </Typography>
-        <FormControl>
-          <Typography className={classes.subHeading} component="h4" variant="h4">
-            Profile Image
-          </Typography>
-          <div className={classes.imageUpload}>
-            <Field className={classes.imageUpload} component={UploadImageField} name="profileImage"  />
-          </div>
-        </FormControl>
-        <FormControl>
-          <Field name="displayName" label="Name:" component={TextField} />
-        </FormControl>
-        <div>
-          <Button className={classes.submitButton} onClick={submitForm}>
-            Update Profile
-          </Button>
-        </div>
-      </Form>
-    </Paper>
+      <AppBar position="static" >
+        <Tabs
+          value={slideIndex}
+          onChange={handleChange}
+          variant="fullWidth" >
+          <Tab label="MY INFO" />
+          <Tab label="MY BALANCES" />
+        </Tabs>
+      </AppBar>
+      <section className={classes.root}>
+        <SwipeableViews
+          index={slideIndex}
+          onChangeIndex={handleChangeIndex}>
+            <article className={classNames(classes.slide, (slideIndex == 0 ? 'active': 'hidden'))}>
+              <Paper square={true} className={classes.paperRoot} elevation={0}>
+                <Form className={classes.formRoot}>
+                  <Typography className={classes.heading} component="h1" variant="h1">
+                    My Profile
+                  </Typography>
+                  <FormControl>
+                    <span className={classes.address}>
+                      My address: {blockchainResources.signerAddress}
+                    </span>
+                    <Typography className={classes.subHeading} component="h4" variant="h4">
+                      Profile Image
+                    </Typography>
+                    <div className={classes.imageUpload}>
+                      <Field className={classes.imageUpload} component={UploadImageField} name="profileImage"  />
+                    </div>
+                  </FormControl>
+                  <FormControl>
+                    <Field name="displayName" label="My Name:" component={TextField} />
+                  </FormControl>
+                  <div>
+                    <Button className={classes.submitButton} onClick={submitForm}>
+                      Update
+                    </Button>
+                  </div>
+                </Form>
+              </Paper>
+            </article>
+            <article className={classNames(classes.slide, (slideIndex == 1 ? 'active': 'hidden'))}>
+              <Paper square={true} className={classes.paperRoot} elevation={0}>
+                <section>
+                  <article className={classes.mainBalances}>
+                    <span>
+                      Total DAI:
+                    </span>
+                    <span>
+                      {
+                        (parseFloat(`${
+                          totalStaked
+                        }`) + parseFloat(`${daiBalance}`)).toFixed(2)
+                      } DAI
+                    </span>
+                    <span>
+                      Uncommited DAI:
+                    </span>
+                    <span>
+                      {parseFloat(`${daiBalance}`).toFixed(2)} DAI
+                    </span>
+                    <span>
+                      Total commited DAI:
+                    </span>
+                    <span>
+                      {parseFloat(`${totalStaked}`).toFixed(2)} DAI
+                    </span>
+                  </article>
+                  <article className={classes.communitiesBalances}>
+                    { communities && (<Fragment>
+                      {
+                        communities.map((community: ICommunity) =>
+                          <div key={community.tbcAddress}>
+                            <span>
+                              {community.name}
+                            </span>
+                            <span className={classes.communityStake}>
+                              {parseFloat(`${community.availableStake}`).toFixed(2)} DAI
+                            </span>
+                            <Link className={classes.communityButton} to={`/communities/${community.tbcAddress}`}>
+                              <Button>
+                                Details
+                              </Button>
+                            </Link>
+                          </div>
+                        )
+                      }
+                    </Fragment>)}
+                  </article>
+                </section>
+              </Paper>
+            </article>
+        </SwipeableViews>
+      </section>
   </div>);
 };
 
