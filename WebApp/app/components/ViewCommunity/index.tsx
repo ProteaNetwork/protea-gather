@@ -19,8 +19,9 @@ import MembersTab from 'components/MembersTab';
 import { IMember } from 'domain/membershipManagement/types';
 import classNames from 'classnames';
 import SearchIcon from '@material-ui/icons/Search';
-import { Edit } from '@material-ui/icons';
+import { Edit, Add, Remove } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
+import TokenManagement from 'components/TokenManagement';
 
 const styles = ({ spacing, shape }: Theme) => createStyles({
   root: {
@@ -49,7 +50,7 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
   },
   buttonArea: {
     backgroundColor: colors.proteaBranding.orange,
-    padding: spacing.unit * 2,
+    padding: `0 ${spacing.unit * 2}px`,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -61,6 +62,9 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
     flexGrow: 1,
     flexBasis: "40%",
     margin: 5,
+    "&:last-child":{
+      margin: "5px 5px 20px",
+    }
   },
   bannerImg: {
     height:'30vh',
@@ -180,7 +184,8 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
     "&.active": {
       opacity: 1,
     }
-  }
+  },
+
 });
 
 interface OwnProps extends WithStyles<typeof styles> {
@@ -278,40 +283,26 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                     </Typography>
                   </div>
                 </section>
+                <TokenManagement
+                  daiTxAmount={daiTxAmount}
+                  handleDaiValueChange={handleDaiValueChange}
+                  onIncreaseMembership={onIncreaseMembership}
+                  onWithdrawMembership={onWithdrawMembership}
+                  onJoinCommunity={onJoinCommunity}
+                  availableStake={community.availableStake}
+                  isMember={community.isMember}
+                  daiBalance={balances.daiBalance}
+                  tbcAddress={community.tbcAddress}
+                  membershipManagerAddress={community.membershipManagerAddress}
+                ></TokenManagement>
                 <section className={classes.buttonArea}>
-                  {!community.isMember && <Button
-                    className={classes.buttons}
-                    onClick={() => onJoinCommunity(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                    disabled={balances.daiBalance < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
-                    size="large">
-                    {`Join for ${daiTxAmount}Dai`}
-                  </Button>}
-                  {community.isMember && <Button
-                    className={classes.buttons}
-                    disabled={parseFloat(`${balances.daiBalance}`) < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
-                    onClick={() => onIncreaseMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                    size="large">
-                    {`Increase stake by ${daiTxAmount}Dai`}
-                  </Button>}
-                  {community.isMember && <Button
-                    className={classes.buttons}
-                    disabled={community.availableStake < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
-                    onClick={() => onWithdrawMembership(daiTxAmount,community.tbcAddress, community.membershipManagerAddress)}
-                    size="large">
-                    {`Withdraw stake by ${daiTxAmount}Dai`}
-                  </Button>}
+
                   {community.isMember && community.isAdmin && <Button
                     onClick={() => onCreateEvent()}
                     className={classes.buttons}
                     size="large">
                     CREATE EVENT
                   </Button>}
-                </section>
-                <section className={classes.puchasingSection}>
-                  <Input type="number" inputProps={{ min: "1", max: `${balances.daiBalance}`, step: "1" }} onChange={(event) => handleDaiValueChange(event)} value={daiTxAmount} />
-                  <Typography className={classes.texts} component="p" variant="subtitle1">
-                    Please set the value here
-                  </Typography>
                 </section>
                 <section className={classes.infoBar}>
                   <Typography className={classes.texts} variant='subtitle1'>About Us</Typography>

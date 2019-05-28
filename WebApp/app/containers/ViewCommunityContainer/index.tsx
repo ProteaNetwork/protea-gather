@@ -63,8 +63,8 @@ class ViewCommunityContainer extends React.Component<Props>  {
     this.setState({ slideIndex: index });
   };
 
-  handleDaiValueChange = (event) => {
-    this.setState({daiTxAmount: event.target.value})
+  handleDaiValueChange = (value) => {
+    this.setState({daiTxAmount: value})
   }
 
   onCreateEvent = () => {
