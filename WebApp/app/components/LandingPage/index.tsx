@@ -1,9 +1,7 @@
 import { Button, Typography, WithStyles } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import React, { Fragment } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { compose, Dispatch } from 'redux';
+import { compose } from 'redux';
 import ReactSVG from 'react-svg';
 
 
@@ -26,21 +24,15 @@ const styles = () => createStyles({
     margin: '10px 0'
   },
   logo:{
-    maxWidth: '150px',
+    height:"auto",
     "& svg":{
-      width: "100%"
+      width: "400px",
+      height: "auto",
+      maxWidth: "75vw"
     },
     "& path":{
       stroke: "#FFFFFF",
-      strokeWidth: '10px'
     }
-  },
-  proteaTitle: {
-    maxWidth: '300px',
-    margin: "30px 0",
-    "& svg":{
-      width: "100%"
-    },
   },
   error:{
     textAlign: "center",
@@ -58,8 +50,7 @@ const LandingPage: React.SFC<Props> = ({ onConnectClick, isWalletUnlocked, error
   return (
     <Fragment>
       <main className={classes.layout}>
-        <ReactSVG className={classes.logo} src="protea_logo_outline.svg" />
-        <ReactSVG className={classes.proteaTitle} src="protea_white_text.svg" />
+        <ReactSVG className={classes.logo} src="ProteaGatherLogo.svg" />
         <Button className={classes.button} onClick={onConnectClick} disabled={!isWalletUnlocked}>Connect</Button>
         <Button className={classes.button}>Discover</Button>
         <Typography className={classes.error} variant="subtitle1">{errorMessage}</Typography>
