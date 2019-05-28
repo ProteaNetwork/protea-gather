@@ -172,7 +172,9 @@ function CarouselCommunites(props: OwnProps) {
         {
           communities && communities.map(c => (
             <div key={c.tbcAddress}>
-              <CommunityCard memberCount={c.memberList.length} {...c} />
+              {
+                c.memberList && c.memberList.length > 0 && <CommunityCard memberCount={c.memberList.length} {...c} />
+              }
             </div>
           ))
         }
