@@ -20,6 +20,12 @@ export const selectMyCommunties = createSelector(selectCommunitiesDomain,
   }
 )
 
+export const selectTotalStaked = createSelector(selectMyCommunties,
+  (myCommunities: ICommunity[]) => {
+    const totalStaked = myCommunities.reduce((total: number, community: ICommunity) => total + parseFloat(`${community.availableStake}`), 0);
+    return totalStaked;
+})
+
 export const selectDiscoverCommunties = createSelector(selectCommunitiesDomain,
   (allCommunities) => {
     return (Object.values(allCommunities).filter((com: ICommunity) => !com.isMember));
