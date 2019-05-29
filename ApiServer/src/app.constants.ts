@@ -3,7 +3,8 @@ export enum Schemas {
   Community = 'Community',
   Event = 'Event',
   Attachment = 'Attachment',
-  Error = 'Error'
+  Error = 'Error',
+  Feedback = 'Feedback'
 }
 
 export enum Modules {

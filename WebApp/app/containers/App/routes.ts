@@ -11,6 +11,7 @@ import ProfileContainer from 'containers/ProfileContainer';
 import UpdateCommunityContainer from 'containers/UpdateCommunityContainer';
 import UpdateEventContainer from 'containers/UpdateEventContainer';
 import CommunitiesPageContainer from 'containers/CommunitiesPageContainer';
+import FeedbackFormContainer from 'containers/FeedbackFormContainer';
 
 export interface appRoute {
   name: string;
@@ -96,6 +97,13 @@ const routes: appRoute[] = [
     name: 'My Profile',
     path: '/my-profile/',
     component: ProfileContainer,
+    isProtected: true,
+    isNavRequired: true,
+  },
+  {
+    name: 'Give Feedback',
+    path: '/feedback/',
+    component: FeedbackFormContainer,
     isProtected: true,
     isNavRequired: true,
   },

@@ -2,10 +2,10 @@ import { ethers } from 'ethers';
 import { normalize } from 'normalizr';
 import { call, fork, put, race, select, take, takeLatest, delay } from 'redux-saga/effects';
 import { ApplicationRootState } from 'types';
-import { getUserProfile as getUserProfileApi, updateProfile as updateProfileApi } from '../../api/api';
+import { getUserProfile as getUserProfileApi, updateProfile as updateProfileApi, sendFeedback as sendFeedbackApi } from '../../api/api';
 import * as userProfileActions from './actions';
 import ActionTypes from './constants';
-import { setUserProfile, setPendingStateAction } from './actions';
+import { setUserProfile, setPendingStateAction, sendFeedbackAction } from './actions';
 import { getBlockchainObjects } from 'blockchainResources';
 import { IMember } from 'domain/membershipManagement/types';
 
@@ -38,6 +38,27 @@ export function* setProfileData(data: IMember) {
 
   }
   catch (error) {
+    yield put(setUserProfile.failure(error));
+    yield put(setPendingStateAction("failure"));
+    yield delay(2000);
+    yield put(setPendingStateAction("ready"));
+    return false;
+  }
+}
+
+
+export function* sendFeedback(data: {address: string, feedback: string, browser: string}) {
+  const apiKey = yield select((state: ApplicationRootState) => state.authentication.accessToken);
+  try {
+    const userData = (yield call(sendFeedbackApi, data, apiKey)).data;
+    yield put(setPendingStateAction("success"));
+    yield put(sendFeedbackAction.success(userData));
+    yield delay(2000);
+    yield put(setPendingStateAction("ready"));
+
+  }
+  catch (error) {
+    yield put(sendFeedbackAction.failure(error));
     yield put(setPendingStateAction("failure"));
     yield delay(2000);
     yield put(setPendingStateAction("ready"));
@@ -53,6 +74,14 @@ export function* setProfileDataListener() {
   }
 }
 
+export function* sendFeedbackListener() {
+  while(true){
+    const feedbackData = (yield take(sendFeedbackAction.request)).payload;
+    yield put(setPendingStateAction("request"));
+    yield call(sendFeedback, feedbackData)
+  }
+}
+
 export function* getUserProfileFlow() {
   while (true) {
     yield take(ActionTypes.GET_PROFILE_REQUEST);
@@ -63,5 +92,6 @@ export function* getUserProfileFlow() {
 export default function* root() {
   yield fork(getUserProfileFlow);
   yield fork(setProfileDataListener);
+  yield fork(sendFeedbackListener);
 }
 

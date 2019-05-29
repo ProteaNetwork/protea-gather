@@ -19,6 +19,7 @@ enum ActionTypes {
   SEND_ERROR_REPORT_REQUEST = 'protea/transactionManagement/SEND_ERROR_REPORT_REQUEST',
   SEND_ERROR_REPORT_SUCCESS = 'protea/transactionManagement/SEND_ERROR_REPORT_SUCCESS',
   SEND_ERROR_REPORT_FAILURE = 'protea/transactionManagement/SEND_ERROR_REPORT_FAILURE',
+  SET_ETH_ADDRESS = 'protea/transactionManagement/SET_ETH_ADDRESS',
 }
 
 export default ActionTypes;

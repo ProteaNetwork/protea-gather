@@ -52,3 +52,7 @@ export function updateProfile(profileData: IMember, apiToken: string): Promise<a
 export function sendErrorReport(error: IError, apiToken: string): Promise<any> {
   return apiRequest('POST', apiUrlBuilder.sendErrorReport(), JSON.stringify(error), "application/json", true, apiToken)
 }
+
+export function sendFeedback(data: {address: string, feedback: string, browser: string}, apiToken: string): Promise<any> {
+  return apiRequest('POST', apiUrlBuilder.sendFeedback(), JSON.stringify(data), "application/json", true, apiToken)
+}
