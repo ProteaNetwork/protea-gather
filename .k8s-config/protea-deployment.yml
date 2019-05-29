@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: protea-frontend
+  name: protea-frontend-_TAG_
   namespace: protea-_APP_
   labels:
-    app: protea-frontend
+    app: protea-frontend-_TAG_
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: protea-frontend
+      app: protea-frontend-_TAG_
   
   # Pod template
   template:
     metadata:
       labels:
-        app: protea-frontend
+        app: protea-frontend-_TAG_
         date: _DATE_
     spec:
       containers:
@@ -32,10 +32,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: protea-frontend
+  name: protea-frontend-_TAG_
   namespace: protea-_APP_
   labels:
-    app: protea-frontend
+    app: protea-frontend-_TAG_
     date: _DATE_
 spec:
   type: NodePort
@@ -44,27 +44,27 @@ spec:
       targetPort: 80
       protocol: TCP
   selector:
-    app: protea-frontend
+    app: protea-frontend-_TAG_
 ---
 # Backend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: protea-backend 
+  name: protea-backend-_TAG_
   namespace: protea-_APP_
   labels:
-    app: protea-backend
+    app: protea-backend-_TAG_
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: protea-backend
+      app: protea-backend-_TAG_
 
   # Pod template
   template:
     metadata:
       labels:
-        app: protea-backend
+        app: protea-backend-_TAG_
         date: _DATE_
     spec:
       containers:
@@ -73,80 +73,11 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3001
-          env:
-            - name: APP_NAME
-              value: "protea_API_server"
-            - name: APP_SCHEMA
-              value: "https"
-            - name: APP_HOST
-              value: "0.0.0.0"
-            - name: APP_PORT
-              value: "3001"
-            - name: APP_ROUTE_PREFIX
-              value: "/api"
-            - name: APP_BANNER
-              value: "true"
-            - name: LOG_LEVEL
-              value: "debug"
-            - name: LOG_OUTPUT
-              value: "dev"
-            - name: MONGO_USERNAME
-              value: "mongo-user"
-            - name: MONGO_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: protea-mongo-auth
-                  key: mongo-password
-            - name: MONGO_HOST
-              value: "mongo-protea.protea-_APP_"
-            - name: MONGO_PORT
-              value: "27017"
-            - name: MONGO_DATABASE
-              value: "PROTEA_DB"
-            - name: MONGO_AUTH_SOURCE
-              value: "admin"
-            - name: BCRYPT_SALT_ROUND
-              value: "10"
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: protea-backend-jwt-secret
-                  key: jwt-token
-            - name: JWT_EXPIRY
-              value: "1"
-            - name: JWT_PERMIT_SALT
-              valueFrom:
-                secretKeyRef:
-                  name: protea-backend-jwt-permit-salt-secret
-                  key: jwt-salt
-            - name: ETHERS_PROVIDER
-              value: "default"
-            - name: ETHERS_NETWORK
-              value: "rinkeby"
-            - name: ETHERS_RPC_PROVIDER_URL
-              value: "http://localhost:8545" # TODO: update
-            - name: INFURA_API_KEY
-              value: "5b87341803ab415295dc6dd54b4239e6"
-            - name: RINKEBY_COMMUNITY_FACTORY
-              value: "0xb142f4d19c4CA99230990143896b0a32E31ed4C0"
-            - name: KOVAN_COMMUNITY_FACTORY
-              value: "0x9f36F9100F75A68BA66C02106A539c1dC72c97C1"
-            - name: ROPSTEN_COMMUNITY_FACTORY
-              value: "0x253a8E67C88c95955CE1817aE2AF92c260Fad605"
-            - name: GOERLI_COMMUNITY_FACTORY
-              value: "0x9f36F9100F75A68BA66C02106A539c1dC72c97C1"
-            - name: MAINNET_COMMUNITY_FACTORY
-              value: ""
-            - name: APPLICATION_WALLET_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: protea-backend-wallet-private-key
-                  key: wallet-private-key
-            - name: APPLICATION_WALLET_MNEMONIC
-              valueFrom:
-                secretKeyRef:
-                  name: protea-wallet-mnemonic
-                  key: wallet-mnemonic
+          envFrom:
+          - configMapRef:
+              name: env-config
+          - secretRef:
+              name: env-secrets
       imagePullSecrets:
         - name: gitlab-registry-protea
 ---
@@ -154,10 +85,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: protea-backend
+  name: protea-backend-_TAG_
   namespace: protea-_APP_
   labels:
-    app: protea-backend
+    app: protea-backend-_TAG_
     date: _DATE_
 spec:
   type: NodePort
@@ -166,4 +97,4 @@ spec:
       targetPort: 3001
       protocol: TCP
   selector:
-    app: protea-backend
+    app: protea-backend-_TAG_
