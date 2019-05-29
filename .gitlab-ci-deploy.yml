@@ -11,6 +11,8 @@ docker-build:
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker-compose -v
+    - docker-compose pull $PROTEA_BACKEND_CONTAINER_RELEASE_IMAGE || true
+    - docker-compose pull $PROTEA_FRONTEND_CONTAINER_RELEASE_IMAGE || true
     - docker-compose build
     - docker-compose up -d
     - docker-compose down
@@ -27,12 +29,14 @@ deploy:
   variables:
     CLUSTER: AmazonEKS_LinumLabs_Spot
     NAMESPACE: protea-$CI_BUILD_REF_NAME
+    OVERRIDE_NAMESPACE: nightly
   before_script:
     - echo "Starting deploy stage..."
     - echo "Override global 'before_script'"
   script:
     - .gitlab-ci-scripts/configure-k8s.sh
-    - sed 's/_APP_/'"$CI_ENVIRONMENT_SLUG"'/g; s/_TAG_/'"$CI_BUILD_REF_NAME"'/g; s/_DATE_/'\"$(date +'%s')\"'/g' ./.k8s-config/protea-deployment.yml > kubernetes.yml;
+    # 's/_APP_/'"$CI_ENVIRONMENT_SLUG"'/g;
+    - sed 's/_APP_/'"$OVERRIDE_NAMESPACE"'/g; s/_TAG_/'"$CI_ENVIRONMENT_SLUG"'/g; s/_DATE_/'\"$(date +'%s')\"'/g' ./.k8s-config/protea-deployment.yml > kubernetes.yml;
     - kubectl apply -f kubernetes.yml
   only:
     - nightly
