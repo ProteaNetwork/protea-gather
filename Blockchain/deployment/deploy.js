@@ -46,13 +46,16 @@ const deploy = async (network, secret) => {
 	switch(network){
 		case "mainnet": {
 			deployer = new etherlime.InfuraPrivateKeyDeployer(secret, network, INFURA_API_KEY, mainnetConfig);
+			deployer.defaultOverrides.gasLimit = 3264000;
 
 			communityFactoryInstance = await deployer.deploy(
 				CommunityFactoryV1, 
 				false, 
 				DAI_ADDRESS,
 				PROTEA_ADDRESS,
+				{gasLimit: 1231000}
 			);
+
 			break;
 		}
 		case "goerli":{
@@ -62,13 +65,15 @@ const deploy = async (network, secret) => {
 				false, 
 				daiSettings.name, 
 				daiSettings.symbol, 
-				daiSettings.decimals
+				daiSettings.decimals,
+				{gasLimit: 948421}
 			);
 			communityFactoryInstance = await deployer.deploy(
 				CommunityFactoryV1, 
 				false, 
 				pseudoDaiInstance.contract.address,
 				deployer.wallet.address,
+				{gasLimit: 1231000}
 			);
 			break;
 		}
@@ -79,13 +84,15 @@ const deploy = async (network, secret) => {
 				false, 
 				daiSettings.name, 
 				daiSettings.symbol, 
-				daiSettings.decimals
+				daiSettings.decimals,
+				{gasLimit: 948421}
 			);
 			communityFactoryInstance = await deployer.deploy(
 				CommunityFactoryV1, 
 				false, 
 				pseudoDaiInstance.contract.address,
 				deployer.wallet.address,
+				{gasLimit: 1231000}
 			);
 			break;
 		}
@@ -96,13 +103,15 @@ const deploy = async (network, secret) => {
 				false, 
 				daiSettings.name, 
 				daiSettings.symbol, 
-				daiSettings.decimals
+				daiSettings.decimals,
+				{gasLimit: 948421}
 			);
 			communityFactoryInstance = await deployer.deploy(
 				CommunityFactoryV1, 
 				false, 
 				pseudoDaiInstance.contract.address,
 				deployer.wallet.address,
+				{gasLimit: 1231000}
 			);
 			break;
 		}
@@ -113,13 +122,15 @@ const deploy = async (network, secret) => {
 				false, 
 				daiSettings.name, 
 				daiSettings.symbol, 
-				daiSettings.decimals
+				daiSettings.decimals,
+				{gasLimit: 948421}
 			);
 			communityFactoryInstance = await deployer.deploy(
 				CommunityFactoryV1, 
 				false, 
 				pseudoDaiInstance.contract.address,
 				deployer.wallet.address,
+				{gasLimit: 1231000}
 			);
 			break;
 		}
@@ -131,13 +142,15 @@ const deploy = async (network, secret) => {
 				false, 
 				daiSettings.name, 
 				daiSettings.symbol, 
-				daiSettings.decimals
+				daiSettings.decimals,
+				{gasLimit: 948421}
 			);
 			communityFactoryInstance = await deployer.deploy(
 				CommunityFactoryV1, 
 				false, 
 				pseudoDaiInstance.contract.address,
 				deployer.wallet.address,
+				{gasLimit: 1231000}
 			);
 			break;
 		}
@@ -147,19 +160,22 @@ const deploy = async (network, secret) => {
 	const tokenManagerFactoryInstance = await deployer.deploy(
 		BasicLinearTokenManagerFactory,
 		false,
-		communityFactoryInstance.contract.address
+		communityFactoryInstance.contract.address,
+		{gasLimit: 2000000}
 	);
 
 	const membershipManagerFactoryInstance = await deployer.deploy(
 		MembershipManagerV1Factory,
 		false,
-		communityFactoryInstance.contract.address
+		communityFactoryInstance.contract.address,
+		{gasLimit: 2413000}
 	);
 
 	const eventManagerFactoryInstance = await deployer.deploy(
 		EventManagerV1Factory,
 		false,
-		communityFactoryInstance.contract.address
+		communityFactoryInstance.contract.address,
+		{gasLimit: 3264000}
 	);
 	await (await communityFactoryInstance
 		.initialize(
