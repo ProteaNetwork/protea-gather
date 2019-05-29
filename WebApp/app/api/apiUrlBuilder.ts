@@ -18,6 +18,7 @@ const apiUrlBuilder = {
   updateEvent: (eventId: string) => generateUri(`event/${blockchainResources.networkId}/${eventId}/update`),
   updateProfile: generateUri(`users`),
   sendErrorReport: () => generateUri(`error/${blockchainResources.networkId}`),
+  sendFeedback: () => generateUri(`feedback/${blockchainResources.networkId}`),
 };
 
 export default apiUrlBuilder;

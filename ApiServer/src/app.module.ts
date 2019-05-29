@@ -15,6 +15,7 @@ import { EthersProviderModule } from './ethersProvider/ethersProvider.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ErrorModule } from './errorReporting/error.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [ConfigModule,
@@ -50,7 +51,8 @@ import { ErrorModule } from './errorReporting/error.module';
     AttachmentModule,
     EventModule,
     CommunityModule,
-    ErrorModule
+    ErrorModule,
+    FeedbackModule
   ],
   controllers: [AppController],
   providers: [ConfigService, AppService],

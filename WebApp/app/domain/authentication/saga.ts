@@ -87,10 +87,10 @@ export function* loginFlow() {
 }
 
 export function* connectWallet() {
-  const {ethAddress, provider } = yield call(getBlockchainObjects);
+  const {signerAddress, provider } = yield call(getBlockchainObjects);
   if (provider) {
     try {
-      yield put(authenticationActions.setEthAddress({ethAddress : ethAddress}));
+      yield put(authenticationActions.setEthAddress({ethAddress : signerAddress}));
       yield put(authenticationActions.connectWallet.success());
 
     } catch (error) {

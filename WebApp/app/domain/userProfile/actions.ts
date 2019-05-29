@@ -14,4 +14,10 @@ export const setUserProfile = createAsyncAction(
   ActionTypes.SET_PROFILE_FAILURE)
   <IMember, {}, string>();
 
+export const sendFeedbackAction = createAsyncAction(
+  ActionTypes.SEND_FEEDBACK_REQUEST,
+  ActionTypes.SEND_FEEDBACK_SUCCESS,
+  ActionTypes.SEND_FEEDBACK_FAILURE)
+  <{address: string, feedback: string, browser: string}, {}, string>();
+
 export const setPendingStateAction = createStandardAction(ActionTypes.SET_PENDING_RESPONSE)<string>();
