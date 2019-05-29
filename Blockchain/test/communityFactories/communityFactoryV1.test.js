@@ -149,6 +149,95 @@ describe('Community factory', () => {
                 "The community owner is incorrect"
             );
         });
+        it("Deploys & registers new token factory", async () =>{
+
+            const tokenManagerFactoryInstance2 = await deployer.deploy(
+                BasicLinearTokenManagerFactory,
+                false,
+                communityFactoryInstance.contract.address
+            );
+            const previousFactories = await communityFactoryInstance
+            .from(adminAccount.wallet.address).getFactories();
+
+            const result = await (await communityFactoryInstance
+                .from(adminAccount.wallet.address)
+                .setTokenManagerFactory(
+                        tokenManagerFactoryInstance2.contract.address
+                    )).wait();
+
+            const newFactories = await communityFactoryInstance
+            .from(adminAccount.wallet.address).getFactories();
+
+            assert.ok(previousFactories[0] != newFactories[0], "New factory not registered");
+        })
+        it("Deploys community with new token factory", async () =>{
+            
+            const txReceipt = await(await communityFactoryInstance
+                .from(communityCreatorAccount)
+                .createCommunity(
+                    communitySettings.name,
+                    communitySettings.symbol,
+                    communityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
+                    communitySettings.contributionRate
+                )).wait();
+            let communityDetails = await communityFactoryInstance
+                .from(communityCreatorAccount.wallet.address)
+                .getCommunity(0);
+            assert.equal(
+                communityDetails[0],
+                communitySettings.name, 
+                "The community has the wrong name");
+            assert.equal(
+                communityDetails[1],
+                communityCreatorAccount.wallet.address,
+                "The community owner is incorrect"
+            );
+
+            const tokenManagerFactoryInstance2 = await deployer.deploy(
+                BasicLinearTokenManagerFactory,
+                false,
+                communityFactoryInstance.contract.address
+            );
+            const previousFactories = await communityFactoryInstance
+            .from(adminAccount.wallet.address).getFactories();
+
+            const result = await (await communityFactoryInstance
+                .from(adminAccount.wallet.address)
+                .setTokenManagerFactory(
+                        tokenManagerFactoryInstance2.contract.address
+                    )).wait();
+
+            const newFactories = await communityFactoryInstance
+            .from(adminAccount.wallet.address).getFactories();
+
+            assert.ok(previousFactories[0] != newFactories[0], "New factory not registered");
+
+            const txReceipt2 = await(await communityFactoryInstance
+                .from(anotherCommunityCreatorAccount)
+                .createCommunity(
+                    `Not${communitySettings.name}`,
+                    `Not${communitySettings.symbol}`,
+                    anotherCommunityCreatorAccount.wallet.address,
+                    communitySettings.gradientDemoninator,
+                    communitySettings.contributionRate
+                )).wait();
+
+            let communityDetails2 = await communityFactoryInstance
+                .from(anotherCommunityCreatorAccount.wallet.address)
+                .getCommunity(1);
+
+            assert.equal(communityDetails2[0], 
+                `Not${communitySettings.name}`,
+                "The community has the wrong name");
+                
+            assert.equal(
+                communityDetails2[1],
+                anotherCommunityCreatorAccount.wallet.address,
+                "The community owner is incorrect"
+            );
+            
+        })
     });
     
     describe("Admin controls", () => {
