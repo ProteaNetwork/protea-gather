@@ -27,7 +27,7 @@ ADD ./yarn.lock /app/WebApp/yarn.lock
 ADD ./Blockchain /temp
 
 WORKDIR /temp
-RUN yarn --frozen-lockfile
+RUN yarn
 RUN yarn build
 RUN cp -r /temp/build/. /app/Blockchain/build
 RUN rm -rf /temp
@@ -35,7 +35,7 @@ RUN rm -rf /temp
 WORKDIR /app/WebApp
 
 # Install necessary dependancies
-RUN yarn --frozen-lockfile
+RUN yarn
 
 # Configure deployment environment
 #ENV NODE_ENV=development
