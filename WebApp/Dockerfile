@@ -23,6 +23,7 @@ RUN mkdir -p /app/Blockchain/build
 RUN mkdir /temp
 
 ADD ./WebApp /app/WebApp
+ADD ./yarn.lock /app/WebApp/yarn.lock
 ADD ./Blockchain /temp
 
 WORKDIR /temp

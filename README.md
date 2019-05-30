@@ -45,13 +45,13 @@ https://kovan.etherscan.io/address/0x0f17d2198dbb9d7a50557284f7ee10dfa5e0628a
 https://ropsten.etherscan.io/address/0x0f17d2198dbb9d7a50557284f7ee10dfa5e0628a
 
 ### Mainnet
-The current contracts as of xx/xx/2019 are deployed on Mainnet at the following address, with the following markets. 
+The current contracts as of 29/05/2019 are deployed on Mainnet at the following address, with the following markets. 
 #### yarn deploy:mainnet
-Dai:                    
-Community Factory:      
-Basic Linear Factory:   
-Membership Mgr Fact:    
-Event Manager Factory:   
+Dai:                    0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359
+Community Factory:      0xc5Af5f868eff2F7cC49d7BE5362C505bD5Bec06a
+Basic Linear Factory:   0x727Cb5dc8c3abF5044d2cE3239FF9a441551F9eF
+Membership Mgr Fact:    0x08381500b1DeAfd200E5aBE046Fd7096c9Dc5Ba2
+Event Manager Factory:  0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3
 
 ### Goerli
 The current contracts as of 24/05/2019 are deployed on Goerli at the following address, with the following markets. 
