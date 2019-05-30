@@ -52,7 +52,8 @@ export const selectDiscoverEvents = createSelector(selectDiscoverCommunties, sel
   (communities, allEvents, ethAddress): IEvent[] => {
     const eventManagers = (Object.values(communities)).map((com: ICommunity)=> com.eventManagerAddress);
     const eventsArray: IEvent[] = Object.values(allEvents);
-    return eventsArray.filter((evt: IEvent) => eventManagers.includes(evt.eventManagerAddress)).filter((event: IEvent) => (event.memberState == 0 && event.organizer.toLowerCase() != ethAddress.toLowerCase()));
+    const allDiscoverEvents = eventsArray.filter((evt: IEvent) => eventManagers.includes(evt.eventManagerAddress)).filter((event: IEvent) => (event.memberState == 0 && event.organizer.toLowerCase() != ethAddress.toLowerCase()));
+    return allDiscoverEvents.filter(event => event.state == 1);
   }
 )
 
