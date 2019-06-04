@@ -70,6 +70,8 @@ export function* refreshTokenPoller() {
 
 export function* loginFlow() {
   while (yield take(ActionTypes.AUTH_REQUEST)) {
+    yield put(resetCommunitiesAction())
+    yield put(resetEventsAction())
     try {
       const response = yield call(getPermit);
       const {signerAddress} = yield call(getBlockchainObjects);

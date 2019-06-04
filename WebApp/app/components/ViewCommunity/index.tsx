@@ -190,6 +190,7 @@ const styles = ({ spacing, shape }: Theme) => createStyles({
 interface OwnProps extends WithStyles<typeof styles> {
   slideIndex: number;
   daiTxAmount: number;
+  purchasePrice: number;
   balances: any;
   filter: string;
   members: IMember[];
@@ -227,7 +228,8 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
     onCreateEvent,
     handleNameChange,
     filter,
-    members
+    members,
+    purchasePrice
   } = props;
   return (
     <Fragment>
@@ -284,6 +286,7 @@ const ViewCommunity: React.SFC<OwnProps> = (props: OwnProps) => {
                 </section>
                 <TokenManagement
                   daiTxAmount={daiTxAmount}
+                  purchasePrice={purchasePrice}
                   handleDaiValueChange={handleDaiValueChange}
                   onIncreaseMembership={onIncreaseMembership}
                   onWithdrawMembership={onWithdrawMembership}

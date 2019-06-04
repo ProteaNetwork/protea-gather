@@ -65,7 +65,7 @@ contract BasicLinearTokenManager is BaseTokenManager {
 
         balances[revenueTarget_] = balances[revenueTarget_].add(comContribution); // Minus amount sent to Revenue target
 
-        emit Transfer(address(0), _to, _numTokens);
+        emit Transfer(address(0), _to, _numTokens); // Consider 2 transfer events
         return true;
     }
 

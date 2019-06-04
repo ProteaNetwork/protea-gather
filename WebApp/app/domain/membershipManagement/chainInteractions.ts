@@ -240,3 +240,4 @@ export async function setReputationReward(utilityAddress: string, membershipMana
   }
 
 }
+
