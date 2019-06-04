@@ -22,7 +22,14 @@ const styles = (theme: Theme) =>
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
-        margin:"5px 0"
+        margin:"5px 0",
+        "&:last-child > *":{
+          display: "block",
+          flexGrow: 1,
+          flexBasis: 1,
+          textAlign: "center",
+          color: colors.white
+        }
       },
 
     },
@@ -60,6 +67,7 @@ const styles = (theme: Theme) =>
 
 interface OwnProps extends WithStyles<typeof styles> {
   daiTxAmount: number;
+  purchasePrice: number;
   handleDaiValueChange(event: any): void;
   onIncreaseMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
   onWithdrawMembership(daiValue: number, tbcAddress: string, membershipManagerAddress: string): void;
@@ -72,7 +80,7 @@ interface OwnProps extends WithStyles<typeof styles> {
 }
 
 const TokenManagement: React.SFC<OwnProps> = (props: OwnProps) => {
-  const {classes, handleDaiValueChange, daiTxAmount, availableStake, isMember, daiBalance, tbcAddress, membershipManagerAddress, onWithdrawMembership, onJoinCommunity, onIncreaseMembership } = props;
+  const {classes, handleDaiValueChange, daiTxAmount, availableStake, isMember, daiBalance, tbcAddress, membershipManagerAddress, onWithdrawMembership, onJoinCommunity, onIncreaseMembership, purchasePrice } = props;
   return <section className={classes.root}>
   <div>
     <div>
@@ -98,13 +106,13 @@ const TokenManagement: React.SFC<OwnProps> = (props: OwnProps) => {
     {!isMember && <Button
       className={classes.buttons}
       onClick={() => onJoinCommunity(daiTxAmount, tbcAddress, membershipManagerAddress)}
-      disabled={daiBalance < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
+      disabled={daiBalance < parseFloat(`${purchasePrice}`) || `${purchasePrice}` == ""}
       size="large">
       {`Buy`}
     </Button>}
     {isMember && <Button
       className={classes.buttons}
-      disabled={parseFloat(`${daiBalance}`) < parseFloat(`${daiTxAmount}`) || `${daiTxAmount}` == ""}
+      disabled={parseFloat(`${daiBalance}`) < parseFloat(`${purchasePrice}`) || `${purchasePrice}` == ""}
       onClick={() => onIncreaseMembership(daiTxAmount, tbcAddress, membershipManagerAddress)}
       size="large">
       {`Buy`}
@@ -115,12 +123,14 @@ const TokenManagement: React.SFC<OwnProps> = (props: OwnProps) => {
 
     </div>
     <div>
-      <Fab className={classes.fab} onClick={() => handleDaiValueChange(daiTxAmount - 1)}>
+      <Fab className={classes.fab} onClick={() => handleDaiValueChange((daiTxAmount - 1) != 0 ? daiTxAmount - 1 : 1)}>
         <Remove />
       </Fab>
     </div>
     <div>
-
+      <span>
+        Buy Price: <br/> {purchasePrice.toFixed(2)} DAI
+      </span>
     </div>
 
   </div>

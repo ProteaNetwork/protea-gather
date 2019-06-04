@@ -147,12 +147,16 @@ class AppWrapper extends React.Component<Props> {
     open: false,
   };
 
-  public handleDrawerToggle = () => {
+  public menuToggle = (event) => {
+    event.stopPropagation();
     this.setState({ open: !this.state.open });
   };
 
-  public close = () => {
-    this.setState({ open: false });
+  public close = (event) => {
+    if(this.state.open){
+      event.stopPropagation();
+      this.setState({ open: false });
+    }
   };
 
   public render() {
@@ -161,65 +165,62 @@ class AppWrapper extends React.Component<Props> {
       <div className={classes.root}>
       {isLoggedIn && (
           <Fragment>
-            <AppBar
-            position="fixed"
-            className={classes.appBar} >
-            <Toolbar
-              disableGutters={true}
-            >
-              {
-                this.state.open ?
-                  <IconButton
-                    color="inherit"
-                    aria-label="Close drawer"
-                    onClick={this.handleDrawerToggle}
-                    className={classes.menuButton} >
-                    <ChevronLeftIcon />
-                  </IconButton>
-                  :
-                  <IconButton
-                    color="inherit"
-                    aria-label="Open drawer"
-                    onClick={this.handleDrawerToggle}
-                    className={classes.menuButton} >
-                    <MenuIcon />
-                  </IconButton>
-              }
-              <Link className={classes.appBarLogo} to="/dashboard">
-                <ReactSVG src="/protea_logo_outline.svg" />
-              </Link>
-              <div className={classes.daiBalance}>
-                <span>
-                  {parseFloat(`${daiBalance}`).toFixed(2)}
-                </span>
-                <ReactSVG src="DaiIcon.svg" />
-              </div>
-            </Toolbar>
-          </AppBar>
           <ClickAwayListener onClickAway={this.close}>
-            <Drawer
-              variant="persistent"
-              classes= {{paper: classes.paperRoot}}
-              anchor="left"
-              open={this.state.open} >
-              <List>
-                {
-                  navLinks.map(({ name, path, routeNavLinkIcon }) => (
-                    <NavLink onClick={this.close} to={path} className={classes.link} key={name}>
-                      <ListItem button>
-                        {/* <ListItemIcon>
-                          {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
-                        </ListItemIcon> */}
-                        <ListItemText className={classes.navItem} primaryTypographyProps={{color:"inherit" }} color="inherit" primary={name} />
-                      </ListItem>
-                    </NavLink>
-                  ))
-                }
-                <ListItem className={classes.link} button onClick={() => {this.close(); onLogout()}}>
-                  <ListItemText className={classes.navItem} primaryTypographyProps={{color:"inherit" }} color="inherit" primary={'Logout'} />
-                </ListItem>
-              </List>
-            </Drawer>
+            <Fragment>
+              <AppBar
+              position="fixed"
+              className={classes.appBar} >
+                <Toolbar
+                  disableGutters={true}
+                >
+                  <IconButton
+                    color="inherit"
+                    aria-label={this.state.open ? "Close menu" : "Open menu"}
+                    onClick={this.menuToggle}
+                    className={classes.menuButton} >
+                    { this.state.open ?
+                      <ChevronLeftIcon />
+                      :
+                      <MenuIcon  />
+                    }
+                  </IconButton>
+                  <Link className={classes.appBarLogo} to="/dashboard">
+                    <ReactSVG src="/protea_logo_outline.svg" />
+                  </Link>
+                  <div className={classes.daiBalance}>
+                    <span>
+                      {parseFloat(`${daiBalance}`).toFixed(2)}
+                    </span>
+                    <Fragment>
+                      <ReactSVG src="/DaiIcon.svg" />
+                    </Fragment>
+                  </div>
+                </Toolbar>
+              </AppBar>
+              <Drawer
+                variant="persistent"
+                classes= {{paper: classes.paperRoot}}
+                anchor="left"
+                open={this.state.open} >
+                <List>
+                  {
+                    navLinks.map(({ name, path, routeNavLinkIcon }) => (
+                      <NavLink onClick={this.close} to={path} className={classes.link} key={name}>
+                        <ListItem button>
+                          {/* <ListItemIcon>
+                            {(routeNavLinkIcon) ? React.createElement(routeNavLinkIcon) : <Fragment />}
+                          </ListItemIcon> */}
+                          <ListItemText className={classes.navItem} primaryTypographyProps={{color:"inherit" }} color="inherit" primary={name} />
+                        </ListItem>
+                      </NavLink>
+                    ))
+                  }
+                  <ListItem className={classes.link} button onClick={(event) => {this.close(event); onLogout()}}>
+                    <ListItemText className={classes.navItem} primaryTypographyProps={{color:"inherit" }} color="inherit" primary={'Logout'} />
+                  </ListItem>
+                </List>
+              </Drawer>
+            </Fragment>
           </ClickAwayListener>
           </Fragment>
         )}

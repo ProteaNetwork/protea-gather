@@ -21,6 +21,8 @@ import { IMember } from 'domain/membershipManagement/types';
 import { setFilter } from './actions';
 import reducer from './reducer';
 import injectReducer from 'utils/injectReducer';
+import { BLTMExportPriceCalculation } from 'domain/communities/chainInteractions';
+import { utils } from 'ethers';
 
 interface RouteParams {
   eventId: string;
@@ -58,15 +60,17 @@ interface StateProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 class ViewEventContainer extends React.Component<Props> {
-  state: {slideIndex: number, confirmingList: string[]} = {
+  state: {slideIndex: number, confirmingList: string[], purchasePrice: number} = {
     slideIndex: 0,
-    confirmingList: []
+    confirmingList: [],
+    purchasePrice: 0
   };
 
   componentDidMount(){
     this.props.refreshBalances();
     this.props.getCommunity(this.props.community.tbcAddress);
     this.props.getEvent(this.props.match.params.eventId, this.props.community.membershipManagerAddress);
+    this.calcPurchasePrice();
   }
 
   handleChange = (event, slideIndex) => {
@@ -76,6 +80,48 @@ class ViewEventContainer extends React.Component<Props> {
   handleChangeIndex = index => {
     this.setState({ slideIndex: index });
   };
+
+
+  calcPurchasePrice = () =>{
+    if(this.props.community && this.props.event &&  this.props.community.contributionRate != undefined){
+      if(this.props.community.isMember && this.props.community.availableStake < this.props.event.requiredDai){
+        const requiredDaiBN = utils.parseUnits(`${this.props.event.requiredDai}`, 18).sub(utils.parseUnits(`${this.props.community.availableStake}`, 18))
+        let purchasePrice = BLTMExportPriceCalculation(
+          utils.parseUnits(`${utils.formatUnits(requiredDaiBN, 18)}`,18),
+          parseInt(`${this.props.community.contributionRate}`),
+          utils.parseUnits(`${this.props.community.totalSupply}`,18),
+          utils.parseUnits(`${this.props.community.poolBalance}`,18),
+          parseFloat(`${this.props.community.gradientDenominator}`),
+        )
+
+        if(parseFloat(utils.formatUnits(purchasePrice, 18)) == 0){
+          purchasePrice = BLTMExportPriceCalculation(
+            utils.parseUnits('0.01', 18),
+            parseInt(`${this.props.community.contributionRate}`),
+            utils.parseUnits(`${this.props.community.totalSupply}`,18),
+            utils.parseUnits(`${this.props.community.poolBalance}`,18),
+            parseFloat(`${this.props.community.gradientDenominator}`),
+          )
+        }
+        this.setState({purchasePrice: parseFloat(utils.formatUnits(purchasePrice, 18))})
+      }else{
+        const purchasePrice = BLTMExportPriceCalculation(
+          utils.parseUnits(`${this.props.event.requiredDai}`,18),
+          parseInt(`${this.props.community.contributionRate}`),
+          utils.parseUnits(`${this.props.community.totalSupply}`,18),
+          utils.parseUnits(`${this.props.community.poolBalance}`,18),
+          parseFloat(`${this.props.community.gradientDenominator}`),
+        )
+        this.setState({purchasePrice: parseFloat(utils.formatUnits(purchasePrice, 18))})
+      }
+    }else if(this.props.event){
+      this.setState({purchasePrice: this.props.event.requiredDai})
+
+    }else{
+      this.setState({purchasePrice: 2})
+    }
+  }
+
 
   handleTogglePendingApproval = (address:string) =>{
     let newState = this.state.confirmingList.filter(address => this.props.event.confirmedAttendees.indexOf(address) < 0);
@@ -99,6 +145,7 @@ class ViewEventContainer extends React.Component<Props> {
           event={event}
           balances={balances}
           attendees={attendees}
+          purchasePrice={this.state.purchasePrice}
 
           confirmingList={this.state.confirmingList}
           handleTogglePendingApproval={this.handleTogglePendingApproval}
