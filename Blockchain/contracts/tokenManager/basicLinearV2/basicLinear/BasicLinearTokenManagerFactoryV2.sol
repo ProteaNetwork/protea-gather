@@ -1,10 +1,10 @@
-pragma solidity >=0.5.3 < 0.6.0;
+pragma solidity 0.5.4;
 
-import { BasicLinearTokenManager } from "./BasicLinearTokenManager.sol";
-import { BaseFactory } from "../../shared/baseContracts/BaseFactory.sol";
-import { ITokenManagerFactory } from "../ITokenManagerFactory.sol";
+import { BasicLinearTokenManagerV2 } from "./BasicLinearTokenManagerV2.sol";
+import { BaseFactory } from "../../../shared/baseContracts/BaseFactory.sol";
+import { ITokenManagerFactory } from "../ITokenManagerFactoryV2.sol";
 
-contract BasicLinearTokenManagerFactory is BaseFactory, ITokenManagerFactory {
+contract BasicLinearTokenManagerFactoryV2 is BaseFactory, ITokenManagerFactory {
     constructor(address _rootFactory) public BaseFactory(_rootFactory) {
 
     }
@@ -19,7 +19,7 @@ contract BasicLinearTokenManagerFactory is BaseFactory, ITokenManagerFactory {
         address _membershipManager
     ) external onlyRootFactory() returns (address) {
         return address(
-            new BasicLinearTokenManager(
+            new BasicLinearTokenManagerV2(
                 _name,
                 _symbol,
                 _reserveToken,

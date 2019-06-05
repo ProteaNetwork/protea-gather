@@ -1,7 +1,7 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import { BaseTokenManager } from "../BaseTokenManager.sol";
-import { IERC20 } from "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
+import { BaseTokenManager } from "../BaseTokenManagerV1.sol";
+import { IERC20 } from "../../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 
 /// @author Ben, Veronica & Ryan of Linum Labs
 /// @author Ryan N.                 RyRy79261

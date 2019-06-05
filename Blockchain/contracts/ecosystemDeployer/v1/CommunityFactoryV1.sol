@@ -1,6 +1,6 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import { ITokenManagerFactory } from "../../tokenManager/ITokenManagerFactory.sol";
+import { ITokenManagerFactory } from "../../tokenManager/basicLinearV1/ITokenManagerFactoryV1.sol";
 import { IMembershipFactory } from "../../membershipManager/IMembershipFactory.sol";
 import { IMembershipManager } from "../../membershipManager/IMembershipManager.sol";
 import { IEventManagerFactory } from "../../utilities/eventManager/IEventManagerFactory.sol";
