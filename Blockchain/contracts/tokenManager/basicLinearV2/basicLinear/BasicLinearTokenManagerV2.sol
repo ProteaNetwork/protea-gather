@@ -1,12 +1,12 @@
 pragma solidity 0.5.4;
 
-import { BaseTokenManager } from "../BaseTokenManagerV2.sol";
+import { BaseTokenManagerV2 } from "../BaseTokenManagerV2.sol";
 import { IERC20 } from "../../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 
 /// @author Ben, Veronica & Ryan of Linum Labs
 /// @author Ryan N.                 RyRy79261
 /// @title Basic Linear Token Manager
-contract BasicLinearTokenManager is BaseTokenManager {
+contract BasicLinearTokenManagerV2 is BaseTokenManagerV2 {
     constructor(
         string memory _name,
         string memory _symbol,
@@ -17,7 +17,7 @@ contract BasicLinearTokenManager is BaseTokenManager {
         address _membershipManager
     ) 
         public
-        BaseTokenManager(_name, _symbol, _reserveToken, _proteaAccount, _publisher, _contributionRate, _membershipManager)
+        BaseTokenManagerV2(_name, _symbol, _reserveToken, _proteaAccount, _publisher, _contributionRate, _membershipManager)
     {
     }
 

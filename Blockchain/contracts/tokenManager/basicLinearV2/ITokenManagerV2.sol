@@ -2,7 +2,7 @@ pragma solidity 0.5.4;
 
 /// @author Ryan @ Protea 
 /// @title ERC20 compliant interface for Token Manager  
-interface ITokenManager {
+interface ITokenManagerV2 /* is ITokenManagerV1 */{
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint value);
 
@@ -56,6 +56,11 @@ interface ITokenManager {
     /// @param _value       :uint256 The value of funds accessed.
     /// @return             :boolean Indicating the action was successful.
     function approve(address _spender, uint256 _value) external returns (bool success);
+
+    /// @dev                This updates the revenue target for custom targets
+    /// @param _newTarget   :address The address of the new target
+    /// @return             A bool for safe execution
+    function changeContributionTarget(address _newTarget) external returns(bool);
     
     /// @dev                Gets the balance of the specified address.
     /// @param _owner       :address The address to query the the balance of.
