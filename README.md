@@ -110,6 +110,7 @@ The current contracts as of 29/05/2019 are deployed on Mainnet at the following 
 * Dai:                    [0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359](https://etherscan.io/address/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359)
 * Community Factory:      [0xc5Af5f868eff2F7cC49d7BE5362C505bD5Bec06a](https://etherscan.io/address/0xc5Af5f868eff2F7cC49d7BE5362C505bD5Bec06a)
 * Basic Linear Factory:   [0x727Cb5dc8c3abF5044d2cE3239FF9a441551F9eF](https://etherscan.io/address/0x727Cb5dc8c3abF5044d2cE3239FF9a441551F9eF)
+* Basic Linear Factory V2:[](https://etherscan.io/address/) - Gas used 1938111
 * Membership Mgr Fact:    [0x08381500b1DeAfd200E5aBE046Fd7096c9Dc5Ba2](https://etherscan.io/address/0x08381500b1DeAfd200E5aBE046Fd7096c9Dc5Ba2)
 * Event Manager Factory:   [0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3](https://etherscan.io/address/0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3)
 
@@ -119,6 +120,7 @@ The current contracts as of 24/05/2019 are deployed on Goerli at the following a
 * PseudoDai:              [0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3](https://goerli.etherscan.io/address/0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3) - Gas used 948421
 * Community Factory:      [0x9f36F9100F75A68BA66C02106A539c1dC72c97C1](https://goerli.etherscan.io/address/0x9f36F9100F75A68BA66C02106A539c1dC72c97C1) - Gas used 1230352
 * Basic Linear Factory:   [0xa86bA03C6A2858755423A5225C34464848e5E1C2](https://goerli.etherscan.io/address/0xa86bA03C6A2858755423A5225C34464848e5E1C2) - Gas used 1938111
+* Basic Linear Factory V2:[](https://goerli.etherscan.io/address/) - Gas used 1938111
 * Membership Mgr Fact:    [0xF29e66aA67421a53B8d9cb14C9d6768907B7D47e](https://goerli.etherscan.io/address/0xF29e66aA67421a53B8d9cb14C9d6768907B7D47e) - Gas used 2412319
 * Event Manager Factory:  [0x261871a421f8cAAa4686Df18aDe13b3406E4c9E2](https://goerli.etherscan.io/address/0x261871a421f8cAAa4686Df18aDe13b3406E4c9E2) - Gas used 3263815
 
@@ -129,6 +131,7 @@ The current contracts as of 14/04/2019 are deployed on Rinkeby at the following 
 * PseudoDai:              [0xb5947cFD299a4bB5a749AA18A8D1a41353B52332](https://rinkeby.etherscan.io/address/0xb5947cFD299a4bB5a749AA18A8D1a41353B52332) - Gas used 948421
 * Community Factory:      [0xb142f4d19c4CA99230990143896b0a32E31ed4C0](https://rinkeby.etherscan.io/address/0xb142f4d19c4CA99230990143896b0a32E31ed4C0) - Gas used 1230352
 * Basic Linear Factory:   [0x6e4451E154F740aa7386a8831DC73C072C948a8D](https://rinkeby.etherscan.io/address/0x6e4451E154F740aa7386a8831DC73C072C948a8D) - Gas used 1938111
+* Basic Linear Factory V2:[](https://rinkeby.etherscan.io/address/) - Gas used 1938111
 * Membership Mgr Fact:    [0xbE24cC927f55D0645146052EC58c2b4cE8219239](https://rinkeby.etherscan.io/address/0xbE24cC927f55D0645146052EC58c2b4cE8219239) - Gas used 2412319
 * Event Manager Factory:  [0x4b4daE72c251371530ce0CED2Ed8192b6caBcb85](https://rinkeby.etherscan.io/address/0x4b4daE72c251371530ce0CED2Ed8192b6caBcb85) - Gas used 3263815
 
@@ -138,6 +141,7 @@ The current contracts as of 24/05/2019 are deployed on Kovan at the following ad
 * PseudoDai:              [0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3](https://kovan.etherscan.io/address/0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3) - Gas used 948421
 * Community Factory:      [0x9f36F9100F75A68BA66C02106A539c1dC72c97C1](https://kovan.etherscan.io/address/0x9f36F9100F75A68BA66C02106A539c1dC72c97C1) - Gas used 1230352
 * Basic Linear Factory:   [0xa86bA03C6A2858755423A5225C34464848e5E1C2](https://kovan.etherscan.io/address/0xa86bA03C6A2858755423A5225C34464848e5E1C2) - Gas used 1938111
+* Basic Linear Factory V2:[](https://kovan.etherscan.io/address/) - Gas used 1938111
 * Membership Mgr Fact:    [0xF29e66aA67421a53B8d9cb14C9d6768907B7D47e](https://kovan.etherscan.io/address/0xF29e66aA67421a53B8d9cb14C9d6768907B7D47e) - Gas used 2412319
 * Event Manager Factory:  [0x261871a421f8cAAa4686Df18aDe13b3406E4c9E2](https://kovan.etherscan.io/address/0x261871a421f8cAAa4686Df18aDe13b3406E4c9E2) - Gas used 3263815
 
@@ -147,6 +151,7 @@ The current contracts as of 23/05/2019 are deployed on Ropsten at the following 
 * PseudoDai:              [0x3f05e5D250FE1A294c665E970513a36D7E2F3230](https://ropsten.etherscan.io/address/0x3f05e5D250FE1A294c665E970513a36D7E2F3230) - Gas used 948421
 * Community Factory:      [0x253a8E67C88c95955CE1817aE2AF92c260Fad605](https://ropsten.etherscan.io/address/0x253a8E67C88c95955CE1817aE2AF92c260Fad605) - Gas used 1230352
 * Basic Linear Factory:   [0xc6585F8e3E3e949f87170A8F024b2Ce9B1Cb3a42](https://ropsten.etherscan.io/address/0xc6585F8e3E3e949f87170A8F024b2Ce9B1Cb3a42) - Gas used 1938111
+* Basic Linear Factory V2:[](https://ropsten.etherscan.io/address/) - Gas used 1938111
 * Membership Mgr Fact:    [0x22Eecbe89f9b50Fa997D03562c62229127Cd65d4](https://ropsten.etherscan.io/address/0x22Eecbe89f9b50Fa997D03562c62229127Cd65d4) - Gas used 2412319
 * Event Manager Factory:  [0xdE114425b6B4cA64C159cfb9aCEB2cb96195cDEA](https://ropsten.etherscan.io/address/0xdE114425b6B4cA64C159cfb9aCEB2cb96195cDEA) - Gas used 3263815
 

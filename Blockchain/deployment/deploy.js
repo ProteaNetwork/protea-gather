@@ -12,6 +12,7 @@ const ethers = require('ethers');
 var PseudoDaiToken = require('../build/PseudoDaiToken.json');
 var CommunityFactoryV1 = require('../build/CommunityFactoryV1.json');
 var BasicLinearTokenManagerFactory = require('../build/BasicLinearTokenManagerFactory.json');
+var BasicLinearTokenManagerFactoryV2 = require('../build/BasicLinearTokenManagerFactoryV2.json');
 var MembershipManagerV1Factory = require('../build/MembershipManagerV1Factory.json');
 var EventManagerV1Factory = require('../build/EventManagerV1Factory.json');
 
@@ -48,142 +49,160 @@ const deploy = async (network, secret) => {
 			deployer = new etherlime.InfuraPrivateKeyDeployer(secret, network, INFURA_API_KEY, mainnetConfig);
 			deployer.defaultOverrides.gasLimit = 3264000;
 
-			communityFactoryInstance = await deployer.deploy(
-				CommunityFactoryV1, 
-				false, 
-				DAI_ADDRESS,
-				PROTEA_ADDRESS,
-				{gasLimit: 1231000}
-			);
+			// communityFactoryInstance = await deployer.deploy(
+			// 	CommunityFactoryV1, 
+			// 	false, 
+			// 	DAI_ADDRESS,
+			// 	PROTEA_ADDRESS,
+			// 	{gasLimit: 1231000}
+			// );
 
 			break;
 		}
 		case "goerli":{
 			deployer = new etherlime.JSONRPCPrivateKeyDeployer(secret, "https://rpc.goerli.mudit.blog/", goerliDefaultConfigs)
-			let pseudoDaiInstance = await deployer.deploy(
-				PseudoDaiToken, 
-				false, 
-				daiSettings.name, 
-				daiSettings.symbol, 
-				daiSettings.decimals,
-				{gasLimit: 948421}
-			);
-			communityFactoryInstance = await deployer.deploy(
-				CommunityFactoryV1, 
-				false, 
-				pseudoDaiInstance.contract.address,
-				deployer.wallet.address,
-				{gasLimit: 1231000}
-			);
+			// let pseudoDaiInstance = await deployer.deploy(
+			// 	PseudoDaiToken, 
+			// 	false, 
+			// 	daiSettings.name, 
+			// 	daiSettings.symbol, 
+			// 	daiSettings.decimals,
+			// 	{gasLimit: 948421}
+			// );
+			// communityFactoryInstance = await deployer.deploy(
+			// 	CommunityFactoryV1, 
+			// 	false, 
+			// 	pseudoDaiInstance.contract.address,
+			// 	deployer.wallet.address,
+			// 	{gasLimit: 1231000}
+			// );
 			break;
 		}
 		case "rinkeby":{
 			deployer = new etherlime.InfuraPrivateKeyDeployer(secret, network, INFURA_API_KEY, defaultConfigs);
-			let pseudoDaiInstance = await deployer.deploy(
-				PseudoDaiToken, 
-				false, 
-				daiSettings.name, 
-				daiSettings.symbol, 
-				daiSettings.decimals,
-				{gasLimit: 948421}
-			);
-			communityFactoryInstance = await deployer.deploy(
-				CommunityFactoryV1, 
-				false, 
-				pseudoDaiInstance.contract.address,
-				deployer.wallet.address,
-				{gasLimit: 1231000}
-			);
+			// let pseudoDaiInstance = await deployer.deploy(
+			// 	PseudoDaiToken, 
+			// 	false, 
+			// 	daiSettings.name, 
+			// 	daiSettings.symbol, 
+			// 	daiSettings.decimals,
+			// 	{gasLimit: 948421}
+			// );
+			// communityFactoryInstance = await deployer.deploy(
+			// 	CommunityFactoryV1, 
+			// 	false, 
+			// 	pseudoDaiInstance.contract.address,
+			// 	deployer.wallet.address,
+			// 	{gasLimit: 1231000}
+			// );
 			break;
 		}
 		case "kovan":{
 			deployer = new etherlime.InfuraPrivateKeyDeployer(secret, network, INFURA_API_KEY, defaultConfigs);
-			let pseudoDaiInstance = await deployer.deploy(
-				PseudoDaiToken, 
-				false, 
-				daiSettings.name, 
-				daiSettings.symbol, 
-				daiSettings.decimals,
-				{gasLimit: 948421}
-			);
-			communityFactoryInstance = await deployer.deploy(
-				CommunityFactoryV1, 
-				false, 
-				pseudoDaiInstance.contract.address,
-				deployer.wallet.address,
-				{gasLimit: 1231000}
-			);
+			// let pseudoDaiInstance = await deployer.deploy(
+			// 	PseudoDaiToken, 
+			// 	false, 
+			// 	daiSettings.name, 
+			// 	daiSettings.symbol, 
+			// 	daiSettings.decimals,
+			// 	{gasLimit: 948421}
+			// );
+			// communityFactoryInstance = await deployer.deploy(
+			// 	CommunityFactoryV1, 
+			// 	false, 
+			// 	pseudoDaiInstance.contract.address,
+			// 	deployer.wallet.address,
+			// 	{gasLimit: 1231000}
+			// );
 			break;
 		}
 		case "ropsten":{
 			deployer = new etherlime.InfuraPrivateKeyDeployer(secret, network, INFURA_API_KEY, defaultConfigs);
-			let pseudoDaiInstance = await deployer.deploy(
-				PseudoDaiToken, 
-				false, 
-				daiSettings.name, 
-				daiSettings.symbol, 
-				daiSettings.decimals,
-				{gasLimit: 948421}
-			);
-			communityFactoryInstance = await deployer.deploy(
-				CommunityFactoryV1, 
-				false, 
-				pseudoDaiInstance.contract.address,
-				deployer.wallet.address,
-				{gasLimit: 1231000}
-			);
+			// let pseudoDaiInstance = await deployer.deploy(
+			// 	PseudoDaiToken, 
+			// 	false, 
+			// 	daiSettings.name, 
+			// 	daiSettings.symbol, 
+			// 	daiSettings.decimals,
+			// 	{gasLimit: 948421}
+			// );
+			// communityFactoryInstance = await deployer.deploy(
+			// 	CommunityFactoryV1, 
+			// 	false, 
+			// 	pseudoDaiInstance.contract.address,
+			// 	deployer.wallet.address,
+			// 	{gasLimit: 1231000}
+			// );
 			break;
 		}
 		case "devnet": {
 			deployer = new etherlime.EtherlimeDevnetDeployer('0x7ab741b57e8d94dd7e1a29055646bafde7010f38a900f55bbd7647880faa6ee8');
-			// proteaAdmin = new ethers.Wallet('0x2030b463177db2da82908ef90fa55ddfcef56e8183caf60db464bc398e736e6f');
-			let pseudoDaiInstance = await deployer.deploy(
-				PseudoDaiToken, 
-				false, 
-				daiSettings.name, 
-				daiSettings.symbol, 
-				daiSettings.decimals,
-				{gasLimit: 948421}
-			);
-			communityFactoryInstance = await deployer.deploy(
-				CommunityFactoryV1, 
-				false, 
-				pseudoDaiInstance.contract.address,
-				deployer.wallet.address,
-				{gasLimit: 1231000}
-			);
+			// // proteaAdmin = new ethers.Wallet('0x2030b463177db2da82908ef90fa55ddfcef56e8183caf60db464bc398e736e6f');
+			// let pseudoDaiInstance = await deployer.deploy(
+			// 	PseudoDaiToken, 
+			// 	false, 
+			// 	daiSettings.name, 
+			// 	daiSettings.symbol, 
+			// 	daiSettings.decimals,
+			// 	{gasLimit: 948421}
+			// );
+			// communityFactoryInstance = await deployer.deploy(
+			// 	CommunityFactoryV1, 
+			// 	false, 
+			// 	pseudoDaiInstance.contract.address,
+			// 	deployer.wallet.address,
+			// 	{gasLimit: 1231000}
+			// );
 			break;
 		}
 	}
 
 	
-	const tokenManagerFactoryInstance = await deployer.deploy(
-		BasicLinearTokenManagerFactory,
-		false,
-		communityFactoryInstance.contract.address,
-		{gasLimit: 2000000}
-	);
+	// const tokenManagerFactoryInstance = await deployer.deploy(
+	// 	BasicLinearTokenManagerFactoryV2,
+	// 	false,
+	// 	// communityFactoryInstance.contract.address,
+	// 	"0x9f36F9100F75A68BA66C02106A539c1dC72c97C1",
+	// 	{gasLimit: 2000000}
+	// );
 
-	const membershipManagerFactoryInstance = await deployer.deploy(
-		MembershipManagerV1Factory,
-		false,
-		communityFactoryInstance.contract.address,
-		{gasLimit: 2413000}
-	);
+	// const membershipManagerFactoryInstance = await deployer.deploy(
+	// 	MembershipManagerV1Factory,
+	// 	false,
+	// 	communityFactoryInstance.contract.address,
+	// 	{gasLimit: 2413000}
+	// );
 
-	const eventManagerFactoryInstance = await deployer.deploy(
-		EventManagerV1Factory,
-		false,
-		communityFactoryInstance.contract.address,
-		{gasLimit: 3264000}
-	);
+	// const eventManagerFactoryInstance = await deployer.deploy(
+	// 	EventManagerV1Factory,
+	// 	false,
+	// 	communityFactoryInstance.contract.address,
+	// 	{gasLimit: 3264000}
+	// );
+	// await (await communityFactoryInstance
+	// 	.initialize(
+	// 		[
+	// 			tokenManagerFactoryInstance.contract.address,
+	// 			membershipManagerFactoryInstance.contract.address,
+	// 			eventManagerFactoryInstance.contract.address
+	// 		],{gasLimit: 100000}
+	// 	)).wait(); 
+
+
+	// communityFactoryInstance = await deployer.deploy(
+	// 		CommunityFactoryV1, 
+	// 		false, 
+	// 		DAI_ADDRESS,
+	// 		PROTEA_ADDRESS,
+	// 		{gasLimit: 1231000}
+	// 	);
+	communityFactoryInstance = await etherlime.ContractAt(CommunityFactoryV1,
+		"0x9f36F9100F75A68BA66C02106A539c1dC72c97C1", deployer.wallet, deployer.wallet.provider);
+		console.log(communityFactoryInstance)
 	await (await communityFactoryInstance
-		.initialize(
-			[
-				tokenManagerFactoryInstance.contract.address,
-				membershipManagerFactoryInstance.contract.address,
-				eventManagerFactoryInstance.contract.address
-			],{gasLimit: 100000}
+		.setTokenManagerFactory(
+			"0xfF103Ea84d734761a7e4094D9d1396e42cD509e5",
+			{gasLimit: 100000}
 		)).wait(); 
 };
 
