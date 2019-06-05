@@ -4,6 +4,7 @@ const ethers = require('ethers');
 var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
 var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
 var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
+var BasicLinearTokenManagerFactoryV2 = require('../../build/BasicLinearTokenManagerFactoryV2.json');
 var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory.json');
 var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
 
@@ -150,25 +151,26 @@ describe('Community factory', () => {
             );
         });
         it("Deploys & registers new token factory", async () =>{
-
-            const tokenManagerFactoryInstance2 = await deployer.deploy(
-                BasicLinearTokenManagerFactory,
+            const tokenManagerFactoryInstanceV2 = await deployer.deploy(
+                BasicLinearTokenManagerFactoryV2,
                 false,
                 communityFactoryInstance.contract.address
             );
+           
             const previousFactories = await communityFactoryInstance
             .from(adminAccount.wallet.address).getFactories();
 
             const result = await (await communityFactoryInstance
                 .from(adminAccount.wallet.address)
                 .setTokenManagerFactory(
-                        tokenManagerFactoryInstance2.contract.address
+                    tokenManagerFactoryInstanceV2.contract.address
                     )).wait();
 
             const newFactories = await communityFactoryInstance
             .from(adminAccount.wallet.address).getFactories();
 
             assert.ok(previousFactories[0] != newFactories[0], "New factory not registered");
+            assert.ok(tokenManagerFactoryInstanceV2.contract.address == newFactories[0], "Address is incorrect");
         })
         it("Deploys community with new token factory", async () =>{
             
@@ -194,18 +196,19 @@ describe('Community factory', () => {
                 "The community owner is incorrect"
             );
 
-            const tokenManagerFactoryInstance2 = await deployer.deploy(
-                BasicLinearTokenManagerFactory,
+            const tokenManagerFactoryInstanceV2 = await deployer.deploy(
+                BasicLinearTokenManagerFactoryV2,
                 false,
                 communityFactoryInstance.contract.address
             );
+           
             const previousFactories = await communityFactoryInstance
             .from(adminAccount.wallet.address).getFactories();
 
             const result = await (await communityFactoryInstance
                 .from(adminAccount.wallet.address)
                 .setTokenManagerFactory(
-                        tokenManagerFactoryInstance2.contract.address
+                        tokenManagerFactoryInstanceV2.contract.address
                     )).wait();
 
             const newFactories = await communityFactoryInstance
