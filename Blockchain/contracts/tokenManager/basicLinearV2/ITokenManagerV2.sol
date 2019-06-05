@@ -71,4 +71,7 @@ interface ITokenManagerV2 /* is ITokenManagerV1 */{
     /// @return             A uint256 representing the total supply of tokens in this market
     function totalSupply() external view returns (uint256);
 
+    /// @dev                Returns the address where community revenue is sent
+    /// @return             :address Address of the revenue storing account
+    function revenueTarget() external view returns(address);
 }
