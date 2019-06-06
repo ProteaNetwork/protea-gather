@@ -74,6 +74,7 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
 
     //Calculate root puchase volume
     const targetDaiBN = yield call(BLTMExportPriceCalculation, daiValueBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
+    debugger;
 
 
     if(liquidTokenBalanceBN.eq(0)){
@@ -82,6 +83,7 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
       const priceToMint = yield call(BLTMPriceToMint, tokenVolume, totalSupplyBN, gradientDenominator, poolBalance);
       const asNormal = ethers.utils.formatUnits(priceToMint, 18);
       const finalTotal = parseFloat(asNormal).toFixed(4)
+
       yield put(setTxContextAction(`Purchasing ${parseFloat(`${communityData.daiValue}`).toFixed(2)} Dai worth of community tokens. Total cost: ${finalTotal} Dai`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);

@@ -2,7 +2,7 @@
 import { abi as CommunityFactoryABI } from "../../../../Blockchain/build/CommunityFactoryV1.json";
 import { abi as MembershipManagerAbi} from "../../../../Blockchain/build/MembershipManagerV1.json";
 import { abi as DaiContractAbi} from "../../../../Blockchain/build/PseudoDaiToken.json";
-import { abi as TbcContractAbi} from "../../../../Blockchain/build/BasicLinearTokenManager.json";
+import { abi as TbcContractAbi} from "../../../../Blockchain/build/BasicLinearTokenManagerV2.json";
 
 import { ethers } from "ethers";
 

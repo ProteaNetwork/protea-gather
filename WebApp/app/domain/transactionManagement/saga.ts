@@ -117,6 +117,8 @@ export default function* TransactionManagementSaga() {
   yield put(setTxPendingState(false));
   yield put(setCommunityMutexAction(''));
   yield put(setQrAction(''));
+  yield put(setRemainingTxCountAction(0));
+  yield put(setTxContextAction(``));
   yield fork(txPendingListener);
   yield fork(refreshBalancesListener);
   yield fork(updatePostTxListener);

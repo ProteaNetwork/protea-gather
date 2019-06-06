@@ -112,7 +112,7 @@ The current contracts as of 29/05/2019 are deployed on Mainnet at the following 
 * Basic Linear Factory:   [0x727Cb5dc8c3abF5044d2cE3239FF9a441551F9eF](https://etherscan.io/address/0x727Cb5dc8c3abF5044d2cE3239FF9a441551F9eF)
 * Basic Linear Factory V2:[0xa86bA03C6A2858755423A5225C34464848e5E1C2](https://etherscan.io/address/0xa86bA03C6A2858755423A5225C34464848e5E1C2)
 * Membership Mgr Fact:    [0x08381500b1DeAfd200E5aBE046Fd7096c9Dc5Ba2](https://etherscan.io/address/0x08381500b1DeAfd200E5aBE046Fd7096c9Dc5Ba2)
-* Event Manager Factory:   [0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3](https://etherscan.io/address/0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3)
+* Event Manager Factory:  [0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3](https://etherscan.io/address/0x47bCAeA99942eCbf5e4d0b0C82D8fec5854810b3)
 
 ### Goerli
 The current contracts as of 24/05/2019 are deployed on Goerli at the following address, with the following markets. 
