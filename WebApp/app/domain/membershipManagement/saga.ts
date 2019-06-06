@@ -74,7 +74,6 @@ export function* increaseMembership(communityData: {tbcAddress:string, daiValue:
 
     //Calculate root puchase volume
     const targetDaiBN = yield call(BLTMExportPriceCalculation, daiValueBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
-    debugger;
 
 
     if(liquidTokenBalanceBN.eq(0)){
