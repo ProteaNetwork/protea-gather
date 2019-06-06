@@ -3,7 +3,7 @@ pragma solidity >=0.5.3 < 0.6.0;
 import { IERC20 } from "../../_resources/openzeppelin-solidity/token/ERC20/IERC20.sol";
 import { SafeMath } from "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
 import { Roles } from "../../_resources/openzeppelin-solidity/access/Roles.sol";
-import { ITokenManager } from "../../tokenManager/ITokenManager.sol";
+import { ITokenManager } from "../../tokenManager/basicLinearV1/ITokenManagerV1.sol";
 import { AdminManaged } from "../../shared/modules/AdminManaged.sol";
 
 // Use Library for Roles: https://openzeppelin.org/api/docs/learn-about-access-control.html

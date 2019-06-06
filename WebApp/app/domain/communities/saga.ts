@@ -142,11 +142,11 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
       yield delay(2000);
     }
 
-    const contributionRate = yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate);
+    // Typescript randomly casts this as a number despite casting or typing
+    const contributionRate:number  = parseInt(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate)}`);
     const totalSupplyBN: BigNumber = ethers.utils.parseUnits(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].totalSupply)}`, 18)
     const gradientDenominator: number = parseInt(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].gradientDenominator)}`);
     const poolBalance: BigNumber = ethers.utils.parseUnits(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].poolBalance)}`, 18);
-
 
     const liquidTokenBalanceBN = yield call(getTokenBalance, communityData.tbcAddress);
     const liquidTokensValuationBN = yield call(getDaiValueBurn, communityData.tbcAddress, liquidTokenBalanceBN);
@@ -164,7 +164,7 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
       yield put(setRemainingTxCountAction(2));
       const priceToMint = yield call(BLTMPriceToMint, tokenVolume, totalSupplyBN, gradientDenominator, poolBalance);
       const asNormal = ethers.utils.formatUnits(priceToMint, 18);
-      const finalTotal = parseFloat(asNormal).toFixed(4)
+      const finalTotal = parseFloat(asNormal).toFixed(4);
       yield put(setTxContextAction(`Purchasing ${parseFloat(`${communityData.daiValue}`).toFixed(2)} Dai worth of community tokens. Total cost: ${finalTotal} Dai`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
@@ -180,7 +180,7 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
       tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, remainingToPuchaseDaiBN);
       const priceToMint = yield call(BLTMExportPriceCalculation, remainingToPuchaseDaiBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
       const asNormal = ethers.utils.formatUnits(priceToMint, 18);
-      const finalTotal = parseFloat(asNormal).toFixed(4)
+      const finalTotal = parseFloat(asNormal).toFixed(4);
       yield put(setRemainingTxCountAction(2));
 
       yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens. Total cost: ${finalTotal} Dai`));

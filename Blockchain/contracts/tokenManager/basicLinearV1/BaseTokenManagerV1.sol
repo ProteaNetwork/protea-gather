@@ -1,7 +1,7 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import { SafeMath } from "../_resources/openzeppelin-solidity/math/SafeMath.sol";
-import { AdminManaged } from "../shared/modules/AdminManaged.sol";
+import { SafeMath } from "../../_resources/openzeppelin-solidity/math/SafeMath.sol";
+import { AdminManaged } from "../../shared/modules/AdminManaged.sol";
 
 
 /// @author Ben, Veronica & Ryan of Linum Labs

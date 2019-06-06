@@ -83,7 +83,7 @@ class ViewEventContainer extends React.Component<Props> {
 
 
   calcPurchasePrice = () =>{
-    if(this.props.community && this.props.event &&  this.props.community.contributionRate != undefined){
+    if(this.props.community && this.props.community.contributionRate != undefined && this.props.community.totalSupply != undefined && this.props.community.poolBalance != undefined){
       if(this.props.community.isMember && this.props.community.availableStake < this.props.event.requiredDai){
         const requiredDaiBN = utils.parseUnits(`${this.props.event.requiredDai}`, 18).sub(utils.parseUnits(`${this.props.community.availableStake}`, 18))
         let purchasePrice = BLTMExportPriceCalculation(
@@ -115,10 +115,15 @@ class ViewEventContainer extends React.Component<Props> {
         this.setState({purchasePrice: parseFloat(utils.formatUnits(purchasePrice, 18))})
       }
     }else if(this.props.event){
-      this.setState({purchasePrice: this.props.event.requiredDai})
+      setTimeout(() => {
+        this.setState({purchasePrice: this.props.event.requiredDai})
+        this.calcPurchasePrice();
+      }, 2000);
 
     }else{
-      this.setState({purchasePrice: 2})
+      setTimeout(() => {
+        this.calcPurchasePrice();
+      }, 2000);
     }
   }
 
