@@ -4,6 +4,7 @@ import { ICommunity } from 'domain/communities/types';
 import { selectBalances } from 'domain/transactionManagement/selectors';
 import { selectCommunitiesDomain } from 'domain/communities/selectors';
 import { selectEventsDomain } from 'domain/events/selectors';
+import { IMember } from 'domain/membershipManagement/types';
 
 /**
  * Direct selector to the viewCommunityContainer state domain
@@ -27,7 +28,7 @@ export const makeSelectFilterMembers = createSelector(
   makeSelectCommunity(), makeSelectFilter,
   (community, filter) => {
     if(community){
-      return community.memberList ? community.memberList.filter(member => (filter == "" || member.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) || member.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0) : [];
+      return community.memberList ? community.memberList.filter((member: IMember) => (filter == "" || (member.displayName.toLowerCase().indexOf(filter.toLowerCase()) >= 0)) || member.ethAddress.toLowerCase().indexOf(filter.toLowerCase()) >= 0) : [];
     } else {
       return [];
     }

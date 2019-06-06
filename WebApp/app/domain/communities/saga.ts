@@ -22,7 +22,7 @@ import { BlockTag } from 'ethers/providers/abstract-provider';
 import { ICommunity } from "./types";
 import { ApplicationRootState } from "types";
 import { forwardTo } from "utils/history";
-import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn, checkTransferApprovalState, getTokenBalance, getDaiValueMint } from "./chainInteractions";
+import { getCommunityFromChain, publishCommunityToChain, getCommunitiesFromChain, updateTransferApproval, mintTokens, getTokenVolumeBuy, getDaiValueBurn, checkTransferApprovalState, getTokenBalance, getDaiValueMint, BLTMCalculateTargetTokens, BLTMPriceToMint, BLTMExportPriceCalculation } from "./chainInteractions";
 import { checkStatus, getMembersAction } from "domain/membershipManagement/actions";
 import { setRemainingTxCountAction, setTxContextAction, setCommunityMutexAction } from "domain/transactionManagement/actions";
 import { registerUtility, setReputationReward, increaseMembershipStake } from "domain/membershipManagement/chainInteractions";
@@ -135,7 +135,6 @@ export function* createCommunity() {
 export function* joinCommunity(communityData: {tbcAddress:string, daiValue: number, membershipManagerAddress: string}){
   try{
     const approvalState = yield call(checkTransferApprovalState, communityData.tbcAddress)
-    const contributionRate = yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate);
     if(!approvalState){
       yield put(setRemainingTxCountAction(3));
       yield put(setTxContextAction("Unlocking Dai transfers to the community"));
@@ -143,40 +142,52 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
       yield delay(2000);
     }
 
-    const daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);
-    let tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, daiValueBN);
+    // Typescript randomly casts this as a number despite casting or typing
+    const contributionRate:number  = parseInt(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate)}`);
+    const totalSupplyBN: BigNumber = ethers.utils.parseUnits(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].totalSupply)}`, 18)
+    const gradientDenominator: number = parseInt(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].gradientDenominator)}`);
+    const poolBalance: BigNumber = ethers.utils.parseUnits(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].poolBalance)}`, 18);
+
     const liquidTokenBalanceBN = yield call(getTokenBalance, communityData.tbcAddress);
     const liquidTokensValuationBN = yield call(getDaiValueBurn, communityData.tbcAddress, liquidTokenBalanceBN);
 
     let mintedVolume: BigNumber = ethers.utils.bigNumberify(0);
 
+    const daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);
+    let tokenVolume = yield call(BLTMCalculateTargetTokens, daiValueBN, gradientDenominator, contributionRate, totalSupplyBN);
+
     //Calculate root puchase volume
-    const minusProteaTaxBN = daiValueBN.sub(daiValueBN.div(101));
-    const includingContributionBN = liquidTokenBalanceBN.gt(0) ? liquidTokenBalanceBN.mul(100).div(ethers.utils.parseUnits(`${100 - contributionRate}`, 0)).div(10) : liquidTokenBalanceBN;
-    const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
-    // 420 * 0.6 = 252  |  (252 / 60) * 100 = 420
+    const targetDaiBN = yield call(BLTMExportPriceCalculation, daiValueBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
+
     if(liquidTokenBalanceBN.eq(0)){
       // If no tokens have been minted
       yield put(setRemainingTxCountAction(2));
-      yield put(setTxContextAction(`Purchasing ${communityData.daiValue} Dai worth of community tokens.(Incl. Contribtions)`));
+      const priceToMint = yield call(BLTMPriceToMint, tokenVolume, totalSupplyBN, gradientDenominator, poolBalance);
+      const asNormal = ethers.utils.formatUnits(priceToMint, 18);
+      const finalTotal = parseFloat(asNormal).toFixed(4);
+      yield put(setTxContextAction(`Purchasing ${parseFloat(`${communityData.daiValue}`).toFixed(2)} Dai worth of community tokens. (incl. Contributions): ${finalTotal} Dai`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
-      mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(parseInt(contributionRate)))
-    }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).gt(minusProteaTaxBN)){
+      mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(contributionRate))
+    }else if(liquidTokensValuationBN.gte(targetDaiBN)){
       yield put(setTxContextAction(`Roughly enough to stake`));
       yield delay(1000);
       mintedVolume = liquidTokenBalanceBN;
 
-    }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).lt(minusProteaTaxBN)){
+    }else if(liquidTokensValuationBN.gt(0) && liquidTokensValuationBN.lt(daiValueBN)){
       // A mint occured externally to this user, price has changed so mint whats needed
       const remainingToPuchaseDaiBN = daiValueBN.sub(liquidTokensValuationBN);
       tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, remainingToPuchaseDaiBN);
-
+      const priceToMint = yield call(BLTMExportPriceCalculation, remainingToPuchaseDaiBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
+      const asNormal = ethers.utils.formatUnits(priceToMint, 18);
+      const finalTotal = parseFloat(asNormal).toFixed(4);
       yield put(setRemainingTxCountAction(2));
 
-      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens.(Incl. Contribtions)`));
+      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens. (incl. Contributions): ${finalTotal} Dai`));
       yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
+
       mintedVolume = yield call(getTokenBalance, communityData.tbcAddress);
+      // Removing contribution
     }else if(liquidTokenBalanceBN.gte(tokenVolume)){
       // Theres enough for the mint
       mintedVolume = tokenVolume;
@@ -217,7 +228,7 @@ export function* getAllCommumunities(){
       eventsToRemove.length > 0 ? yield all(eventsToRemove.map(address => put(removeEventAction(address)))) : null;
     }
 
-    const resolvedCommunities = Object.keys(communitiesFromState).filter(key => communitiesFromState[key].networkId && communitiesFromState[key].networkId == blockchainResources.networkId && communitiesFromState[key].name).map(validKey => communitiesFromState[validKey]);
+    const resolvedCommunities = Object.keys(communitiesFromState).filter(key => communitiesFromState[key].networkId && communitiesFromState[key].networkId == blockchainResources.networkId && communitiesFromState[key].description).map(validKey => communitiesFromState[validKey]);
     yield all(resolvedCommunities.map(resolvedCommunity => put(saveCommunity(resolvedCommunity))));
     const resolvedAddresses = resolvedCommunities.map(community => community.tbcAddress);
     communities = communities.filter(com => resolvedAddresses.indexOf(com.tbcAddress) < 0)

@@ -1,12 +1,12 @@
 const etherlime = require('etherlime');
 const ethers = require('ethers');
 
-var PseudoDaiToken = require('../../build/PseudoDaiToken.json');
-var BasicLinearTokenManager = require('../../build/BasicLinearTokenManager.json');
-var CommunityFactoryV1 = require('../../build/CommunityFactoryV1.json');
-var BasicLinearTokenManagerFactory = require('../../build/BasicLinearTokenManagerFactory.json');
-var MembershipManagerV1Factory = require('../../build/MembershipManagerV1Factory.json');
-var EventManagerV1Factory = require('../../build/EventManagerV1Factory.json');
+var PseudoDaiToken = require('../../../build/PseudoDaiToken.json');
+var BasicLinearTokenManager = require('../../../build/BasicLinearTokenManagerV2.json');
+var CommunityFactoryV1 = require('../../../build/CommunityFactoryV1.json');
+var BasicLinearTokenManagerFactory = require('../../../build/BasicLinearTokenManagerFactoryV2.json');
+var MembershipManagerV1Factory = require('../../../build/MembershipManagerV1Factory.json');
+var EventManagerV1Factory = require('../../../build/EventManagerV1Factory.json');
 
 
 const communitySettings = {
@@ -23,7 +23,7 @@ const daiSettings = {
 
 const defaultTokenVolume = 100;
 
-describe('V1 Token Manager', () => {
+describe('V2 Token Manager', () => {
     let deployer;
     let proteaAdmin = devnetAccounts[0];
     let userAccount = devnetAccounts[1];
@@ -282,7 +282,6 @@ describe('V1 Token Manager', () => {
                 );
             });
 
-
             it("Returns burning values correctly", async () => {
                 let priceOfMint = await tokenManagerInstance
                     .from(userAccount.wallet.address)
@@ -442,6 +441,101 @@ describe('V1 Token Manager', () => {
             })
             
         });
+
+        it("Changes contribution target successfully", async ()=>{
+            const tokenVolume = ethers.utils.parseUnits(`${defaultTokenVolume}`, 18);
+
+            let priceOfMint = await tokenManagerInstance
+                .from(userAccount.wallet.address)
+                .priceToMint(tokenVolume);
+            let userPDAIBalance = await pseudoDaiInstance.from(
+                userAccount.wallet.address
+            ).balanceOf(
+                userAccount.wallet.address
+            );
+
+            await pseudoDaiInstance.from(userAccount.wallet.address).mint();
+            await pseudoDaiInstance.from(userAccount.wallet.address)
+                .approve(
+                    tokenManagerInstance.contract.address,
+                    priceOfMint
+                );
+            
+            await tokenManagerInstance
+                .from(userAccount.wallet.address)
+                .mint(
+                    userAccount.wallet.address, 
+                    tokenVolume
+            );
+
+            const balance = await pseudoDaiInstance
+                    .from(proteaAdmin.wallet.address)
+                    .balanceOf(
+                        userAccount.wallet.address
+                );
+
+            assert.notEqual(ethers.utils.formatUnits(balance, 18), ethers.utils.formatUnits(tokenVolume, 18), "Tokens were not contributed");
+
+            const revenueTargetBalance = await tokenManagerInstance
+                    .from(proteaAdmin.wallet.address)
+                    .balanceOf(
+                        communityCreatorAccount.wallet.address
+                );
+
+            assert.notEqual(
+                parseFloat(ethers.utils.formatUnits(revenueTargetBalance,18)), 
+                0, 
+                "Tokens were not contributed");
+                
+            
+            // Changing targets
+            let targetAddress = await tokenManagerInstance.revenueTarget();
+            await (await tokenManagerInstance.from(communityCreatorAccount).changeContributionTarget(anotherCommunityCreatorAccount.wallet.address)).wait()
+            targetAddress = await tokenManagerInstance.revenueTarget();
+            assert.equal(
+                anotherCommunityCreatorAccount.wallet.address,
+                targetAddress,
+                "Address not updated"
+            )
+            priceOfMint = await tokenManagerInstance
+                .from(userAccount.wallet.address)
+                .priceToMint(tokenVolume);
+
+            await pseudoDaiInstance.from(userAccount.wallet.address)
+                .approve(
+                    tokenManagerInstance.contract.address,
+                    priceOfMint
+                );
+        
+            let newRevenueTargetBalance = await tokenManagerInstance
+                .from(proteaAdmin.wallet.address)
+                .balanceOf(
+                    anotherCommunityCreatorAccount.wallet.address
+            );
+
+            assert.equal(
+                parseFloat(ethers.utils.formatUnits(newRevenueTargetBalance,18)), 
+                0, 
+                "Balance incorrect");
+            
+            await tokenManagerInstance
+                .from(userAccount.wallet.address)
+                .mint(
+                    userAccount.wallet.address, 
+                    tokenVolume
+            );
+
+            newRevenueTargetBalance = await tokenManagerInstance
+                    .from(proteaAdmin.wallet.address)
+                    .balanceOf(
+                        anotherCommunityCreatorAccount.wallet.address
+                );
+
+            assert.notEqual(
+                parseFloat(ethers.utils.formatUnits(revenueTargetBalance,18)), 
+                0, 
+                "Tokens were not contributed");
+        })
 
         describe('Moving along the curve', async () => {
             it('Total supply changes with minting and burning', async () => {

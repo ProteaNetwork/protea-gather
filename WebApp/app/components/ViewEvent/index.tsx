@@ -207,6 +207,7 @@ interface OwnProps extends WithStyles<typeof styles> {
   community: ICommunity;
   balances: {ethBalance: number, daiBalance: number, ethAddress: string};
   slideIndex: number;
+  purchasePrice: number;
   filter: string;
   confirmingList: string[];
   handleChange(event: any, value: any): void;
@@ -255,7 +256,8 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
       filter,
       handleTogglePendingApproval,
       confirmingList,
-      onGenerateQr
+      onGenerateQr,
+      purchasePrice
     } = props;
 
     return <Fragment>
@@ -342,20 +344,20 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                       className={classes.buttons}
                       onClick={() => onJoinCommunity(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
                       size="large">
-                      {`Join for community for ${event.requiredDai}Dai`}
+                      {`Join for community for ${purchasePrice.toFixed(2)} Dai`}
                     </Button>
                   }
                   {
                     community.isMember && event.memberState == 0 && (community.availableStake < event.requiredDai) &&
                     <Button
                       className={classes.buttons}
-                      onClick={() => onIncreaseMembership(event.requiredDai,community.tbcAddress, community.membershipManagerAddress)}
+                      onClick={() => onIncreaseMembership(purchasePrice,community.tbcAddress, community.membershipManagerAddress)}
                       size="large">
-                      {`Increase stake by ${event.requiredDai}Dai`}
+                      {`Increase stake by ${(purchasePrice).toFixed(2)}Dai`}
                     </Button>
                   }
                   {
-                    event && (event.organizer == balances.ethAddress)&&
+                    event && (event.organizer == balances.ethAddress) &&
                     <Fragment>
                       {
                         event.state <= 1 &&
@@ -403,7 +405,7 @@ const ViewEvent: React.SFC<OwnProps> = (props: OwnProps) => {
                         event.state <= 1 &&
                         <Fragment>
                           {
-                            event.memberState == 0 &&
+                            event.memberState == 0 && (community.availableStake >= event.requiredDai) &&
                             <Button className={classes.buttons} onClick={() => onRSVP(event.eventId, event.membershipManagerAddress, community.tbcAddress)}>
                               RSVP
                             </Button>

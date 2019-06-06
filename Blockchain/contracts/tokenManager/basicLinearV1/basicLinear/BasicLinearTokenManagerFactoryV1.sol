@@ -1,8 +1,8 @@
 pragma solidity >=0.5.3 < 0.6.0;
 
-import { BasicLinearTokenManager } from "./BasicLinearTokenManager.sol";
-import { BaseFactory } from "../../shared/baseContracts/BaseFactory.sol";
-import { ITokenManagerFactory } from "../ITokenManagerFactory.sol";
+import { BasicLinearTokenManager } from "./BasicLinearTokenManagerV1.sol";
+import { BaseFactory } from "../../../shared/baseContracts/BaseFactory.sol";
+import { ITokenManagerFactory } from "../ITokenManagerFactoryV1.sol";
 
 contract BasicLinearTokenManagerFactory is BaseFactory, ITokenManagerFactory {
     constructor(address _rootFactory) public BaseFactory(_rootFactory) {

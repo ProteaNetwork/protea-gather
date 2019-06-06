@@ -2,7 +2,7 @@
 import { abi as CommunityFactoryABI } from "../../../../Blockchain/build/CommunityFactoryV1.json";
 import { abi as MembershipManagerAbi} from "../../../../Blockchain/build/MembershipManagerV1.json";
 import { abi as DaiContractAbi} from "../../../../Blockchain/build/PseudoDaiToken.json";
-import { abi as TbcContractAbi} from "../../../../Blockchain/build/BasicLinearTokenManager.json";
+import { abi as TbcContractAbi} from "../../../../Blockchain/build/BasicLinearTokenManagerV2.json";
 
 import { ethers } from "ethers";
 
@@ -296,4 +296,98 @@ export async function burnTokens(tokenVolume: BigNumber, tbcAddress: string){
   catch(error){
       throw error;
   }
+}
+
+
+
+// Basic Linear pricing
+export function BLTMExportPriceCalculation(daiValue: BigNumber, contributionRate: number, totalSupply: BigNumber, poolBalance: BigNumber, gradientDenominator: number){
+  const targetTokens = BLTMCalculateTargetTokens(daiValue, gradientDenominator, contributionRate, totalSupply);
+  return BLTMPriceToMint(targetTokens, totalSupply, gradientDenominator, poolBalance)
+}
+
+export function BLTMPriceToMint(numTokens: BigNumber, totalSupply: BigNumber, gradientDenominator: number, poolBalance: BigNumber) {
+  // return curveIntegral(totalSupply_.add(_numTokens)).sub(poolBalance_);
+  let rawDai: BigNumber = BLTMCurveIntegral(totalSupply.add(numTokens), gradientDenominator).sub(poolBalance);
+  return rawDai.add(rawDai.div(100)); // Adding 1 percent
+}
+
+/// @dev                Returns the required collateral amount for a volume of bonding curve tokens
+/// @return             Potential return collateral corrected for decimals
+export function BLTMRewardForBurn(numTokens: BigNumber, totalSupply: BigNumber, gradientDenominator: number, poolBalance: BigNumber) {
+  return poolBalance.sub(BLTMCurveIntegral(totalSupply.sub(numTokens), gradientDenominator));
+}
+
+export function BLTMColateralToTokenBuying(colateralTokenOffered: BigNumber, totalSupply: BigNumber, gradientDenominator: number, withContribution: boolean)  {
+  let correctedForContribution: BigNumber = withContribution ? colateralTokenOffered.sub(colateralTokenOffered.div(101)) : colateralTokenOffered; // Removing 1 percent
+  return BLTMInverseCurveIntegral(BLTMCurveIntegral(totalSupply, gradientDenominator).add(correctedForContribution), gradientDenominator).sub(totalSupply);
+}
+
+export function BLTMcolateralToTokenSelling(collateralTokenNeeded: BigNumber, totalSupply: BigNumber, gradientDenominator: number) {
+  return totalSupply.sub(
+      BLTMInverseCurveIntegral(BLTMCurveIntegral(totalSupply, gradientDenominator).sub(collateralTokenNeeded),gradientDenominator)
+  )
+}
+
+export function BLTMCurveIntegral(_x: BigNumber, gradientDenominator: number): BigNumber{
+  const scaling = ethers.utils.bigNumberify("1000000000000000000")
+  return ((_x.mul(_x)).div(2*gradientDenominator).add(0).div(scaling));
+}
+
+export function BLTMInverseCurveIntegral(_x: BigNumber, gradientDenominator: number): BigNumber{
+  // return BLTMSqrt(2*_x*gradientDenominator*(10**18));
+  const scaling = ethers.utils.bigNumberify("1000000000000000000")
+  return BLTMSqrt(((_x.mul(2)).mul(gradientDenominator)).mul(scaling));
+}
+
+export function BLTMSqrt(_x: BigNumber): BigNumber {
+  if (_x.eq(0)) return ethers.utils.bigNumberify(0);
+  else if (_x.lte(3)) return ethers.utils.bigNumberify(1);
+
+  let z: BigNumber = (_x.add(1)).div(2);
+  let y: BigNumber = _x;
+  while (z.lt(y))
+  /// @why3 invariant { to_int !_z = div ((div (to_int arg_x) (to_int !_y)) + (to_int !_y)) 2 }
+  /// @why3 invariant { to_int arg_x < (to_int !_y + 1) * (to_int !_y + 1) }
+  /// @why3 invariant { to_int arg_x < (to_int !_z + 1) * (to_int !_z + 1) }
+  /// @why3 variant { to_int !_y }
+  {
+      y = z;
+      z = ((_x.div(z)).add(z)).div(2);
+  }
+  return y;
+}
+
+
+export function BLTMCalculateTargetTokens(requestedDai: BigNumber, gradientDenominator: number, contributionRate: number, totalSupply: BigNumber){
+  try{
+    const gradient = ethers.utils.parseUnits(`${(1/gradientDenominator)}`, 18);
+    // console.log("Gradient", ethers.utils.formatUnits(gradient ,18))
+    const userShare = (ethers.utils.parseUnits("100", 18).sub(ethers.utils.parseUnits(`${contributionRate}`, 18))).div(100);
+    // console.log("userShare", ethers.utils.formatUnits(userShare ,18))
+
+    // Quadratic roots
+    const a = ethers.utils.parseUnits(`${(100 + contributionRate)}`, 18).mul(userShare).div(ethers.utils.parseUnits(`1`, 18)).div(100);
+    // console.log("a", ethers.utils.formatUnits(a ,18))
+    const b = ((totalSupply.mul(2)).mul(userShare)).div(ethers.utils.parseUnits(`1`, 18));
+    // console.log("b", ethers.utils.formatUnits(b ,18))
+
+    const bSquared = (b.pow(2)).div(ethers.utils.parseUnits('1', 18));
+    // console.log("foo", ethers.utils.formatUnits(foo ,18))
+    const arg1 = (a.mul(4).mul(requestedDai)).div(gradient.mul(ethers.utils.parseUnits('0.5', 18)));
+    const arg1Scaled = arg1.mul(ethers.utils.parseUnits(`1`, 18))
+
+    // console.log("bar", ethers.utils.formatUnits(bar, 18))
+    const arg = bSquared.add(arg1Scaled);
+    // console.log("arg", ethers.utils.formatUnits(arg ,18))
+    const sqrt_arg = BLTMSqrt(arg).mul(ethers.utils.parseUnits(`1`, 9));
+    // console.log("sqrt_arg", ethers.utils.formatUnits(sqrt_arg ,18))
+    const tokens = (sqrt_arg.sub(b).mul(ethers.utils.parseUnits('1', 18))).div(a.mul(2));
+    // console.log("tokens", ethers.utils.formatUnits(tokens ,18))
+    return tokens
+  }
+  catch(e){
+    return e;
+  }
+
 }

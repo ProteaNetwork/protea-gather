@@ -12,6 +12,7 @@ const ethers = require('ethers');
 var PseudoDaiToken = require('../build/PseudoDaiToken.json');
 var CommunityFactoryV1 = require('../build/CommunityFactoryV1.json');
 var BasicLinearTokenManagerFactory = require('../build/BasicLinearTokenManagerFactory.json');
+var BasicLinearTokenManagerFactoryV2 = require('../build/BasicLinearTokenManagerFactoryV2.json');
 var MembershipManagerV1Factory = require('../build/MembershipManagerV1Factory.json');
 var EventManagerV1Factory = require('../build/EventManagerV1Factory.json');
 
@@ -156,9 +157,11 @@ const deploy = async (network, secret) => {
 		}
 	}
 
+	// communityFactoryInstance = await etherlime.ContractAt(CommunityFactoryV1,
+	// 	"", deployer.wallet, deployer.wallet.provider);
 	
 	const tokenManagerFactoryInstance = await deployer.deploy(
-		BasicLinearTokenManagerFactory,
+		BasicLinearTokenManagerFactoryV2,
 		false,
 		communityFactoryInstance.contract.address,
 		{gasLimit: 2000000}
@@ -185,6 +188,23 @@ const deploy = async (network, secret) => {
 				eventManagerFactoryInstance.contract.address
 			],{gasLimit: 100000}
 		)).wait(); 
+
+
+	// communityFactoryInstance = await deployer.deploy(
+	// 		CommunityFactoryV1, 
+	// 		false, 
+	// 		DAI_ADDRESS,
+	// 		PROTEA_ADDRESS,
+	// 		{gasLimit: 1231000}
+	// 	);
+
+	// Gas used 29,979
+	// Updating facotry code
+	// await (await communityFactoryInstance
+	// 	.setTokenManagerFactory(
+	// 		tokenManagerFactoryInstance.contract.address,
+	// 		{gasLimit: 100000}
+	// 	)).wait(); 
 };
 
 module.exports = {
@@ -195,6 +215,7 @@ module.exports = {
 // PDAI deploy: 948,421
 // Community Factory: 1,230,352  @ 2Gwei   		
 // Token factory: 1,938,111  @ 2 Gwei 0.0038762
+// Token factory 2: 2,016,544  @ 2 Gwei 0.0038762
 // Membership Factory: 2,412,319 @ 2Gwei 0.0048246
 // Event factory: 3,263,815 @ 2Gwei  0.0065276
 // Initialize:  92,785 @ 2Gwei 0.0001856

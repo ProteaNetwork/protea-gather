@@ -2,7 +2,7 @@ import { fork, take, call, put, select, all, delay } from "redux-saga/effects";
 import { checkStatus, increaseMembershipAction, withdrawMembershipAction, getMembersAction } from "./actions";
 
 // Ethers standard event filter type is missing the blocktags
-import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn, getTokenVolumeSell, getTotalSupply, getGradientDenominator, getPoolBalance, getContributionRate } from "domain/communities/chainInteractions";
+import { getTokenBalance, checkTransferApprovalState, burnTokens, mintTokens, getTokenVolumeBuy, getDaiValueBurn, getTokenVolumeSell, getTotalSupply, getGradientDenominator, getPoolBalance, getContributionRate, BLTMColateralToTokenBuying, BLTMcolateralToTokenSelling, BLTMRewardForBurn, getDaiValueMint, BLTMPriceToMint, BLTMSqrt, BLTMCurveIntegral, BLTMInverseCurveIntegral, BLTMExportPriceCalculation, BLTMCalculateTargetTokens } from "domain/communities/chainInteractions";
 import { increaseMembershipStake, checkUserStateOnChain, withdrawMembershipStake, getAvailableStake, checkAdminState, getMembersTx } from "./chainInteractions";
 import { statusUpdated, setMemberList } from "domain/communities/actions";
 import { ethers } from "ethers";
@@ -48,47 +48,60 @@ export function* resolveMembersMeta(ethAddress: string) {
   }
 }
 
+
 // CRUD
 export function* increaseMembership(communityData: {tbcAddress:string, daiValue: number, membershipManagerAddress: string}){
   try{
-    const daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);
-    const contributionRate = yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate);
+    if(typeof(communityData.daiValue) == "string"){
+      communityData.daiValue = parseFloat(communityData.daiValue)
+    }
+
+    const contributionRate:number  = parseInt(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].contributionRate)}`);
+    const totalSupplyBN: BigNumber = ethers.utils.parseUnits(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].totalSupply)}`, 18)
+    const gradientDenominator: number = parseInt(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].gradientDenominator)}`);
+    const poolBalance: BigNumber = ethers.utils.parseUnits(`${yield select((state: ApplicationRootState) => state.communities[communityData.tbcAddress].poolBalance)}`, 18);
 
     const liquidTokenBalanceBN = yield call(getTokenBalance, communityData.tbcAddress);
     const liquidTokensValuationBN = yield call(getDaiValueBurn, communityData.tbcAddress, liquidTokenBalanceBN);
+
     let mintedVolume: BigNumber = ethers.utils.bigNumberify(0);
 
-    // This is the volume after contribution
-    let tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, daiValueBN);
+
+    let daiValueBN = ethers.utils.parseUnits(`${communityData.daiValue}`, 18);
+    let tokenVolume = yield call(BLTMCalculateTargetTokens, daiValueBN, gradientDenominator, contributionRate, totalSupplyBN);
 
     yield put(setCommunityMutexAction(communityData.tbcAddress));
 
     //Calculate root puchase volume
-    const minusProteaTaxBN = daiValueBN.sub(daiValueBN.div(101));
-    const includingContributionBN = liquidTokenBalanceBN.gt(0) ? liquidTokenBalanceBN.mul(100).div(ethers.utils.parseUnits(`${100 - contributionRate}`, 0)).div(10) : liquidTokenBalanceBN;
-    const fullContributionResolvedBN = yield call(getDaiValueBurn, communityData.tbcAddress, includingContributionBN);
+    const targetDaiBN = yield call(BLTMExportPriceCalculation, daiValueBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
 
 
     if(liquidTokenBalanceBN.eq(0)){
       // If no tokens have been minted
       yield put(setRemainingTxCountAction(2));
-      yield put(setTxContextAction(`Purchasing ${communityData.daiValue}(Incl. Contribtions) Dai worth of community tokens.`));
+      const priceToMint = yield call(BLTMPriceToMint, tokenVolume, totalSupplyBN, gradientDenominator, poolBalance);
+      const asNormal = ethers.utils.formatUnits(priceToMint, 18);
+      const finalTotal = parseFloat(asNormal).toFixed(4)
+
+      yield put(setTxContextAction(`Purchasing ${parseFloat(`${communityData.daiValue}`).toFixed(2)} Dai worth of community tokens. (incl. Contributions): ${finalTotal} Dai`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
-      mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(parseInt(contributionRate)))
-    }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).gt(minusProteaTaxBN)){
+      mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(contributionRate))
+    }else if(liquidTokensValuationBN.gte(targetDaiBN)){
       yield put(setTxContextAction(`Roughly enough to stake`));
       yield delay(1000);
       mintedVolume = liquidTokenBalanceBN;
 
-    }else if(fullContributionResolvedBN.add(ethers.utils.parseUnits("0.2", 18)).lt(minusProteaTaxBN)){
+    }else if(liquidTokensValuationBN.gt(0) && liquidTokensValuationBN.lt(daiValueBN)){
       // A mint occured externally to this user, price has changed so mint whats needed
       const remainingToPuchaseDaiBN = daiValueBN.sub(liquidTokensValuationBN);
       tokenVolume = yield retry(5, 2000, getTokenVolumeBuy, communityData.tbcAddress, remainingToPuchaseDaiBN);
-
+      const priceToMint = yield call(BLTMExportPriceCalculation, remainingToPuchaseDaiBN,  parseInt(`${contributionRate}`), totalSupplyBN, poolBalance, gradientDenominator);
+      const asNormal = ethers.utils.formatUnits(priceToMint, 18);
+      const finalTotal = parseFloat(asNormal).toFixed(4)
       yield put(setRemainingTxCountAction(2));
 
-      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens.(Incl. Contribtions)`));
+      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens. (incl. Contributions): ${finalTotal} Dai`));
       yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
 
       mintedVolume = yield call(getTokenBalance, communityData.tbcAddress);

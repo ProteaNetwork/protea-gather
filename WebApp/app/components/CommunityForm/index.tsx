@@ -63,6 +63,9 @@ const styles = (theme: Theme) =>
           backgroundColor: colors.proteaBranding.pink,
         }
       },
+    },
+    notice:{
+      color: colors.white
     }
   });
 
@@ -80,6 +83,10 @@ const CommunityForm: React.SFC<OwnProps> = (props: OwnProps) => {
           <Typography className={classes.heading} component="h1" variant="h1">
             {(isNew) ? "Create a community" : "Update Community Metadata"}
           </Typography>
+          {isNew && <Typography className={classes.notice} component="p" variant="body1">
+              Beta Notice: Creating a community launches 3 contracts, an ERC20 bonding curve contract, a membership management module and the events module.
+              The current design increases token value a bit fast but will be revised in future updates.
+          </Typography>}
           <FormControl>
             <Typography className={classes.subHeading} component="h4" variant="h4">
               Community banner
