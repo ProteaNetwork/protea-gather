@@ -165,7 +165,7 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
       const priceToMint = yield call(BLTMPriceToMint, tokenVolume, totalSupplyBN, gradientDenominator, poolBalance);
       const asNormal = ethers.utils.formatUnits(priceToMint, 18);
       const finalTotal = parseFloat(asNormal).toFixed(4);
-      yield put(setTxContextAction(`Purchasing ${parseFloat(`${communityData.daiValue}`).toFixed(2)} Dai worth of community tokens. Total cost: ${finalTotal} Dai`));
+      yield put(setTxContextAction(`Purchasing ${parseFloat(`${communityData.daiValue}`).toFixed(2)} Dai worth of community tokens. (incl. Contributions): ${finalTotal} Dai`));
 
       mintedVolume = yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
       mintedVolume = mintedVolume.sub(mintedVolume.div(100).mul(contributionRate))
@@ -183,7 +183,7 @@ export function* joinCommunity(communityData: {tbcAddress:string, daiValue: numb
       const finalTotal = parseFloat(asNormal).toFixed(4);
       yield put(setRemainingTxCountAction(2));
 
-      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens. Total cost: ${finalTotal} Dai`));
+      yield put(setTxContextAction(`Purchasing ${parseFloat(ethers.utils.formatUnits(remainingToPuchaseDaiBN, 18)).toFixed(2)} Dai worth of community tokens. (incl. Contributions): ${finalTotal} Dai`));
       yield retry(5, 2000, mintTokens, tokenVolume, communityData.tbcAddress);
 
       mintedVolume = yield call(getTokenBalance, communityData.tbcAddress);

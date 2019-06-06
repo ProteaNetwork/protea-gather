@@ -129,7 +129,7 @@ const TokenManagement: React.SFC<OwnProps> = (props: OwnProps) => {
     </div>
     <div>
       <span>
-        Buy Price: <br/> {purchasePrice.toFixed(2)} DAI
+      (incl. Contributions): <br/> {purchasePrice.toFixed(2)} DAI
       </span>
     </div>
 
